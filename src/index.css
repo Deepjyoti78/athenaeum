@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-main: #171915;
+    --bg-sidebar: #11130F;
+    --bg-paper: #E9E5D8;
+    --bg-paper-dark: #DCD8CB;
+    --border-color: #AAA99B;
+    --text-primary: #25251F;
+    --text-muted: #77766B;
+  }
+
+  body {
+    background-color: #171915;
+    color: #25251F;
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+}
+
+/* Custom Archival Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(170, 169, 155, 0.15);
+}
+::-webkit-scrollbar-thumb {
+  background: #AAA99B;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #77796C;
+}
+
+/* Crisp 1px Borders */
+.border-archival {
+  border-color: #AAA99B;
+}
+
+.border-dark-archival {
+  border-color: #262922;
+}
+
+/* Barcode Simulation Pattern */
+.barcode-strip {
+  background: repeating-linear-gradient(
+    90deg,
+    #25251F,
+    #25251F 1.5px,
+    transparent 1.5px,
+    transparent 3px,
+    #25251F 3px,
+    #25251F 5px,
+    transparent 5px,
+    transparent 6px,
+    #25251F 6px,
+    #25251F 8.5px,
+    transparent 8.5px,
+    transparent 9.5px,
+    #25251F 9.5px,
+    #25251F 12px,
+    transparent 12px,
+    transparent 14px
+  );
+}
+
+/* Micro dots pattern */
+.bg-grid-dots {
+  background-image: radial-gradient(#AAA99B 0.75px, transparent 0.75px);
+  background-size: 8px 8px;
+}
+
+/* Subtle archival texture */
+.paper-surface {
+  background-color: #E9E5D8;
+  position: relative;
+}
+
