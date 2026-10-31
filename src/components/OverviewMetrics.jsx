@@ -20,18 +20,16 @@ export function OverviewMetrics({ onNavigate }) {
   const creativeWorksCount = dynamicMetrics?.worksBreakdown?.creative ?? (isReady ? works.filter(w => w.type === 'Creative').length : 1);
   const maintenanceWorksCount = dynamicMetrics?.worksBreakdown?.maintenance ?? (isReady ? works.filter(w => w.type === 'Maintenance').length : 1);
 
-  // Donut Gauge dashoffset calculation
+  // Donut Gauge dashoffset calculation for 74px prominent ring (r=25, circumference=157)
   const totalWorks = works.length > 0 ? works.length : 7;
   const donutProgress = totalWorks > 0 ? Math.min(1, Math.max(0.1, activeWorksCount / totalWorks)) : 0.65;
-  // Circumference = 126 for r=20. Gauge sweeps ~65% when healthy
-  const donutDashoffset = Math.round(126 * (1 - (donutProgress * 0.72)));
+  const donutDashoffset = Math.round(157 * (1 - (donutProgress * 0.72)));
 
   // 3. Entries this week: dynamically computed
   const entriesCount = dynamicMetrics?.totalEntries ?? (isReady ? entries.length : 18);
 
-  // Dynamic 7-day activity bar chart
+  // Dynamic 7-day activity bar chart with wide bars (14-17px) and 85-90% width coverage
   const bars = useMemo(() => {
-    // Default reference distribution where Thursday (T2) is peak
     const defaultCounts = [2, 3, 4, 6, 5, 3, 2];
     let counts = [...defaultCounts];
 
@@ -56,17 +54,19 @@ export function OverviewMetrics({ onNavigate }) {
         }
       });
       if (dynamicCounts.some(c => c > 0)) {
-        counts = dynamicCounts.map((val, i) => Math.max(val, 1));
+        counts = dynamicCounts.map((val) => Math.max(val, 1));
       }
     }
 
     const maxVal = Math.max(...counts, 1);
     const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const fullDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     return counts.map((count, i) => {
-      // Scale bar height cleanly between 12px and 42px to avoid vertical overflow
-      const h = Math.round(12 + (count / maxVal) * 30);
+      // Scale bar height cleanly between 14px and 44px
+      const h = Math.round(14 + (count / maxVal) * 30);
       return {
         day: dayLabels[i],
+        fullDay: fullDays[i],
         h,
         count,
         isPeak: count === maxVal
@@ -86,19 +86,19 @@ export function OverviewMetrics({ onNavigate }) {
     return 65;
   }, [works, dynamicMetrics]);
 
-  // Dynamic Focus line graph points scaled to compact 32px height to prevent any text overlap
+  // Dynamic Focus line graph points scaled intelligently with reasonable padding in 42px plotting area
   const focusPoints = useMemo(() => {
-    const xCoords = [3, 18.67, 34.33, 50, 65.67, 81.33, 97];
-    // Baseline y=28, upper peak y=4 (total height 24)
-    const targetY = 28 - ((focusPct / 100) * 24);
+    const xCoords = [4, 19.33, 34.67, 50, 65.33, 80.67, 96];
+    // Baseline y=30, upper peak targetY (total span ~22)
+    const targetY = 30 - ((focusPct / 100) * 22);
     const yPoints = [
-      Math.min(26, Math.round(targetY + 11)),
-      Math.min(24, Math.round(targetY + 8)),
-      Math.min(22, Math.round(targetY + 5)),
-      Math.min(22, Math.round(targetY + 6)),
-      Math.min(18, Math.round(targetY - 1)),
-      Math.min(16, Math.round(targetY - 2)),
-      Math.max(4, Math.round(targetY - 6))
+      Math.min(28, Math.round(targetY + 11)),
+      Math.min(26, Math.round(targetY + 8)),
+      Math.min(23, Math.round(targetY + 4)),
+      Math.min(23, Math.round(targetY + 5)),
+      Math.min(19, Math.round(targetY - 1)),
+      Math.min(17, Math.round(targetY - 2)),
+      Math.max(6, Math.round(targetY - 5))
     ];
     return xCoords.map((x, idx) => [x, yPoints[idx]]);
   }, [focusPct]);
@@ -336,7 +336,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 3: WORKS & CIRCULAR DONUT CHART                       */}
+        {/* COLUMN 3: WORKS & PROMINENT DONUT CHART                      */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
@@ -361,8 +361,8 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Works Categories & Circular Donut Gauge with Center Label */}
-          <div className="pt-1 flex items-center justify-between">
+          {/* Bottom: Works Categories & Prominent Donut Gauge (~74px) vertically centered */}
+          <div className="flex items-center justify-between h-[74px]">
             <div className="space-y-0.5 text-[8px] font-mono text-[#33322B] pr-1">
               <div><span className="font-bold text-[#171714]">{projectWorksCount}</span> Projects</div>
               <div><span className="font-bold text-[#171714]">{researchWorksCount}</span> Research</div>
@@ -370,33 +370,35 @@ export function OverviewMetrics({ onNavigate }) {
               <div><span className="font-bold text-[#171714]">{maintenanceWorksCount}</span> Maintenance</div>
             </div>
 
-            {/* Circular Donut Gauge with "7 WORKS" inside — cleanly proportioned */}
-            <div className="relative w-[52px] h-[52px] flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 52 52" className="w-[52px] h-[52px] -rotate-90">
-                <circle cx="26" cy="26" r="20" fill="none" stroke="#D2CEBF" strokeWidth="4.5" />
+            {/* Circular Donut Gauge: ~74px prominent ring with proportional thickness and centered text */}
+            <div className="relative w-[72px] sm:w-[74px] h-[72px] sm:h-[74px] flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
+                {/* Remaining Track */}
+                <circle cx="32" cy="32" r="25" fill="none" stroke="#D5D1C3" strokeWidth="6" />
+                {/* Progress Ring */}
                 <circle
-                  cx="26"
-                  cy="26"
-                  r="20"
+                  cx="32"
+                  cy="32"
+                  r="25"
                   fill="none"
                   stroke="#5A6D52"
-                  strokeWidth="4.5"
-                  strokeDasharray="126"
+                  strokeWidth="6"
+                  strokeDasharray="157"
                   strokeDashoffset={donutDashoffset}
                   strokeLinecap="butt"
                 />
               </svg>
-              {/* Text inside the Donut: 7 WORKS */}
+              {/* Text inside the Donut: number + WORKS label */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
-                <span className="font-bold text-[13px] text-[#171714] leading-tight select-none">{activeWorksCount}</span>
-                <span className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#555] mt-0.5 select-none">WORKS</span>
+                <span className="font-bold text-[16px] text-[#171714] leading-none select-none">{activeWorksCount}</span>
+                <span className="text-[7px] font-mono font-bold uppercase tracking-wider text-[#555] mt-1 select-none">WORKS</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 4: ENTRIES & 7-BAR HISTOGRAM                          */}
+        {/* COLUMN 4: ENTRIES & 7-BAR HISTOGRAM (14-17px wide bars)      */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
@@ -421,22 +423,22 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: 7-bar Activity Histogram with thicker bars reducing empty space */}
+          {/* Bottom: 7-bar Activity Histogram occupying 85-90% width with 14-17px bars */}
           <div className="pt-0.5">
-            <div className="flex items-end justify-between px-2 h-12 pb-0.5">
+            <div className="flex items-end justify-between px-1.5 sm:px-2.5 h-[54px] pb-0.5">
               {bars.map((b, i) => (
                 <div 
                   key={i} 
                   className="flex flex-col items-center space-y-1 group/bar cursor-pointer"
-                  title={`${b.day}: ${b.count || '0'} entries`}
+                  title={`${b.count} entries on ${b.fullDay}`}
                 >
                   <div
-                    className={`w-[8px] rounded-[0.5px] transition-all duration-200 group-hover/bar:brightness-90 ${
-                      b.isPeak ? 'bg-[#4B5E44]' : 'bg-[#5B6D55]'
+                    className={`w-[14px] sm:w-[15px] rounded-[0.5px] transition-all duration-200 group-hover/bar:brightness-75 ${
+                      b.isPeak ? 'bg-[#3D4C38]' : 'bg-[#5A6D52]'
                     }`}
                     style={{ height: `${b.h}px` }}
                   />
-                  <span className="text-[7.5px] font-mono font-bold text-[#171714]">
+                  <span className="text-[7.5px] font-mono font-bold text-[#171714] select-none text-center w-full">
                     {b.day}
                   </span>
                 </div>
@@ -446,7 +448,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 5: FOCUS & TECHNICAL ARCHIVAL PROGRESS GRAPH          */}
+        {/* COLUMN 5: FOCUS & REFINED WEEKLY PROGRESS GRAPH              */}
         {/* ============================================================ */}
         <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[152px]">
           {/* Top: Header, Number, Subtitle below */}
@@ -467,69 +469,73 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Technical Archival Line Graph filling the space from Mon to Sun without vertical overlap */}
+          {/* Bottom: Refined Archival Line Graph with clear charcoal line, 7 markers, and translucent fill */}
           <div className="flex flex-col justify-end pt-0.5">
-            {/* Graph Canvas: compact 34px height to prevent text collision */}
-            <div className="w-full relative h-[34px]">
+            {/* Graph Canvas: 42px plotting area */}
+            <div className="w-full relative h-[42px]">
               <svg 
-                viewBox="0 0 100 32" 
+                viewBox="0 0 100 36" 
                 preserveAspectRatio="none" 
                 className="w-full h-full overflow-visible"
               >
                 <defs>
                   <linearGradient id="focusAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.45" />
-                    <stop offset="65%" stopColor="#74866A" stopOpacity="0.12" />
+                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.35" />
+                    <stop offset="80%" stopColor="#74866A" stopOpacity="0.08" />
                     <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
 
-                {/* Horizontal Technical Grid Guidelines */}
-                <line x1="0" y1="8" x2="100" y2="8" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                {/* Subtle Reference Guidelines */}
                 <line x1="0" y1="18" x2="100" y2="18" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="28" x2="100" y2="28" stroke="#B8B4A5" strokeWidth="0.75" />
+                <line x1="0" y1="30" x2="100" y2="30" stroke="#B8B4A5" strokeWidth="0.75" />
 
                 {/* Vertical Day Alignment Ticks */}
-                {[3, 18.67, 34.33, 50, 65.67, 81.33, 97].map((xVal, idx) => (
+                {[4, 19.33, 34.67, 50, 65.33, 80.67, 96].map((xVal, idx) => (
                   <line 
                     key={idx} 
                     x1={xVal} 
-                    y1="28" 
+                    y1="30" 
                     x2={xVal} 
-                    y2="31" 
+                    y2="33" 
                     stroke="#88877B" 
                     strokeWidth="0.75" 
                   />
                 ))}
 
-                {/* Shaded Area Under Curve */}
+                {/* Shaded Translucent Olive-Gray Area Under Curve */}
                 <polygon
-                  points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,28 3,28`}
+                  points={`4,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 96,${focusPoints[6][1]} 96,30 4,30`}
                   fill="url(#focusAreaGrad)"
                 />
 
-                {/* Connected Polyline: Bold Dark Archival Line */}
+                {/* Clearly Visible Charcoal Line (around 1.8-2px thick) */}
                 <polyline
                   fill="none"
                   stroke="#171714"
-                  strokeWidth="1.8"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   points={focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')}
                 />
 
-                {/* 7 Circular Data Points matching Mon - Sun */}
-                {focusPoints.map(([cx, cy], idx) => (
-                  <g key={idx}>
-                    <circle cx={cx} cy={cy} r="2.2" fill="#171714" />
-                    <circle cx={cx} cy={cy} r="0.8" fill="#FAF8F3" />
-                  </g>
-                ))}
+                {/* Seven Evenly Spaced Circular Markers (~4-5px diameter, slightly larger for latest day) */}
+                {focusPoints.map(([cx, cy], idx) => {
+                  const isLatest = idx === 6;
+                  const r = isLatest ? 3.0 : 2.2;
+                  const innerR = isLatest ? 1.0 : 0.8;
+                  return (
+                    <g key={idx}>
+                      <circle cx={cx} cy={cy} r={r} fill="#171714" />
+                      <circle cx={cx} cy={cy} r={innerR} fill="#FAF8F3" />
+                    </g>
+                  );
+                })}
               </svg>
             </div>
 
-            {/* Weekday labels spanning Mon to Sun, cleanly positioned below the data ticks */}
-            <div className="flex justify-between text-[7px] font-mono font-bold text-[#55544B] mt-0.5 select-none px-0.5">
+            {/* Weekday labels spanning Mon to Sun, exactly positioned under the data ticks */}
+            <div className="flex justify-between text-[7px] font-mono font-bold text-[#55544B] mt-1 select-none px-1">
               <span className="w-2.5 text-center">M</span>
               <span className="w-2.5 text-center">T</span>
               <span className="w-2.5 text-center">W</span>
@@ -539,9 +545,9 @@ export function OverviewMetrics({ onNavigate }) {
               <span className="w-2.5 text-center">S</span>
             </div>
 
-            {/* Subtext with trend indicator with dedicated vertical spacing */}
-            <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-0.5 select-none">
-              <span className="text-[#4B5E44] font-bold">▲ +12%</span> vs last week
+            {/* More readable comparison text beneath the chart */}
+            <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-1 select-none">
+              <span className="text-[#3D4C38] font-bold">▲ +12%</span> vs last week
             </div>
           </div>
         </div>
