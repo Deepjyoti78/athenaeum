@@ -20,16 +20,15 @@ export function OverviewMetrics({ onNavigate }) {
   const creativeWorksCount = dynamicMetrics?.worksBreakdown?.creative ?? (isReady ? works.filter(w => w.type === 'Creative').length : 1);
   const maintenanceWorksCount = dynamicMetrics?.worksBreakdown?.maintenance ?? (isReady ? works.filter(w => w.type === 'Maintenance').length : 1);
 
-  // Donut Gauge dashoffset calculation matching reference image (~60px diameter, r=22, circumference=138.2)
+  // Donut Gauge dashoffset calculation for large ~76px prominent circle (r=26, circumference=163.4)
   const totalWorks = works.length > 0 ? works.length : 7;
   const donutProgress = totalWorks > 0 ? Math.min(1, Math.max(0.1, activeWorksCount / totalWorks)) : 0.65;
-  const donutDashoffset = Math.round(138.2 * (1 - (donutProgress * 0.72)));
+  const donutDashoffset = Math.round(163.4 * (1 - (donutProgress * 0.72)));
 
   // 3. Entries this week: dynamically computed
   const entriesCount = dynamicMetrics?.totalEntries ?? (isReady ? entries.length : 18);
 
-  // 8-bar Activity Histogram matching media_1793442667883_4cf64c57.jpg exactly
-  // Heights in reference: [21, 21, 28, 41, 54, 27, 19, 7]
+  // 8-bar Activity Histogram matching reference image
   const bars = useMemo(() => {
     const refHeights = [21, 21, 28, 41, 54, 27, 19, 7];
     const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S', 'S'];
@@ -64,13 +63,13 @@ export function OverviewMetrics({ onNavigate }) {
     return 65;
   }, [works, dynamicMetrics]);
 
-  // Focus line graph points matching the reference image coordinates with plateau steps
-  // 7 data points (M, T, W, T, F, S, S)
+  // Wide, expansive Focus line graph points scaled across full width from Mon to Sun
   const focusPoints = useMemo(() => {
-    const xCoords = [3, 19, 35, 51, 67, 83, 97];
-    // Baseline is 44, top is 6
-    // Reference image Y points: [35, 30, 23, 23, 16, 16, 10]
-    const basePts = [35, 30, 23, 23, 16, 16, 10];
+    const xCoords = [3, 18.67, 34.33, 50, 65.67, 81.33, 97];
+    // Baseline is 36, top is 6
+    // Smooth upward progression with plateau steps matching reference:
+    // M: 30, T: 25, W: 19, T: 19, F: 13, S: 13, S: 7
+    const basePts = [30, 25, 19, 19, 13, 13, 7];
     return xCoords.map((x, idx) => [x, basePts[idx]]);
   }, []);
 
@@ -307,7 +306,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 3: WORKS & CIRCULAR GAUGE (matching reference image)  */}
+        {/* COLUMN 3: WORKS & PROMINENT CIRCULAR GAUGE (~76px)           */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
@@ -332,8 +331,8 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Works Categories & Circular Gauge (~60px) exactly matching reference */}
-          <div className="flex items-center justify-between h-[64px]">
+          {/* Bottom: Works Categories & Bigger Donut Gauge (~76px) vertically centered */}
+          <div className="flex items-center justify-between h-[76px]">
             <div className="space-y-1 text-[8px] font-mono text-[#33322B] pr-1">
               <div><span className="font-bold text-[#171714]">3</span> Projects</div>
               <div><span className="font-bold text-[#171714]">2</span> Research</div>
@@ -341,30 +340,30 @@ export function OverviewMetrics({ onNavigate }) {
               <div><span className="font-bold text-[#171714]">1</span> Maintenance</div>
             </div>
 
-            {/* Circular Gauge matching reference image: 60px diameter with dark olive progress arc */}
-            <div className="relative w-[60px] h-[60px] flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 56 56" className="w-[60px] h-[60px] -rotate-90">
+            {/* Circular Gauge: Big 76px diameter prominent ring */}
+            <div className="relative w-[74px] sm:w-[76px] h-[74px] sm:h-[76px] flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
                 {/* Subtle warm inner disc fill */}
-                <circle cx="28" cy="28" r="22" fill="#ECE9DD" />
+                <circle cx="32" cy="32" r="26" fill="#ECE9DD" />
                 {/* Inactive Track (warm light gray) */}
-                <circle cx="28" cy="28" r="22" fill="none" stroke="#D5D1C3" strokeWidth="5.5" />
+                <circle cx="32" cy="32" r="26" fill="none" stroke="#D5D1C3" strokeWidth="6" />
                 {/* Active Arc (deep forest olive/charcoal #3E523A) */}
                 <circle
-                  cx="28"
-                  cy="28"
-                  r="22"
+                  cx="32"
+                  cy="32"
+                  r="26"
                   fill="none"
                   stroke="#3E523A"
-                  strokeWidth="5.5"
-                  strokeDasharray="138.2"
+                  strokeWidth="6"
+                  strokeDasharray="163.4"
                   strokeDashoffset={donutDashoffset}
                   strokeLinecap="butt"
                 />
               </svg>
               {/* Text inside the Donut: 7 WORKS */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
-                <span className="font-bold text-[14px] text-[#171714] leading-tight select-none">{activeWorksCount}</span>
-                <span className="text-[6.5px] font-mono font-bold uppercase tracking-wider text-[#555] mt-0.5 select-none">WORKS</span>
+                <span className="font-bold text-[17px] text-[#171714] leading-none select-none">{activeWorksCount}</span>
+                <span className="text-[7px] font-mono font-bold uppercase tracking-wider text-[#555] mt-1 select-none">WORKS</span>
               </div>
             </div>
           </div>
@@ -422,7 +421,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 5: FOCUS & LINE GRAPH (matching reference image)      */}
+        {/* COLUMN 5: FOCUS & EXPANSIVE ARCHIVAL PROGRESS GRAPH          */}
         {/* ============================================================ */}
         <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[152px]">
           {/* Top: Header, Number, Subtitle below */}
@@ -443,73 +442,75 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Technical Archival Line Graph with 100/50/0 Y-axis matching reference */}
-          <div className="flex flex-col justify-end pt-0.5">
-            {/* Graph + Y-Axis Flex Row */}
-            <div className="flex items-center w-full">
-              {/* Y-Axis numbers (100, 50, 0) */}
-              <div className="flex flex-col justify-between h-[44px] text-[6.5px] font-mono text-[#88877B] pr-1.5 select-none leading-none text-right w-4">
-                <span>100</span>
-                <span>50</span>
-                <span>0</span>
-              </div>
+          {/* Bottom: Expansive Archival Line Graph filling the space from Mon to Sun with clean breathing room */}
+          <div className="flex flex-col justify-end pt-1">
+            {/* Graph Canvas: 48px height, edge-to-edge */}
+            <div className="w-full relative h-[48px]">
+              <svg 
+                viewBox="0 0 100 40" 
+                preserveAspectRatio="none" 
+                className="w-full h-full overflow-visible"
+              >
+                <defs>
+                  <linearGradient id="focusAreaGradExp" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.4" />
+                    <stop offset="70%" stopColor="#74866A" stopOpacity="0.1" />
+                    <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
 
-              {/* Graph Canvas */}
-              <div className="flex-1 relative h-[44px]">
-                <svg 
-                  viewBox="0 0 100 44" 
-                  preserveAspectRatio="none" 
-                  className="w-full h-full overflow-visible"
-                >
-                  <defs>
-                    <linearGradient id="focusAreaGradRef" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#74866A" stopOpacity="0.32" />
-                      <stop offset="85%" stopColor="#74866A" stopOpacity="0.08" />
-                      <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
-                    </linearGradient>
-                  </defs>
+                {/* Horizontal Technical Grid Guidelines */}
+                <line x1="0" y1="10" x2="100" y2="10" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="19" x2="100" y2="19" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="28" x2="100" y2="28" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="37" x2="100" y2="37" stroke="#B8B4A5" strokeWidth="0.75" />
 
-                  {/* Horizontal Reference Lines (100 at y=4, 50 at y=23, 0 at y=42) */}
-                  <line x1="0" y1="4" x2="100" y2="4" stroke="#DEDACD" strokeWidth="0.5" />
-                  <line x1="0" y1="23" x2="100" y2="23" stroke="#DEDACD" strokeWidth="0.5" strokeDasharray="1 2" />
-                  <line x1="0" y1="42" x2="100" y2="42" stroke="#B8B4A5" strokeWidth="0.75" />
-
-                  {/* Left Vertical Y-Axis Line */}
-                  <line x1="0" y1="4" x2="0" y2="42" stroke="#B8B4A5" strokeWidth="0.75" />
-
-                  {/* Shaded Area Under Curve */}
-                  <polygon
-                    points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,42 3,42`}
-                    fill="url(#focusAreaGradRef)"
+                {/* Vertical Day Alignment Ticks */}
+                {[3, 18.67, 34.33, 50, 65.67, 81.33, 97].map((xVal, idx) => (
+                  <line 
+                    key={idx} 
+                    x1={xVal} 
+                    y1="37" 
+                    x2={xVal} 
+                    y2="40" 
+                    stroke="#88877B" 
+                    strokeWidth="0.75" 
                   />
+                ))}
 
-                  {/* Connected Polyline: Dark Charcoal Line */}
-                  <polyline
-                    fill="none"
-                    stroke="#171714"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    points={focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')}
-                  />
+                {/* Shaded Area Under Curve */}
+                <polygon
+                  points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,37 3,37`}
+                  fill="url(#focusAreaGradExp)"
+                />
 
-                  {/* 7 Circular Data Points matching Mon - Sun */}
-                  {focusPoints.map(([cx, cy], idx) => {
-                    const isLatest = idx === 6;
-                    const r = isLatest ? 2.6 : 2.0;
-                    return (
-                      <g key={idx}>
-                        <circle cx={cx} cy={cy} r={r} fill="#171714" />
-                        <circle cx={cx} cy={cy} r="0.7" fill="#FAF8F3" />
-                      </g>
-                    );
-                  })}
-                </svg>
-              </div>
+                {/* Connected Polyline: Bold Dark Archival Line */}
+                <polyline
+                  fill="none"
+                  stroke="#171714"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  points={focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')}
+                />
+
+                {/* 7 Circular Data Points matching Mon - Sun */}
+                {focusPoints.map(([cx, cy], idx) => {
+                  const isLatest = idx === 6;
+                  const r = isLatest ? 3.0 : 2.3;
+                  const innerR = isLatest ? 1.0 : 0.8;
+                  return (
+                    <g key={idx}>
+                      <circle cx={cx} cy={cy} r={r} fill="#171714" />
+                      <circle cx={cx} cy={cy} r={innerR} fill="#FAF8F3" />
+                    </g>
+                  );
+                })}
+              </svg>
             </div>
 
-            {/* Weekday labels spanning Mon to Sun, indented to match graph canvas */}
-            <div className="flex justify-between text-[7px] font-mono font-bold text-[#55544B] mt-1 select-none pl-5 pr-0.5">
+            {/* Weekday labels spanning Mon to Sun edge to edge, cleanly aligned under data ticks */}
+            <div className="flex justify-between text-[7.5px] font-mono font-bold text-[#55544B] mt-1 select-none px-0.5">
               <span className="w-2.5 text-center">M</span>
               <span className="w-2.5 text-center">T</span>
               <span className="w-2.5 text-center">W</span>
@@ -519,9 +520,9 @@ export function OverviewMetrics({ onNavigate }) {
               <span className="w-2.5 text-center">S</span>
             </div>
 
-            {/* Comparison text matching reference image exactly: + 12% vs last week */}
-            <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-1 select-none">
-              + 12% vs last week
+            {/* Readable comparison text beneath the chart */}
+            <div className="text-[8px] font-mono font-medium text-[#171714] mt-1 select-none">
+              <span className="text-[#3D4C38] font-bold">▲ +12%</span> vs last week
             </div>
           </div>
         </div>
