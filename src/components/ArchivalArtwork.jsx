@@ -1,6 +1,30 @@
 import React from 'react';
 
 export function ArchivalArtwork({ type, className = "w-full h-full object-cover" }) {
+  // Use high-fidelity cropped artworks matching Image 2 reference with clean fallbacks
+  const imageMap = {
+    blueprint: '/images/works/athenaeum_app.jpg',
+    highlight_blueprint: '/images/works/athenaeum_app.jpg',
+    dockmap: '/images/works/east_london_archive.jpg',
+    creature: '/images/works/creature_concepts.jpg',
+    highlight_sketch: '/images/works/creature_concepts.jpg',
+    camera: '/images/works/photography_portfolio.jpg'
+  };
+
+  const imgPath = imageMap[type];
+
+  if (imgPath) {
+    return (
+      <div className={`relative bg-[#D5D0C2] overflow-hidden flex items-center justify-center ${className}`}>
+        <img 
+          src={imgPath} 
+          alt={type} 
+          className="w-full h-full object-cover select-none"
+        />
+      </div>
+    );
+  }
+
   // 1. Blueprint / Technical UI Schematic (Athenaeum App Project)
   if (type === 'blueprint' || type === 'highlight_blueprint') {
     return (

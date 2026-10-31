@@ -115,9 +115,9 @@ export function DailyLog({ onViewLog }) {
         </div>
       </div>
 
-      {/* Bottom Controls: Mood (4 Faces) & Energy (10 Segmented Blocks) */}
+      {/* Bottom Controls: Mood (4 Minimalist Monochromatic Faces) & Energy (10 Segmented Blocks) */}
       <div className="pt-3 border-t border-[#D5D1C4] flex items-center justify-between">
-        {/* Mood Selection: 4 Minimalist Faces matching reference image */}
+        {/* Mood Selection: 4 Monochromatic Vector Faces matching Image 2 */}
         <div className="flex items-center space-x-2">
           <span className="text-[7.5px] font-mono uppercase tracking-wider text-[#66655A] font-bold">
             MOOD
@@ -126,57 +126,77 @@ export function DailyLog({ onViewLog }) {
             {/* 1. Sad / Frown */}
             <button
               onClick={() => handleMoodSelect(0)}
-              className={`w-4 h-4 rounded-full flex items-center justify-center text-[11px] leading-none transition-transform ${
+              className={`w-4 h-4 rounded-full flex items-center justify-center transition-all ${
                 selectedMood === 0 ? 'bg-[#171714] text-[#FAF8F3]' : 'border border-[#77766B] text-[#555] hover:border-[#171714]'
               }`}
               title="Low"
             >
-              ☹
+              <svg viewBox="0 0 16 16" className="w-3.5 h-3.5">
+                <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
+                <circle cx="10.5" cy="6" r="0.9" fill="currentColor" />
+                <path d="M 5.5 11 Q 8 8.5 10.5 11" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+              </svg>
             </button>
             {/* 2. Neutral */}
             <button
               onClick={() => handleMoodSelect(1)}
-              className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] leading-none transition-transform ${
+              className={`w-4 h-4 rounded-full flex items-center justify-center transition-all ${
                 selectedMood === 1 ? 'bg-[#171714] text-[#FAF8F3]' : 'border border-[#77766B] text-[#555] hover:border-[#171714]'
               }`}
               title="Neutral"
             >
-              😐
+              <svg viewBox="0 0 16 16" className="w-3.5 h-3.5">
+                <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
+                <circle cx="10.5" cy="6" r="0.9" fill="currentColor" />
+                <line x1="5.5" y1="10" x2="10.5" y2="10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+              </svg>
             </button>
             {/* 3. Smile */}
             <button
               onClick={() => handleMoodSelect(2)}
-              className={`w-4 h-4 rounded-full flex items-center justify-center text-[11px] leading-none transition-transform ${
+              className={`w-4 h-4 rounded-full flex items-center justify-center transition-all ${
                 selectedMood === 2 ? 'bg-[#171714] text-[#FAF8F3]' : 'border border-[#77766B] text-[#555] hover:border-[#171714]'
               }`}
               title="Good"
             >
-              🙂
+              <svg viewBox="0 0 16 16" className="w-3.5 h-3.5">
+                <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
+                <circle cx="10.5" cy="6" r="0.9" fill="currentColor" />
+                <path d="M 5.5 9.5 Q 8 12 10.5 9.5" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+              </svg>
             </button>
-            {/* 4. Solid Black Focused Face (Active Selected in reference image) */}
+            {/* 4. Solid Black Focused Face (Active Selected in Image 2) */}
             <button
               onClick={() => handleMoodSelect(3)}
-              className={`w-4 h-4 rounded-full flex items-center justify-center text-[12px] leading-none transition-transform ${
+              className={`w-4 h-4 rounded-full flex items-center justify-center transition-all ${
                 selectedMood === 3 ? 'bg-[#171714] text-[#FAF8F3]' : 'border border-[#77766B] text-[#555] hover:border-[#171714]'
               }`}
               title="Focused / Inspired"
             >
-              ☻
+              <svg viewBox="0 0 16 16" className="w-3.5 h-3.5">
+                <circle cx="8" cy="8" r="7" fill={selectedMood === 3 ? "#171714" : "currentColor"} />
+                <circle cx="5.5" cy="6" r="0.9" fill={selectedMood === 3 ? "#FAF8F3" : "#EAE7D9"} />
+                <circle cx="10.5" cy="6" r="0.9" fill={selectedMood === 3 ? "#FAF8F3" : "#EAE7D9"} />
+                <path d="M 5.5 9.5 Q 8 12 10.5 9.5" fill="none" stroke={selectedMood === 3 ? "#FAF8F3" : "#EAE7D9"} strokeWidth="1.2" strokeLinecap="round" />
+              </svg>
             </button>
           </div>
         </div>
 
-        {/* Energy Segmented Battery Indicator matching reference image */}
+        {/* Energy Segmented Progress Bar matching Image 2 */}
         <div className="flex items-center space-x-2">
           <span className="text-[7.5px] font-mono uppercase tracking-wider text-[#66655A] font-bold">
             ENERGY
           </span>
-          <div className="flex items-center space-x-0.5">
+          <div className="flex items-center space-x-[2px]">
             {[...Array(energyBlocks)].map((_, i) => (
               <button
                 key={i}
                 onClick={() => handleBlockClick(i)}
-                className={`w-2 h-3 transition-colors ${
+                className={`w-2 h-3.5 transition-colors rounded-[0.5px] ${
                   i < filledBlocks 
                     ? 'bg-[#171714]' 
                     : 'bg-[#D2CEBF] hover:bg-[#BBB7A8]'

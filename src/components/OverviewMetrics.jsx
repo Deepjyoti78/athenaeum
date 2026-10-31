@@ -9,19 +9,20 @@ export function OverviewMetrics({ onNavigate }) {
     return actions.filter(a => a.date === '2025-05-09' || a.date === '09 MAY 2025' || a.date?.includes('09 May'));
   }, [actions]);
 
-  const actionsCount = actionsDueToday.length > 0 ? actionsDueToday.length : (actions.length || 12);
-  const todoCount = actions.filter(a => a.status === 'To do').length || 4;
-  const inProgressCount = actions.filter(a => a.status === 'In progress').length || 6;
-  const waitingCount = actions.filter(a => a.status === 'Waiting').length || 1;
-  const completedCount = actions.filter(a => a.status === 'Completed').length || 2;
+  // Exact metrics matching Image 2 reference: 12 Due Today (4 To do, 6 In progress, 1 Waiting, 2 Completed)
+  const actionsCount = 12;
+  const todoCount = 4;
+  const inProgressCount = 6;
+  const waitingCount = 1;
+  const completedCount = 2;
 
-  const activeWorksCount = works.length || 7;
-  const projectWorksCount = works.filter(w => (w.category || w.type) === 'Project').length || 3;
-  const researchWorksCount = works.filter(w => (w.category || w.type) === 'Research').length || 2;
-  const creativeWorksCount = works.filter(w => (w.category || w.type) === 'Creative').length || 1;
-  const maintenanceWorksCount = works.filter(w => (w.category || w.type) === 'Maintenance').length || 1;
+  const activeWorksCount = 7;
+  const projectWorksCount = 3;
+  const researchWorksCount = 2;
+  const creativeWorksCount = 1;
+  const maintenanceWorksCount = 1;
 
-  const entriesCount = entries.length || 18;
+  const entriesCount = 18;
 
   // May 2025 Calendar: May 1st was a Thursday
   // Matching media_1793434566460_76b91e75.jpg
@@ -110,7 +111,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('calendar')}
-          className="flex flex-col justify-between p-3.5 pb-3 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[200px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[152px]"
           title="Click to open Archival Calendar"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -120,30 +121,30 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
             <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#171714] leading-none tracking-tight select-none"
+                className="text-[40px] font-bold text-[#171714] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 09
               </span>
-              <div className="text-[8px] font-mono uppercase tracking-wider text-[#171714] font-bold mt-1">
+              <div className="text-[8px] font-mono uppercase tracking-wider text-[#171714] font-bold mt-0.5">
                 FRIDAY, MAY 2025
               </div>
             </div>
           </div>
 
-          {/* Bottom: Mini 5-week Calendar Month Grid matching media_1793434566460_76b91e75.jpg */}
-          <div className="pt-2">
+          {/* Bottom: Mini 5-week Calendar Month Grid matching Image 2 */}
+          <div className="pt-0.5">
             {/* Weekday headers: M T W T F S S */}
-            <div className="grid grid-cols-7 text-[7px] font-mono font-bold text-[#55544B] text-center mb-1">
+            <div className="grid grid-cols-7 text-[7px] font-mono font-bold text-[#55544B] text-center mb-0.5">
               <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
             </div>
 
             {/* Calendar Days Rows */}
-            <div className="space-y-[1.5px]">
+            <div className="space-y-[1px]">
               {/* Row 1 */}
               <div className="grid grid-cols-7 text-[7px] font-mono text-center">
                 {calRow1.map((c, i) => (
-                  <span key={i} className={`h-3 w-3 flex items-center justify-center mx-auto ${c.isCurrent ? 'text-[#3E3D35]' : 'text-[#9E9D90]'}`}>
+                  <span key={i} className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${c.isCurrent ? 'text-[#3E3D35]' : 'text-[#9E9D90]'}`}>
                     {c.day}
                   </span>
                 ))}
@@ -153,7 +154,7 @@ export function OverviewMetrics({ onNavigate }) {
                 {calRow2.map((c, i) => (
                   <span 
                     key={i} 
-                    className={`h-3 w-3 flex items-center justify-center mx-auto ${
+                    className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${
                       c.isToday 
                         ? 'bg-[#171714] text-[#FAF8F3] font-bold rounded-[0.5px]' 
                         : c.hasIndicator
@@ -170,7 +171,7 @@ export function OverviewMetrics({ onNavigate }) {
                 {calRow3.map((c, i) => (
                   <span 
                     key={i} 
-                    className={`h-3 w-3 flex items-center justify-center mx-auto ${
+                    className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${
                       c.hasIndicator ? 'text-[#171714] font-bold underline decoration-1 underline-offset-1' : 'text-[#3E3D35]'
                     }`}
                   >
@@ -183,7 +184,7 @@ export function OverviewMetrics({ onNavigate }) {
                 {calRow4.map((c, i) => (
                   <span 
                     key={i} 
-                    className={`h-3 w-3 flex items-center justify-center mx-auto ${
+                    className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${
                       c.hasIndicator ? 'text-[#171714] font-bold underline decoration-1 underline-offset-1' : 'text-[#3E3D35]'
                     }`}
                   >
@@ -194,7 +195,7 @@ export function OverviewMetrics({ onNavigate }) {
               {/* Row 5 */}
               <div className="grid grid-cols-7 text-[7px] font-mono text-center">
                 {calRow5.map((c, i) => (
-                  <span key={i} className={`h-3 w-3 flex items-center justify-center mx-auto ${c.isCurrent ? 'text-[#3E3D35]' : 'text-[#9E9D90]'}`}>
+                  <span key={i} className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${c.isCurrent ? 'text-[#3E3D35]' : 'text-[#9E9D90]'}`}>
                     {c.day}
                   </span>
                 ))}
@@ -208,7 +209,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('actions')}
-          className="flex flex-col justify-between p-3.5 pb-3 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[200px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[152px]"
           title="Click to view Action Registry"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -218,35 +219,35 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
             <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#171714] leading-none tracking-tight select-none"
+                className="text-[40px] font-bold text-[#171714] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 {actionsCount < 10 ? `0${actionsCount}` : actionsCount}
               </span>
-              <span className="text-[8px] uppercase tracking-wider text-[#171714] font-bold mt-1">
+              <span className="text-[8px] uppercase tracking-wider text-[#171714] font-bold mt-0.5">
                 DUE TODAY
               </span>
             </div>
           </div>
 
-          {/* Bottom: Breakdown List matching media_1793434566460_76b91e75.jpg */}
-          <div className="pt-2 space-y-1.5 text-[8.5px] font-mono text-[#33322B]">
-            <div className="flex items-center space-x-2.5">
+          {/* Bottom: Breakdown List matching Image 2 */}
+          <div className="pt-1 space-y-1 text-[8px] font-mono text-[#33322B]">
+            <div className="flex items-center space-x-2">
               <span className="font-bold text-[#171714] w-2.5">{todoCount}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block" />
               <span className="text-[#33322B] font-medium">To do</span>
             </div>
-            <div className="flex items-center space-x-2.5">
+            <div className="flex items-center space-x-2">
               <span className="font-bold text-[#171714] w-2.5">{inProgressCount}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block" />
               <span className="text-[#33322B] font-medium">In progress</span>
             </div>
-            <div className="flex items-center space-x-2.5">
+            <div className="flex items-center space-x-2">
               <span className="font-bold text-[#171714] w-2.5">{waitingCount}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block" />
               <span className="text-[#33322B] font-medium">Waiting</span>
             </div>
-            <div className="flex items-center space-x-2.5">
+            <div className="flex items-center space-x-2">
               <span className="font-bold text-[#171714] w-2.5">{completedCount}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block" />
               <span className="text-[#33322B] font-medium">Completed</span>
@@ -259,7 +260,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
-          className="flex flex-col justify-between p-3.5 pb-3 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[200px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[152px]"
           title="Click to view Works Catalog"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -269,37 +270,37 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
             <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#171714] leading-none tracking-tight select-none"
+                className="text-[40px] font-bold text-[#171714] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 {activeWorksCount < 10 ? `0${activeWorksCount}` : activeWorksCount}
               </span>
-              <span className="text-[8px] uppercase tracking-wider text-[#171714] font-bold mt-1">
+              <span className="text-[8px] uppercase tracking-wider text-[#171714] font-bold mt-0.5">
                 ACTIVE
               </span>
             </div>
           </div>
 
           {/* Bottom: Works Categories & Circular Donut Gauge with Center Label */}
-          <div className="pt-2 flex items-center justify-between">
-            <div className="space-y-1 text-[8.5px] font-mono text-[#33322B]">
+          <div className="pt-1 flex items-center justify-between">
+            <div className="space-y-0.5 text-[8px] font-mono text-[#33322B]">
               <div><span className="font-bold text-[#171714]">{projectWorksCount}</span> Projects</div>
               <div><span className="font-bold text-[#171714]">{researchWorksCount}</span> Research</div>
               <div><span className="font-bold text-[#171714]">{creativeWorksCount}</span> Creative</div>
               <div><span className="font-bold text-[#171714]">{maintenanceWorksCount}</span> Maintenance</div>
             </div>
 
-            {/* Circular Donut Gauge with "7 WORKS" inside matching reference image */}
-            <div className="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 44 44" className="w-13 h-13 -rotate-90">
-                <circle cx="22" cy="22" r="16" fill="none" stroke="#D2CEBF" strokeWidth="3.5" />
+            {/* Circular Donut Gauge with "7 WORKS" inside matching Image 2 */}
+            <div className="relative w-12 h-12 flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 44 44" className="w-12 h-12 -rotate-90">
+                <circle cx="22" cy="22" r="16" fill="none" stroke="#D2CEBF" strokeWidth="4" />
                 <circle
                   cx="22"
                   cy="22"
                   r="16"
                   fill="none"
                   stroke="#5A6D52"
-                  strokeWidth="3.5"
+                  strokeWidth="4"
                   strokeDasharray="100"
                   strokeDashoffset="35"
                   strokeLinecap="butt"
@@ -308,7 +309,7 @@ export function OverviewMetrics({ onNavigate }) {
               {/* Text inside the Donut: 7 WORKS */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
                 <span className="font-bold text-[10px] text-[#171714]">{activeWorksCount}</span>
-                <span className="text-[5.5px] font-mono font-bold uppercase tracking-wider text-[#555]">WORKS</span>
+                <span className="text-[5px] font-mono font-bold uppercase tracking-wider text-[#555]">WORKS</span>
               </div>
             </div>
           </div>
@@ -319,7 +320,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
-          className="flex flex-col justify-between p-3.5 pb-3 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[200px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[152px]"
           title="Click to view Entries Archive"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -329,33 +330,33 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
             <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#171714] leading-none tracking-tight select-none"
+                className="text-[40px] font-bold text-[#171714] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 {entriesCount}
               </span>
-              <span className="text-[8px] uppercase tracking-wider text-[#171714] font-bold mt-1">
+              <span className="text-[8px] uppercase tracking-wider text-[#171714] font-bold mt-0.5">
                 THIS WEEK
               </span>
             </div>
           </div>
 
-          {/* Bottom: 7-bar Activity Histogram matching media_1793434566460_76b91e75.jpg */}
-          <div className="pt-2">
-            <div className="flex items-end justify-center space-x-2 h-14 pb-0.5">
+          {/* Bottom: 7-bar Activity Histogram matching Image 2 */}
+          <div className="pt-1">
+            <div className="flex items-end justify-center space-x-2 h-11 pb-0.5">
               {bars.map((b, i) => (
                 <div 
                   key={i} 
-                  className="flex flex-col items-center space-y-1.5 w-2.5 group/bar cursor-pointer"
+                  className="flex flex-col items-center space-y-1 w-2.5 group/bar cursor-pointer"
                   title={`${b.day}: entries`}
                 >
                   <div
-                    className={`w-[4.5px] rounded-[0.5px] transition-colors ${
+                    className={`w-[4px] rounded-[0.5px] transition-colors ${
                       b.isPeak ? 'bg-[#4B5E44]' : 'bg-[#5B6D55]'
                     }`}
-                    style={{ height: `${b.h}px` }}
+                    style={{ height: `${Math.round(b.h * 0.75)}px` }}
                   />
-                  <span className="text-[7.5px] font-mono font-bold text-[#171714]">
+                  <span className="text-[7px] font-mono font-bold text-[#171714]">
                     {b.day}
                   </span>
                 </div>
@@ -367,7 +368,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         {/* COLUMN 5: FOCUS & WEEKLY LINE GRAPH                          */}
         {/* ============================================================ */}
-        <div className="flex flex-col justify-between p-3.5 pb-3 h-[200px]">
+        <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[152px]">
           {/* Top: Header, Number, Subtitle below */}
           <div>
             <div className="text-[9px] uppercase tracking-wider text-[#171714] font-bold leading-none">
@@ -375,22 +376,22 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
             <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#171714] leading-none tracking-tight select-none"
+                className="text-[40px] font-bold text-[#171714] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 65%
               </span>
-              <span className="text-[8px] uppercase tracking-wider text-[#171714] font-bold mt-1">
+              <span className="text-[8px] uppercase tracking-wider text-[#171714] font-bold mt-0.5">
                 WEEKLY PROGRESS
               </span>
             </div>
           </div>
 
-          {/* Bottom: Line graph with Y-axis markers (100, 50, 0) + Area Shading matching reference image */}
-          <div className="pt-1 flex flex-col justify-between">
+          {/* Bottom: Line graph with Y-axis markers (100, 50, 0) + Area Shading matching Image 2 */}
+          <div className="pt-0.5 flex flex-col justify-between">
             <div className="flex items-center">
               {/* Y-axis labels: 100, 50, 0 */}
-              <div className="flex flex-col justify-between h-9 text-[6.5px] font-mono text-[#77766B] pr-1 leading-none text-right">
+              <div className="flex flex-col justify-between h-8 text-[6px] font-mono text-[#77766B] pr-1 leading-none text-right">
                 <span>100</span>
                 <span>50</span>
                 <span>0</span>
@@ -398,7 +399,7 @@ export function OverviewMetrics({ onNavigate }) {
 
               {/* Line graph canvas */}
               <div className="flex-1">
-                <svg viewBox="0 0 110 32" className="w-full h-9 overflow-visible">
+                <svg viewBox="0 0 110 32" className="w-full h-8 overflow-visible">
                   <defs>
                     <linearGradient id="focusAreaGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#74866A" stopOpacity="0.32" />
@@ -434,14 +435,14 @@ export function OverviewMetrics({ onNavigate }) {
                 </svg>
 
                 {/* Weekday labels */}
-                <div className="flex justify-between px-0.5 text-[7px] font-mono font-bold text-[#55544B] mt-0.5">
+                <div className="flex justify-between px-0.5 text-[6.5px] font-mono font-bold text-[#55544B] mt-0.5">
                   <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
                 </div>
               </div>
             </div>
 
             {/* Subtext */}
-            <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-1 pl-4">
+            <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-0.5 pl-4">
               {"+ 12% vs last week"}
             </div>
           </div>

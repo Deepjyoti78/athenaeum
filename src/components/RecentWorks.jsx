@@ -55,8 +55,8 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
               }}
               className="border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#E2DFD0] transition-colors cursor-pointer p-2 flex flex-col justify-between group relative shadow-sm"
             >
-              {/* Artwork Container */}
-              <div className="w-full h-[104px] border border-[#B5B3A4] overflow-hidden mb-2 bg-[#D5D0C2] relative">
+              {/* Artwork Container matching Image 2 aspect ratio */}
+              <div className="w-full h-[88px] sm:h-[92px] border border-[#B5B3A4] overflow-hidden mb-2 bg-[#D5D0C2] relative">
                 <ArchivalArtwork 
                   type={work.artwork} 
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]" 
@@ -66,9 +66,9 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
                 <button
                   onClick={(e) => toggleMenu(e, work.id)}
                   title="Options"
-                  className="absolute top-1.5 right-1.5 bg-[#EAE7D9]/90 hover:bg-[#FAF8F3] px-1 py-0.5 border border-[#B5B3A4] text-[#171714] transition-colors z-10"
+                  className="absolute top-1 right-1 bg-[#EAE7D9]/90 hover:bg-[#FAF8F3] px-1 py-0.5 border border-[#B5B3A4] text-[#171714] transition-colors z-10"
                 >
-                  <MoreHorizontal className="w-3 h-3 text-[#171714]" />
+                  <MoreHorizontal className="w-2.5 h-2.5 text-[#171714]" />
                 </button>
 
                 {/* Popover Menu */}
