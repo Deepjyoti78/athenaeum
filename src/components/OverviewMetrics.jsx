@@ -20,35 +20,58 @@ export function OverviewMetrics({ onNavigate }) {
   const creativeWorksCount = dynamicMetrics?.worksBreakdown?.creative ?? (isReady ? works.filter(w => w.type === 'Creative').length : 1);
   const maintenanceWorksCount = dynamicMetrics?.worksBreakdown?.maintenance ?? (isReady ? works.filter(w => w.type === 'Maintenance').length : 1);
 
-  // Donut Gauge dashoffset calculation for large ~76px prominent circle (r=26, circumference=163.4)
-  const totalWorks = works.length > 0 ? works.length : 7;
-  const donutProgress = totalWorks > 0 ? Math.min(1, Math.max(0.1, activeWorksCount / totalWorks)) : 0.65;
-  const donutDashoffset = Math.round(163.4 * (1 - (donutProgress * 0.72)));
-
   // 3. Entries this week: dynamically computed
   const entriesCount = dynamicMetrics?.totalEntries ?? (isReady ? entries.length : 18);
 
-  // 7-day Activity Histogram with tight, cohesive spacing
-  const bars = useMemo(() => {
-    const refHeights = [28, 34, 46, 62, 72, 42, 30];
-    const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    const barColors = [
-      '#74866A', // M
-      '#74866A', // T
-      '#4B5E45', // W
-      '#3E5139', // T
-      '#263623', // F (Peak)
-      '#3E5139', // S
-      '#4B5E45'  // S
+  // Works categories with counts and relative proportions for horizontal progress bars
+  const worksCategories = useMemo(() => {
+    const rawCategories = [
+      { label: 'Projects', count: projectWorksCount },
+      { label: 'Research', count: researchWorksCount },
+      { label: 'Creative', count: creativeWorksCount },
+      { label: 'Maintenance', count: maintenanceWorksCount }
+    ];
+    // In reference image: Projects (3) is ~80%, Research (2) is ~53%, Creative (1) is ~27%, Maintenance (1) is ~27%
+    const maxVal = Math.max(...rawCategories.map(c => c.count), 3) * 1.25;
+    return rawCategories.map(cat => ({
+      ...cat,
+      fillPct: Math.min(100, Math.max(8, Math.round((cat.count / maxVal) * 100)))
+    }));
+  }, [projectWorksCount, researchWorksCount, creativeWorksCount, maintenanceWorksCount]);
+
+  // Seven-day activity tiles: Monday through Sunday with dynamic counts & fill
+  const activityTiles = useMemo(() => {
+    const days = [
+      { day: 'M', defaultVal: 2 },
+      { day: 'T', defaultVal: 3 },
+      { day: 'W', defaultVal: 4 },
+      { day: 'T', defaultVal: 5, isHighlighted: true }, // Highlighted day matching reference image
+      { day: 'F', defaultVal: 3 },
+      { day: 'S', defaultVal: 2 },
+      { day: 'S', defaultVal: 1 }
     ];
 
-    return refHeights.map((h, i) => ({
-      day: dayLabels[i],
-      h,
-      color: barColors[i],
-      isPeak: i === 4
+    const counts = days.map((d, i) => {
+      let count = d.defaultVal;
+      if (isReady && entries.length > 0) {
+        const matched = entries.filter(e => {
+          if (!e.date) return false;
+          const match = e.date.match(/(\d{1,2})/);
+          if (!match) return false;
+          const dayNum = parseInt(match[1], 10);
+          return dayNum === (5 + i);
+        }).length;
+        if (matched > 0) count = matched;
+      }
+      return { ...d, count };
+    });
+
+    const maxCount = Math.max(...counts.map(c => c.count), 5);
+    return counts.map(c => ({
+      ...c,
+      fillPct: Math.min(100, Math.max(14, Math.round((c.count / maxCount) * 70)))
     }));
-  }, []);
+  }, [entries, isReady]);
 
   // 4. Focus weekly progress: dynamically computed
   const focusPct = useMemo(() => {
@@ -57,10 +80,26 @@ export function OverviewMetrics({ onNavigate }) {
     }
     if (works.length > 0) {
       const avgProg = Math.round(works.reduce((acc, w) => acc + (Number(w.progress) || 0), 0) / works.length);
-      return avgProg > 0 ? avgProg : 65;
+      return avgProg > 0 ? avgProg : 61;
     }
-    return 65;
+    return 61;
   }, [works, dynamicMetrics]);
+
+  // Annotated Weekly Progress Timeline data points & coordinates
+  const focusTimeline = useMemo(() => {
+    const basePcts = [42, 58, 62, 68, 70, 60, 74];
+    const diff = focusPct - 61;
+    const pcts = basePcts.map((p, i) => {
+      if (i === 6) return Math.min(99, Math.max(10, focusPct > 0 ? focusPct + 13 : 74));
+      return Math.min(99, Math.max(10, p + Math.round(diff * (i / 6))));
+    });
+    const xCoords = [6, 20.67, 35.33, 50, 64.67, 79.33, 94];
+    return pcts.map((p, idx) => {
+      const x = xCoords[idx];
+      const y = 42 - ((p / 100) * 32);
+      return { x, y, pct: p, isLatest: idx === 6 };
+    });
+  }, [focusPct]);
 
   // Dynamic set of days with active records/events for calendar markers
   const activeDaysSet = useMemo(() => {
@@ -297,7 +336,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 3: WORKS & PROMINENT CIRCULAR GAUGE (~76px)           */}
+        {/* COLUMN 3: WORKS & HORIZONTAL CATEGORY PROGRESS BARS          */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
@@ -322,46 +361,33 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Works Categories & Bigger Donut Gauge (~76px) vertically centered */}
-          <div className="flex items-center justify-between h-[86px]">
-            <div className="space-y-1.5 text-[8px] leading-[14px] font-mono text-[#33322B] pr-1">
-              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">3</span> Projects</div>
-              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">2</span> Research</div>
-              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">1</span> Creative</div>
-              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">1</span> Maintenance</div>
-            </div>
+          {/* Bottom: Four Horizontal Category Progress Rows matching reference image */}
+          <div className="h-[86px] flex flex-col justify-center space-y-2.5 pr-0.5">
+            {worksCategories.map((cat, idx) => (
+              <div key={idx} className="flex items-center justify-between text-[8px] font-mono leading-[14px]">
+                <span className="text-[#171714] font-medium w-[62px] sm:w-[68px] flex-shrink-0 select-none">
+                  {cat.label}
+                </span>
+                
+                {/* Thin horizontal progress track */}
+                <div className="flex-1 mx-2 h-[4px] bg-[#DBD7C8] rounded-[0.5px] overflow-hidden">
+                  <div 
+                    className="h-full bg-[#74866A] rounded-[0.5px] transition-all duration-500 ease-out"
+                    style={{ width: `${cat.fillPct}%` }}
+                  />
+                </div>
 
-            {/* Circular Gauge: Big 76px diameter prominent ring, shifted upward */}
-            <div className="relative w-[76px] sm:w-[78px] h-[76px] sm:h-[78px] flex items-center justify-center flex-shrink-0 -translate-y-1.5">
-              <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
-                {/* Subtle warm inner disc fill */}
-                <circle cx="32" cy="32" r="26" fill="#ECE9DD" />
-                {/* Inactive Track (warm light gray) */}
-                <circle cx="32" cy="32" r="26" fill="none" stroke="#D5D1C3" strokeWidth="6" />
-                {/* Active Arc (deep forest olive/charcoal #3E523A) */}
-                <circle
-                  cx="32"
-                  cy="32"
-                  r="26"
-                  fill="none"
-                  stroke="#3E523A"
-                  strokeWidth="6"
-                  strokeDasharray="163.4"
-                  strokeDashoffset={donutDashoffset}
-                  strokeLinecap="butt"
-                />
-              </svg>
-              {/* Text inside the Donut: 7 WORKS */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
-                <span className="font-bold text-[17px] text-[#171714] leading-none select-none">{activeWorksCount}</span>
-                <span className="text-[7px] font-mono font-bold uppercase tracking-wider text-[#555] mt-1 select-none">WORKS</span>
+                {/* Actual count aligned to right */}
+                <span className="font-medium text-[#171714] w-3 text-right flex-shrink-0 select-none">
+                  {cat.count}
+                </span>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 4: ENTRIES & HISTOGRAM (matching reference image)     */}
+        {/* COLUMN 4: ENTRIES & SEVEN-DAY ACTIVITY TILES                 */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
@@ -386,24 +412,40 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: 7 closely spaced vertical bars with reduced gaps */}
-          <div className="pt-0.5">
-            <div className="flex items-end justify-center gap-2 sm:gap-2.5 h-[74px] pb-0.5">
-              {bars.map((b, i) => (
+          {/* Bottom: Seven Vertically Aligned Activity Tiles matching reference image */}
+          <div className="h-[86px] flex flex-col justify-center">
+            <div className="flex items-end justify-between gap-1 sm:gap-1.5 h-[68px]">
+              {activityTiles.map((tile, i) => (
                 <div 
                   key={i} 
-                  className="flex flex-col items-center space-y-1 group/bar cursor-pointer"
-                  title={`${b.h} activity on ${b.day}`}
+                  className="flex-1 flex flex-col items-center group/tile cursor-pointer"
+                  title={`${tile.day}: ${tile.count} entries`}
                 >
-                  <div
-                    className="w-[12px] sm:w-[14px] rounded-[0.5px] transition-all duration-200 group-hover/bar:brightness-75 group-hover/bar:scale-y-105 origin-bottom"
-                    style={{ 
-                      height: `${b.h}px`,
-                      backgroundColor: b.color
-                    }}
-                  />
-                  <span className="text-[7.5px] font-mono font-bold text-[#171714] select-none text-center">
-                    {b.day}
+                  {/* Activity Tile Box */}
+                  <div 
+                    className={`w-full h-[54px] flex flex-col justify-between overflow-hidden rounded-[1px] transition-all duration-200 group-hover/tile:brightness-95 ${
+                      tile.isHighlighted 
+                        ? 'border border-[#44553D] bg-[#E1DDCB]/60 shadow-[0_0_0_0.5px_#44553D]' 
+                        : 'border border-[#C8C3B4] bg-[#E5E1D2]/40'
+                    }`}
+                  >
+                    {/* Daily entry count at top */}
+                    <div className="w-full text-center text-[7.5px] font-mono font-bold text-[#171714] pt-1 select-none leading-none">
+                      {tile.count}
+                    </div>
+
+                    {/* Proportional vertical olive fill at bottom */}
+                    <div 
+                      className={`w-full rounded-b-[0.5px] transition-all duration-500 ease-out ${
+                        tile.isHighlighted ? 'bg-[#4D6146]' : 'bg-[#7E8F75]'
+                      }`}
+                      style={{ height: `${tile.fillPct}%` }}
+                    />
+                  </div>
+
+                  {/* Weekday abbreviation below */}
+                  <span className="text-[7.5px] font-mono font-bold text-[#171714] select-none text-center mt-1">
+                    {tile.day}
                   </span>
                 </div>
               ))}
@@ -412,7 +454,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 5: FOCUS & ARCHIVAL OPTICAL ILLUSTRATION              */}
+        {/* COLUMN 5: FOCUS & ANNOTATED WEEKLY PROGRESS TIMELINE         */}
         {/* ============================================================ */}
         <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[178px]">
           {/* Top: Header, Number, Subtitle below */}
@@ -433,66 +475,88 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Archival Optical Focus Illustration */}
-          <div className="pt-0.5">
-            <div className="relative w-full h-[74px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
-              {/* Subtle background technical grid */}
-              <div 
-                className="absolute inset-0 opacity-15 pointer-events-none"
-                style={{
-                  backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
-                  backgroundSize: '10px 10px'
-                }}
-              />
+          {/* Bottom: Annotated Weekly Progress Timeline matching reference image */}
+          <div className="h-[86px] flex flex-col justify-end">
+            {/* Timeline SVG Canvas */}
+            <div className="w-full relative h-[52px]">
+              <svg 
+                viewBox="0 0 100 44" 
+                preserveAspectRatio="none" 
+                className="w-full h-full overflow-visible"
+              >
+                <defs>
+                  <linearGradient id="timelineAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
 
-              <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
-                {/* Outer concentric optical calibration rings */}
-                <circle cx="40" cy="35" r="28" fill="none" stroke="#A8A495" strokeWidth="0.6" strokeDasharray="2 2" />
-                <circle cx="40" cy="35" r="21" fill="none" stroke="#74866A" strokeWidth="0.8" />
-                <circle cx="40" cy="35" r="14" fill="#EAE7D9" stroke="#171714" strokeWidth="1" />
-                <circle cx="40" cy="35" r="4" fill="#171714" />
-                <circle cx="40" cy="35" r="1.2" fill="#FAF8F3" />
+                {/* Subtle horizontal reference baseline */}
+                <line x1="0" y1="41" x2="100" y2="41" stroke="#D0CCBD" strokeWidth="0.5" strokeDasharray="2 2" />
 
-                {/* Reticle Crosshairs with micro millimeter ticks */}
-                <line x1="8" y1="35" x2="72" y2="35" stroke="#171714" strokeWidth="0.6" />
-                <line x1="40" y1="3" x2="40" y2="67" stroke="#171714" strokeWidth="0.6" />
-                {[20, 28, 52, 60].map(x => (
-                  <line key={`xt-${x}`} x1={x} y1="33" x2={x} y2="37" stroke="#55544B" strokeWidth="0.5" />
-                ))}
-                {[15, 23, 47, 55].map(y => (
-                  <line key={`yt-${y}`} x1="38" y1={y} x2="42" y2={y} stroke="#55544B" strokeWidth="0.5" />
-                ))}
-
-                {/* 45-degree diagonal ray ticks */}
-                <line x1="22" y1="17" x2="28" y2="23" stroke="#74866A" strokeWidth="0.75" />
-                <line x1="58" y1="53" x2="52" y2="47" stroke="#74866A" strokeWidth="0.75" />
-                <line x1="58" y1="17" x2="52" y2="23" stroke="#74866A" strokeWidth="0.75" />
-                <line x1="22" y1="53" x2="28" y2="47" stroke="#74866A" strokeWidth="0.75" />
-
-                {/* Optical Beam / Wave Interference Curve on right */}
-                <path 
-                  d="M 82,35 C 95,18 108,52 122,35 C 136,18 150,52 168,35" 
-                  fill="none" 
-                  stroke="#3E5139" 
-                  strokeWidth="1.2" 
-                  strokeLinecap="round"
+                {/* Shaded Area Under Timeline */}
+                <polygon
+                  points={`6,${focusTimeline[0].y} ${focusTimeline.map(p => `${p.x},${p.y}`).join(' ')} 94,${focusTimeline[6].y} 94,41 6,41`}
+                  fill="url(#timelineAreaGrad)"
                 />
-                <circle cx="122" cy="35" r="2" fill="#3E5139" />
-                <circle cx="168" cy="35" r="2" fill="#3E5139" />
 
-                {/* Vertical Optical Aperture Scale */}
-                <line x1="86" y1="14" x2="86" y2="56" stroke="#9A9687" strokeWidth="0.6" />
-                {[14, 21, 28, 35, 42, 49, 56].map(y => (
-                  <line key={`s-${y}`} x1="84" y1={y} x2="88" y2={y} stroke="#74866A" strokeWidth="0.6" />
+                {/* Connected Charcoal/Olive Line */}
+                <polyline
+                  fill="none"
+                  stroke="#34442F"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  points={focusTimeline.map(p => `${p.x},${p.y}`).join(' ')}
+                />
+
+                {/* Data Points, Markers & Percentage Labels */}
+                {focusTimeline.map((pt, idx) => (
+                  <g key={idx}>
+                    {/* Percentage Label directly above marker */}
+                    <text
+                      x={pt.x}
+                      y={pt.y - 4.5}
+                      textAnchor="middle"
+                      fill="#171714"
+                      fontSize="4.2"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      {pt.pct}%
+                    </text>
+
+                    {/* Circular Marker */}
+                    {pt.isLatest ? (
+                      <g>
+                        {/* Prominent halo ring for latest day */}
+                        <circle cx={pt.x} cy={pt.y} r="4.8" fill="#EAE7D9" stroke="#34442F" strokeWidth="1" />
+                        <circle cx={pt.x} cy={pt.y} r="2.2" fill="#283823" />
+                      </g>
+                    ) : (
+                      <circle cx={pt.x} cy={pt.y} r="2.2" fill="#34442F" />
+                    )}
+                  </g>
                 ))}
-
-                {/* Technical Annotation Metadata */}
-                <text x="94" y="20" fill="#171714" fontSize="5.5" fontFamily="monospace" fontWeight="bold">COLLIMATOR // MK.IV</text>
-                <text x="94" y="30" fill="#55544B" fontSize="5" fontFamily="monospace">AXIS: α-84.2° NNE</text>
-                <text x="94" y="40" fill="#55544B" fontSize="5" fontFamily="monospace">APERTURE: f/2.8</text>
-                <text x="94" y="50" fill="#30432B" fontSize="5.2" fontFamily="monospace" fontWeight="bold">RETICLE: 0x9A4F // OK</text>
-                <text x="94" y="60" fill="#77766B" fontSize="4.5" fontFamily="monospace">SYS_CALIB • OPTICAL</text>
               </svg>
+            </div>
+
+            {/* Weekday labels spanning M to S aligned beneath markers */}
+            <div className="relative w-full h-3 mt-0.5">
+              {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
+                <span
+                  key={i}
+                  className="absolute -translate-x-1/2 text-[7.5px] font-mono font-bold text-[#171714] select-none text-center"
+                  style={{ left: `${focusTimeline[i].x}%` }}
+                >
+                  {day}
+                </span>
+              ))}
+            </div>
+
+            {/* Upward Indicator and Weekly Comparison */}
+            <div className="text-[7.5px] font-mono text-[#171714] select-none mt-1 flex items-center">
+              <span className="font-bold mr-1">↑</span> + 12% vs last week
             </div>
           </div>
         </div>
