@@ -1,5 +1,8 @@
 // ATHENAEUM — Central Archival Context & State Manager
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+// Supports Multi-Tenant Vault Isolation per Curator Account
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { useAuth } from './AuthContext';
+import { fetchUserVault, syncUserVault } from '../services/auth';
 import { 
   seedDatabaseIfEmpty, 
   dbGetAll, 
@@ -14,9 +17,10 @@ import {
 const ArchiveContext = createContext(null);
 
 export function ArchiveProvider({ children }) {
+  const { currentUser, token } = useAuth();
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Core Data Stores
+  // Core Data Stores (scoped to the authenticated user)
   const [works, setWorks] = useState([]);
   const [actions, setActions] = useState([]);
   const [entries, setEntries] = useState([]);
@@ -31,63 +35,84 @@ export function ArchiveProvider({ children }) {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [selectedRecordType, setSelectedRecordType] = useState('work');
 
-  // Load from IndexedDB on startup
-  const refreshData = async () => {
+  // Load User's Isolated Vault
+  const refreshData = useCallback(async () => {
+    if (!currentUser) {
+      setWorks([]);
+      setActions([]);
+      setEntries([]);
+      setCollections([]);
+      setPeople([]);
+      setPlaces([]);
+      setResources([]);
+      setDailyLogs([]);
+      setActivity([]);
+      setSelectedRecord(null);
+      setIsInitialized(false);
+      return;
+    }
+
     try {
-      await seedDatabaseIfEmpty();
-      const [w, a, e, c, p, pl, r, dl, act] = await Promise.all([
-        dbGetAll('works'),
-        dbGetAll('actions'),
-        dbGetAll('entries'),
-        dbGetAll('collections'),
-        dbGetAll('people'),
-        dbGetAll('places'),
-        dbGetAll('resources'),
-        dbGetAll('dailyLogs'),
-        dbGetAll('activity'),
-      ]);
+      // Fetch user-specific vault from backend / local vault store
+      const vault = await fetchUserVault(token, currentUser.id);
 
-      setWorks(w || []);
-      setActions(a || []);
-      setEntries(e || []);
-      setCollections(c || []);
-      setPeople(p || []);
-      setPlaces(pl || []);
-      setResources(r || []);
-      setDailyLogs(dl || []);
-      setActivity(act || []);
+      const w = vault?.works || [];
+      const a = vault?.actions || [];
+      const e = vault?.entries || [];
+      const c = vault?.collections || [];
+      const p = vault?.people || [];
+      const pl = vault?.places || [];
+      const r = vault?.resources || [];
+      const dl = vault?.dailyLogs || [];
+      const act = vault?.activity || [];
 
-      // Default inspector selection: ATHENÆUM APP PROJECT (WRK-2025-0003)
-      if (!selectedRecord && w && w.length > 0) {
+      setWorks(w);
+      setActions(a);
+      setEntries(e);
+      setCollections(c);
+      setPeople(p);
+      setPlaces(pl);
+      setResources(r);
+      setDailyLogs(dl);
+      setActivity(act);
+
+      // Default inspector selection if works exist
+      if (w.length > 0) {
         const defaultWork = w.find(item => item.id === 'WRK-2025-0003') || w[0];
         setSelectedRecord(defaultWork);
         setSelectedRecordType('work');
-      } else if (selectedRecord) {
-        // Keep selected record updated in sync
-        const currentCollection = 
-          selectedRecordType === 'work' ? w :
-          selectedRecordType === 'action' ? a :
-          selectedRecordType === 'entry' ? e :
-          selectedRecordType === 'collection' ? c :
-          selectedRecordType === 'person' ? p :
-          selectedRecordType === 'place' ? pl :
-          selectedRecordType === 'resource' ? r : null;
-        if (currentCollection) {
-          const fresh = currentCollection.find(item => item.id === selectedRecord.id);
-          if (fresh) setSelectedRecord(fresh);
-        }
+      } else {
+        setSelectedRecord(null);
       }
 
       setIsInitialized(true);
     } catch (err) {
-      console.error('Failed to load database:', err);
+      console.error('Failed to load user vault:', err);
       setIsInitialized(true);
     }
-  };
+  }, [currentUser, token]);
 
   useEffect(() => {
     refreshData();
-  }, []);
+  }, [refreshData]);
+
+  // Sync changes to user's vault
+  const persistVaultState = async (overrides = {}) => {
+    if (!currentUser) return;
+    const vaultData = {
+      works,
+      actions,
+      entries,
+      collections,
+      people,
+      places,
+      resources,
+      dailyLogs,
+      activity,
+      ...overrides
+    };
+    await syncUserVault(token, currentUser.id, vaultData);
+  };
 
   // Universal Inspector Selection helper
   const inspectRecord = (type, record) => {
@@ -97,7 +122,7 @@ export function ArchiveProvider({ children }) {
 
   // --- WORKS CRUD ---
   const createWork = async (workData) => {
-    const id = workData.id || `WRK-2025-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+    const id = workData.id || `WRK-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
     const newWork = {
       ...workData,
       id,
@@ -117,10 +142,10 @@ export function ArchiveProvider({ children }) {
       artwork: workData.artwork || 'blueprint'
     };
 
-    await dbPut('works', newWork);
-    await logActivity('WORK_CREATED', `Created work record ${newWork.title}`, id, 'work');
-    await refreshData();
+    const updatedWorks = [newWork, ...works];
+    setWorks(updatedWorks);
     inspectRecord('work', newWork);
+    await persistVaultState({ works: updatedWorks });
     return newWork;
   };
 
@@ -129,29 +154,24 @@ export function ArchiveProvider({ children }) {
       ...updatedWork,
       updated: 'Today 10:24'
     };
-    await dbPut('works', work);
-    await logActivity('WORK_UPDATED', `Updated work record ${work.title}`, work.id, 'work');
-    await refreshData();
-    if (selectedRecord?.id === work.id) {
-      setSelectedRecord(work);
-    }
+    const updatedWorks = works.map(w => w.id === work.id ? work : w);
+    setWorks(updatedWorks);
+    if (selectedRecord?.id === work.id) setSelectedRecord(work);
+    await persistVaultState({ works: updatedWorks });
     return work;
   };
 
   const deleteWork = async (id) => {
-    const workToDelete = works.find(w => w.id === id);
-    await dbDelete('works', id);
-    await logActivity('WORK_DELETED', `Deleted work record ${workToDelete?.title || id}`, id, 'work');
-    // If selected in inspector, fallback to first available work
-    const remaining = works.filter(w => w.id !== id);
+    const updatedWorks = works.filter(w => w.id !== id);
+    setWorks(updatedWorks);
     if (selectedRecord?.id === id) {
-      if (remaining.length > 0) {
-        inspectRecord('work', remaining[0]);
+      if (updatedWorks.length > 0) {
+        inspectRecord('work', updatedWorks[0]);
       } else {
         setSelectedRecord(null);
       }
     }
-    await refreshData();
+    await persistVaultState({ works: updatedWorks });
   };
 
   // --- ACTIONS CRUD ---
@@ -166,30 +186,25 @@ export function ArchiveProvider({ children }) {
       date: actionData.date || '2025-05-09',
       notes: actionData.notes || ''
     };
-    await dbPut('actions', newAction);
-    await logActivity('ACTION_CREATED', `Scheduled action: ${newAction.action}`, id, 'action');
-    await refreshData();
+    const updatedActions = [newAction, ...actions];
+    setActions(updatedActions);
+    await persistVaultState({ actions: updatedActions });
     return newAction;
   };
 
   const updateAction = async (updatedAction) => {
-    await dbPut('actions', updatedAction);
-    await logActivity('ACTION_UPDATED', `Updated action: ${updatedAction.action}`, updatedAction.id, 'action');
-    await refreshData();
-    if (selectedRecord?.id === updatedAction.id) {
-      setSelectedRecord(updatedAction);
-    }
+    const updatedActions = actions.map(a => a.id === updatedAction.id ? updatedAction : a);
+    setActions(updatedActions);
+    if (selectedRecord?.id === updatedAction.id) setSelectedRecord(updatedAction);
+    await persistVaultState({ actions: updatedActions });
     return updatedAction;
   };
 
   const deleteAction = async (id) => {
-    const act = actions.find(a => a.id === id);
-    await dbDelete('actions', id);
-    await logActivity('ACTION_DELETED', `Removed action: ${act?.action || id}`, id, 'action');
-    if (selectedRecord?.id === id) {
-      setSelectedRecord(null);
-    }
-    await refreshData();
+    const updatedActions = actions.filter(a => a.id !== id);
+    setActions(updatedActions);
+    if (selectedRecord?.id === id) setSelectedRecord(null);
+    await persistVaultState({ actions: updatedActions });
   };
 
   const toggleActionStatus = async (id) => {
@@ -203,10 +218,10 @@ export function ArchiveProvider({ children }) {
     };
     const nextStatus = cycle[act.status] || 'To do';
     const updated = { ...act, status: nextStatus };
-    await dbPut('actions', updated);
-    await logActivity('STATUS_CHANGED', `Action "${act.action}" marked as ${nextStatus}`, id, 'action');
-    await refreshData();
+    const updatedActions = actions.map(a => a.id === id ? updated : a);
+    setActions(updatedActions);
     if (selectedRecord?.id === id) setSelectedRecord(updated);
+    await persistVaultState({ actions: updatedActions });
   };
 
   const cycleActionPriority = async (id) => {
@@ -214,9 +229,10 @@ export function ArchiveProvider({ children }) {
     if (!act) return;
     const nextP = (act.priority % 5) + 1;
     const updated = { ...act, priority: nextP };
-    await dbPut('actions', updated);
-    await refreshData();
+    const updatedActions = actions.map(a => a.id === id ? updated : a);
+    setActions(updatedActions);
     if (selectedRecord?.id === id) setSelectedRecord(updated);
+    await persistVaultState({ actions: updatedActions });
   };
 
   // --- ENTRIES CRUD ---
@@ -228,30 +244,29 @@ export function ArchiveProvider({ children }) {
       date: entryData.date || '09 MAY 2025',
       time: entryData.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       category: entryData.category || 'Project Note',
-      author: entryData.author || 'You',
+      author: currentUser?.name || 'Curator',
       content: entryData.content || ''
     };
-    await dbPut('entries', newEntry);
-    await logActivity('ENTRY_CREATED', `Logged research note: ${newEntry.title}`, id, 'entry');
-    await refreshData();
+    const updatedEntries = [newEntry, ...entries];
+    setEntries(updatedEntries);
     inspectRecord('entry', newEntry);
+    await persistVaultState({ entries: updatedEntries });
     return newEntry;
   };
 
   const updateEntry = async (updatedEntry) => {
-    await dbPut('entries', updatedEntry);
-    await logActivity('ENTRY_UPDATED', `Updated entry: ${updatedEntry.title}`, updatedEntry.id, 'entry');
-    await refreshData();
+    const updatedEntries = entries.map(e => e.id === updatedEntry.id ? updatedEntry : e);
+    setEntries(updatedEntries);
     if (selectedRecord?.id === updatedEntry.id) setSelectedRecord(updatedEntry);
+    await persistVaultState({ entries: updatedEntries });
     return updatedEntry;
   };
 
   const deleteEntry = async (id) => {
-    const ent = entries.find(e => e.id === id);
-    await dbDelete('entries', id);
-    await logActivity('ENTRY_DELETED', `Deleted entry: ${ent?.title || id}`, id, 'entry');
+    const updatedEntries = entries.filter(e => e.id !== id);
+    setEntries(updatedEntries);
     if (selectedRecord?.id === id) setSelectedRecord(null);
-    await refreshData();
+    await persistVaultState({ entries: updatedEntries });
   };
 
   // --- COLLECTIONS CRUD ---
@@ -261,13 +276,13 @@ export function ArchiveProvider({ children }) {
       ...colData,
       id,
       itemCount: (colData.items || []).length,
-      items: colData.items || ['highlight_specimen', 'highlight_blueprint'],
+      items: colData.items || [],
       created: '09 May 2025'
     };
-    await dbPut('collections', newCol);
-    await logActivity('COLLECTION_CREATED', `Assembled collection board: ${newCol.title}`, id, 'collection');
-    await refreshData();
+    const updatedCols = [newCol, ...collections];
+    setCollections(updatedCols);
     inspectRecord('collection', newCol);
+    await persistVaultState({ collections: updatedCols });
     return newCol;
   };
 
@@ -276,19 +291,18 @@ export function ArchiveProvider({ children }) {
       ...updatedCol,
       itemCount: (updatedCol.items || []).length
     };
-    await dbPut('collections', col);
-    await logActivity('COLLECTION_UPDATED', `Updated collection: ${col.title}`, col.id, 'collection');
-    await refreshData();
+    const updatedCols = collections.map(c => c.id === col.id ? col : c);
+    setCollections(updatedCols);
     if (selectedRecord?.id === col.id) setSelectedRecord(col);
+    await persistVaultState({ collections: updatedCols });
     return col;
   };
 
   const deleteCollection = async (id) => {
-    const col = collections.find(c => c.id === id);
-    await dbDelete('collections', id);
-    await logActivity('COLLECTION_DELETED', `Removed collection: ${col?.title || id}`, id, 'collection');
+    const updatedCols = collections.filter(c => c.id !== id);
+    setCollections(updatedCols);
     if (selectedRecord?.id === id) setSelectedRecord(null);
-    await refreshData();
+    await persistVaultState({ collections: updatedCols });
   };
 
   // --- PEOPLE CRUD ---
@@ -300,26 +314,26 @@ export function ArchiveProvider({ children }) {
       worksCount: personData.worksCount || 0,
       status: personData.status || 'Active'
     };
-    await dbPut('people', newPerson);
-    await logActivity('PERSON_CREATED', `Registered contact: ${newPerson.name}`, id, 'person');
-    await refreshData();
+    const updatedPeople = [newPerson, ...people];
+    setPeople(updatedPeople);
     inspectRecord('person', newPerson);
+    await persistVaultState({ people: updatedPeople });
     return newPerson;
   };
 
   const updatePerson = async (updatedPerson) => {
-    await dbPut('people', updatedPerson);
-    await refreshData();
+    const updatedPeople = people.map(p => p.id === updatedPerson.id ? updatedPerson : p);
+    setPeople(updatedPeople);
     if (selectedRecord?.id === updatedPerson.id) setSelectedRecord(updatedPerson);
+    await persistVaultState({ people: updatedPeople });
     return updatedPerson;
   };
 
   const deletePerson = async (id) => {
-    const p = people.find(item => item.id === id);
-    await dbDelete('people', id);
-    await logActivity('PERSON_DELETED', `Removed contact: ${p?.name || id}`, id, 'person');
+    const updatedPeople = people.filter(p => p.id !== id);
+    setPeople(updatedPeople);
     if (selectedRecord?.id === id) setSelectedRecord(null);
-    await refreshData();
+    await persistVaultState({ people: updatedPeople });
   };
 
   // --- PLACES CRUD ---
@@ -331,26 +345,26 @@ export function ArchiveProvider({ children }) {
       recordsCount: placeData.recordsCount || 1,
       established: placeData.established || '1900'
     };
-    await dbPut('places', newPlace);
-    await logActivity('PLACE_CREATED', `Recorded locus: ${newPlace.name}`, id, 'place');
-    await refreshData();
+    const updatedPlaces = [newPlace, ...places];
+    setPlaces(updatedPlaces);
     inspectRecord('place', newPlace);
+    await persistVaultState({ places: updatedPlaces });
     return newPlace;
   };
 
   const updatePlace = async (updatedPlace) => {
-    await dbPut('places', updatedPlace);
-    await refreshData();
+    const updatedPlaces = places.map(p => p.id === updatedPlace.id ? updatedPlace : p);
+    setPlaces(updatedPlaces);
     if (selectedRecord?.id === updatedPlace.id) setSelectedRecord(updatedPlace);
+    await persistVaultState({ places: updatedPlaces });
     return updatedPlace;
   };
 
   const deletePlace = async (id) => {
-    const pl = places.find(item => item.id === id);
-    await dbDelete('places', id);
-    await logActivity('PLACE_DELETED', `Removed locus: ${pl?.name || id}`, id, 'place');
+    const updatedPlaces = places.filter(p => p.id !== id);
+    setPlaces(updatedPlaces);
     if (selectedRecord?.id === id) setSelectedRecord(null);
-    await refreshData();
+    await persistVaultState({ places: updatedPlaces });
   };
 
   // --- RESOURCES CRUD ---
@@ -359,142 +373,124 @@ export function ArchiveProvider({ children }) {
     const newRes = {
       ...resData,
       id,
-      checksum: resData.checksum || `0x${Math.floor(Math.random() * 0xFFFFFF).toString(16).toUpperCase()}`,
-      status: resData.status || 'Mounted & Verified',
-      updated: 'Today'
+      format: resData.format || 'PDF',
+      size: resData.size || '1.0 MB',
+      locus: resData.locus || 'General Shelf'
     };
-    await dbPut('resources', newRes);
-    await logActivity('RESOURCE_ATTACHED', `Cataloged vault resource: ${newRes.title}`, id, 'resource');
-    await refreshData();
+    const updatedRes = [newRes, ...resources];
+    setResources(updatedRes);
     inspectRecord('resource', newRes);
+    await persistVaultState({ resources: updatedRes });
     return newRes;
   };
 
   const updateResource = async (updatedRes) => {
-    await dbPut('resources', updatedRes);
-    await refreshData();
+    const updated = resources.map(r => r.id === updatedRes.id ? updatedRes : r);
+    setResources(updated);
     if (selectedRecord?.id === updatedRes.id) setSelectedRecord(updatedRes);
+    await persistVaultState({ resources: updated });
     return updatedRes;
   };
 
   const deleteResource = async (id) => {
-    const r = resources.find(item => item.id === id);
-    await dbDelete('resources', id);
-    await logActivity('RESOURCE_DELETED', `Deleted vault asset: ${r?.title || id}`, id, 'resource');
+    const updated = resources.filter(r => r.id !== id);
+    setResources(updated);
     if (selectedRecord?.id === id) setSelectedRecord(null);
-    await refreshData();
+    await persistVaultState({ resources: updated });
   };
 
-  // --- DAILY LOGS ---
-  const saveDailyLog = async (date, logData) => {
-    const record = {
-      date,
+  // --- DAILY LOG SAVE ---
+  const saveDailyLog = async (logData) => {
+    const date = logData.date || '09 MAY 2025';
+    const logItem = {
       ...logData,
+      date,
       updatedAt: Date.now()
     };
-    await dbPut('dailyLogs', record);
-    await logActivity('LOG_SAVED', `Updated daily journal note for ${date}`);
-    await refreshData();
-    return record;
+    const exists = dailyLogs.some(l => l.date === date);
+    const updatedLogs = exists
+      ? dailyLogs.map(l => l.date === date ? logItem : l)
+      : [logItem, ...dailyLogs];
+    setDailyLogs(updatedLogs);
+    await persistVaultState({ dailyLogs: updatedLogs });
+    return logItem;
   };
 
   // --- NOTES ON RECORDS ---
   const addNoteToRecord = async (recordType, recordId, noteText) => {
     if (!noteText.trim()) return;
-    const storeMap = {
-      work: { store: 'works', items: works },
-      action: { store: 'actions', items: actions },
-      entry: { store: 'entries', items: entries },
-      collection: { store: 'collections', items: collections },
-      person: { store: 'people', items: people },
-      place: { store: 'places', items: places },
-      resource: { store: 'resources', items: resources }
-    };
-
-    const target = storeMap[recordType];
-    if (!target) return;
-    const item = target.items.find(i => i.id === recordId);
-    if (!item) return;
-
     const newNote = {
       id: `n-${Date.now()}`,
       date: '09 May 2025',
       text: noteText.trim()
     };
 
-    const updated = {
-      ...item,
-      notes: [newNote, ...(item.notes || [])]
-    };
-
-    await dbPut(target.store, updated);
-    await logActivity('NOTE_ADDED', `Added archival note to ${item.title || item.name || item.action || recordId}`, recordId, recordType);
-    await refreshData();
-    if (selectedRecord?.id === recordId) setSelectedRecord(updated);
+    if (recordType === 'work') {
+      const updatedWorks = works.map(w => w.id === recordId ? { ...w, notes: [newNote, ...(w.notes || [])] } : w);
+      setWorks(updatedWorks);
+      if (selectedRecord?.id === recordId) setSelectedRecord(updatedWorks.find(w => w.id === recordId));
+      await persistVaultState({ works: updatedWorks });
+    } else if (recordType === 'action') {
+      const updatedActions = actions.map(a => a.id === recordId ? { ...a, notes: (a.notes ? a.notes + '\n' : '') + noteText.trim() } : a);
+      setActions(updatedActions);
+      if (selectedRecord?.id === recordId) setSelectedRecord(updatedActions.find(a => a.id === recordId));
+      await persistVaultState({ actions: updatedActions });
+    } else if (recordType === 'entry') {
+      const updatedEntries = entries.map(e => e.id === recordId ? { ...e, notes: [newNote, ...(e.notes || [])] } : e);
+      setEntries(updatedEntries);
+      if (selectedRecord?.id === recordId) setSelectedRecord(updatedEntries.find(e => e.id === recordId));
+      await persistVaultState({ entries: updatedEntries });
+    }
   };
 
   const deleteNoteFromRecord = async (recordType, recordId, noteId) => {
-    const storeMap = {
-      work: { store: 'works', items: works },
-      action: { store: 'actions', items: actions },
-      entry: { store: 'entries', items: entries },
-      collection: { store: 'collections', items: collections },
-      person: { store: 'people', items: people },
-      place: { store: 'places', items: places },
-      resource: { store: 'resources', items: resources }
-    };
-    const target = storeMap[recordType];
-    if (!target) return;
-    const item = target.items.find(i => i.id === recordId);
-    if (!item) return;
-
-    const updated = {
-      ...item,
-      notes: (item.notes || []).filter(n => n.id !== noteId)
-    };
-    await dbPut(target.store, updated);
-    await refreshData();
-    if (selectedRecord?.id === recordId) setSelectedRecord(updated);
+    if (recordType === 'work') {
+      const updatedWorks = works.map(w => w.id === recordId ? { ...w, notes: (w.notes || []).filter(n => n.id !== noteId) } : w);
+      setWorks(updatedWorks);
+      if (selectedRecord?.id === recordId) setSelectedRecord(updatedWorks.find(w => w.id === recordId));
+      await persistVaultState({ works: updatedWorks });
+    }
   };
 
-  // --- DYNAMIC DASHBOARD METRICS CALCULATION ---
+  // --- DYNAMIC METRICS CALCULATION (ZERO DATA FOR NEW USERS) ---
   const dynamicMetrics = useMemo(() => {
-    const isReady = isInitialized && (actions.length > 0 || works.length > 0 || entries.length > 0);
+    const isReady = isInitialized;
+    const hasData = works.length > 0 || actions.length > 0 || entries.length > 0;
 
-    // 1. Actions counts matching reference when uninitialized, otherwise real live database counts
+    // Actions Breakdown (Exact live counts)
     const actionsBreakdown = {
-      todo: isReady ? actions.filter(a => a.status === 'To do').length : 4,
-      inProgress: isReady ? actions.filter(a => a.status === 'In progress').length : 6,
-      waiting: isReady ? actions.filter(a => a.status === 'Waiting').length : 1,
-      completed: isReady ? actions.filter(a => a.status === 'Completed').length : 2,
-      total: isReady ? actions.length : 12
+      todo: actions.filter(a => a.status === 'To do').length,
+      inProgress: actions.filter(a => a.status === 'In progress').length,
+      waiting: actions.filter(a => a.status === 'Waiting').length,
+      completed: actions.filter(a => a.status === 'Completed').length,
+      total: actions.length
     };
 
-    // 2. Active Works counts matching reference when uninitialized, otherwise real live database counts
+    // Works Breakdown
     const activeWorks = works.filter(w => w.status !== 'Completed');
     const worksBreakdown = {
-      projects: isReady ? works.filter(w => w.type === 'Project').length : 3,
-      research: isReady ? works.filter(w => w.type === 'Research').length : 2,
-      creative: isReady ? works.filter(w => w.type === 'Creative').length : 1,
-      maintenance: isReady ? works.filter(w => w.type === 'Maintenance').length : 1,
-      activeTotal: isReady ? activeWorks.length : 7
+      projects: works.filter(w => w.type === 'Project').length,
+      research: works.filter(w => w.type === 'Research').length,
+      creative: works.filter(w => w.type === 'Creative').length,
+      maintenance: works.filter(w => w.type === 'Maintenance').length,
+      activeTotal: activeWorks.length
     };
 
-    // 3. Entries this week calculation
-    const totalEntries = isReady ? entries.length : 18;
+    // Entries
+    const totalEntries = entries.length;
 
-    // 4. Weekly progress calculation computed dynamically from active works
+    // Weekly progress: 0 if no works exist
     const avgWorksProgress = works.length > 0 
       ? Math.round(works.reduce((acc, w) => acc + (Number(w.progress) || 0), 0) / works.length) 
-      : 65;
-    const weeklyProgress = avgWorksProgress || 65;
+      : 0;
+    const weeklyProgress = avgWorksProgress;
 
-    // 5. Today's daily log
+    // Today's log
     const todayLog = dailyLogs.find(dl => dl.date === '09 MAY 2025' || dl.date === 'Today') || {
       date: '09 MAY 2025',
-      note: "Started working on the database structure and record model for Athenaeum. Feeling focused and productive.",
-      mood: 3,
-      energy: 72
+      note: hasData ? "Started working on the database structure and record model for Athenaeum." : "",
+      mood: hasData ? 3 : 0,
+      energy: hasData ? 72 : 0
     };
 
     return {
@@ -540,6 +536,7 @@ export function ArchiveProvider({ children }) {
         selectedRecordType,
         inspectRecord,
         dynamicMetrics,
+        refreshData,
         // CRUD Methods
         createWork,
         updateWork,
@@ -585,3 +582,4 @@ export function useArchive() {
   return context;
 }
 
+export default ArchiveContext;

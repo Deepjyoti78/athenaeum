@@ -13,10 +13,12 @@ import {
   Newspaper,
   Search, 
   Settings,
-  MoreHorizontal
+  MoreHorizontal,
+  LogOut
 } from 'lucide-react';
 import { AthenaeumLogo } from './AthenaeumLogo';
 import { RECENT_VIEWS } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
 
 export function Sidebar({ 
   activeNav, 
@@ -25,6 +27,7 @@ export function Sidebar({
   onOpenSearch,
   onOpenSettings
 }) {
+  const { currentUser, logout } = useAuth();
   const navItems = [
     { id: 'dashboard', label: 'DASHBOARD', icon: LayoutDashboard },
     { id: 'works', label: 'WORKS', icon: FolderGit2 },
@@ -56,6 +59,35 @@ export function Sidebar({
             </span>
           </div>
         </div>
+
+        {/* Active Curator Profile Badge */}
+        {currentUser && (
+          <div className="border border-[#2B2E27] bg-[#141712] p-2 space-y-1">
+            <div className="flex items-center justify-between text-[7px] text-[#77766B] uppercase tracking-wider pb-1 border-b border-[#22251E] font-medium">
+              <span>ACTIVE CURATOR</span>
+              <button 
+                onClick={logout} 
+                className="text-[#9A3B3B] hover:text-[#C97B74] uppercase text-[6.5px] font-bold tracking-wider hover:underline flex items-center space-x-0.5"
+                title="Sign out of current vault"
+              >
+                <span>SIGN OUT</span>
+              </button>
+            </div>
+            <div className="flex items-center space-x-2 pt-0.5">
+              <div className="w-5 h-5 rounded-full bg-[#2E3D2A] text-[#FAF8F3] text-[8px] font-bold flex items-center justify-center font-mono flex-shrink-0">
+                {currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : 'CU'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[8.5px] text-[#E9E5D8] font-bold truncate">
+                  {currentUser.name}
+                </div>
+                <div className="text-[6.5px] text-[#8C8B7E] truncate">
+                  {currentUser.operatorId || 'OPR-VAULT'} · {currentUser.clearance || 'LEVEL 1'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Institution Status Box */}
         <div className="border border-[#2B2E27] bg-[#141712] p-2 space-y-1">

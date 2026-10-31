@@ -41,7 +41,13 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
       </div>
 
       {/* 4 Cards Grid matching media_1793434566460_76b91e75.jpg */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      {displayWorks.length === 0 ? (
+        <div className="border border-dashed border-[#B5B3A4] bg-[#EAE7D9]/60 p-6 flex flex-col items-center justify-center text-center">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#171714]">NO WORKS CATALOGED IN THIS VAULT</p>
+          <p className="text-[8px] text-[#66655B] mt-1">Initialize your first project, research inquiry, or creative exploration.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {displayWorks.map((work) => {
           const isSelected = selectedWorkId === work.id;
           const isMenuOpen = activeMenuId === work.id;
@@ -144,7 +150,8 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

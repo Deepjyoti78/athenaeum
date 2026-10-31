@@ -62,7 +62,14 @@ export function UpcomingActions({
               </tr>
             </thead>
             <tbody className="divide-y divide-[#DCD8CB]">
-              {displayActions.map((item) => {
+              {displayActions.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-6 text-center text-[#77766B] uppercase text-[8px] font-mono">
+                    All caught up — No upcoming actions recorded in this vault
+                  </td>
+                </tr>
+              ) : (
+                displayActions.map((item) => {
                 const isCompleted = item.status === 'Completed';
                 return (
                   <tr 
@@ -136,7 +143,7 @@ export function UpcomingActions({
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>

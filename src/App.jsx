@@ -27,6 +27,8 @@ import { NewsView } from './components/NewsView';
 import { SystemSettingsModal } from './components/SystemSettingsModal';
 
 import { ArchiveProvider, useArchive } from './context/ArchiveContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthScreen } from './components/AuthScreen';
 
 function AthenaeumApp() {
   // Navigation State: 'dashboard' | 'works' | 'actions' | 'entries' | 'collections' | 'people' | 'places' | 'resources' | 'calendar' | 'daily-log'
@@ -379,10 +381,33 @@ function AthenaeumApp() {
   );
 }
 
+function AppContent() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="w-screen h-screen bg-[#E5E1D2] font-mono flex flex-col items-center justify-center text-[#171714]">
+        <div className="flex items-center space-x-2 text-[11px] font-bold uppercase tracking-wider">
+          <span className="w-2 h-2 rounded-full bg-[#4B5E45] animate-ping" />
+          <span>INITIALIZING ATHENÆUM SECURITY GATEWAY...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AuthScreen />;
+  }
+
+  return <AthenaeumApp />;
+}
+
 export default function App() {
   return (
-    <ArchiveProvider>
-      <AthenaeumApp />
-    </ArchiveProvider>
+    <AuthProvider>
+      <ArchiveProvider>
+        <AppContent />
+      </ArchiveProvider>
+    </AuthProvider>
   );
 }

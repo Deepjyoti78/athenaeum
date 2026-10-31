@@ -4,35 +4,35 @@ import { useArchive } from '../context/ArchiveContext';
 export function OverviewMetrics({ onNavigate }) {
   const { actions = [], works = [], entries = [], dynamicMetrics, isInitialized } = useArchive();
 
-  // 1. Actions counts: dynamically computed from actual data with reference fallbacks
-  const isReady = isInitialized && (actions.length > 0 || works.length > 0);
-  const actionsCount = dynamicMetrics?.actionsBreakdown?.total ?? (isReady ? actions.length : 12);
-  const todoCount = dynamicMetrics?.actionsBreakdown?.todo ?? (isReady ? actions.filter(a => a.status === 'To do').length : 4);
-  const inProgressCount = dynamicMetrics?.actionsBreakdown?.inProgress ?? (isReady ? actions.filter(a => a.status === 'In progress').length : 6);
-  const waitingCount = dynamicMetrics?.actionsBreakdown?.waiting ?? (isReady ? actions.filter(a => a.status === 'Waiting').length : 1);
-  const completedCount = dynamicMetrics?.actionsBreakdown?.completed ?? (isReady ? actions.filter(a => a.status === 'Completed').length : 2);
+  // 1. Actions counts: dynamically computed from actual data
+  const actionsCount = actions.length;
+  const todoCount = actions.filter(a => a.status === 'To do').length;
+  const inProgressCount = actions.filter(a => a.status === 'In progress').length;
+  const waitingCount = actions.filter(a => a.status === 'Waiting').length;
+  const completedCount = actions.filter(a => a.status === 'Completed').length;
 
   // 2. Works counts: dynamically computed from actual data
   const activeWorks = works.filter(w => w.status !== 'Completed');
-  const activeWorksCount = dynamicMetrics?.activeWorksCount ?? (isReady ? activeWorks.length : 7);
-  const projectWorksCount = dynamicMetrics?.worksBreakdown?.projects ?? (isReady ? works.filter(w => w.type === 'Project').length : 3);
-  const researchWorksCount = dynamicMetrics?.worksBreakdown?.research ?? (isReady ? works.filter(w => w.type === 'Research').length : 2);
-  const creativeWorksCount = dynamicMetrics?.worksBreakdown?.creative ?? (isReady ? works.filter(w => w.type === 'Creative').length : 1);
-  const maintenanceWorksCount = dynamicMetrics?.worksBreakdown?.maintenance ?? (isReady ? works.filter(w => w.type === 'Maintenance').length : 1);
+  const activeWorksCount = activeWorks.length;
+  const projectWorksCount = works.filter(w => w.type === 'Project').length;
+  const researchWorksCount = works.filter(w => w.type === 'Research').length;
+  const creativeWorksCount = works.filter(w => w.type === 'Creative').length;
+  const maintenanceWorksCount = works.filter(w => w.type === 'Maintenance').length;
 
   // Donut Gauge dashoffset calculation for circular gauge (r=32, circumference=201.06)
-  const totalWorks = works.length > 0 ? works.length : 7;
-  const donutProgress = totalWorks > 0 ? Math.min(1, Math.max(0.1, activeWorksCount / totalWorks)) : 0.65;
-  const donutDashoffset = Math.round(201.06 * (1 - (donutProgress * 0.72)));
+  const totalWorks = works.length;
+  const donutProgress = totalWorks > 0 ? Math.min(1, Math.max(0.05, activeWorksCount / totalWorks)) : 0;
+  const donutDashoffset = totalWorks > 0 ? Math.round(201.06 * (1 - (donutProgress * 0.72))) : 201.06;
 
   // 3. Entries this week: dynamically computed
-  const entriesCount = dynamicMetrics?.totalEntries ?? (isReady ? entries.length : 18);
+  const entriesCount = entries.length;
 
-  // 7-day Activity Histogram matching reference image (M, T, W, T, F, S, S)
+  // 7-day Activity Histogram (flattens to baseline if 0 entries)
   const bars = useMemo(() => {
-    const refHeights = [21, 21, 28, 41, 54, 27, 19];
+    const hasData = entries.length > 0;
+    const refHeights = hasData ? [21, 21, 28, 41, 54, 27, 19] : [3, 3, 3, 3, 3, 3, 3];
     const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    const barColors = [
+    const barColors = hasData ? [
       '#74866A', // M
       '#74866A', // T
       '#4B5E45', // W
@@ -40,31 +40,38 @@ export function OverviewMetrics({ onNavigate }) {
       '#2E3D2A', // F (Peak)
       '#3E5139', // S
       '#4B5E45'  // S
+    ] : [
+      '#B5B3A4', '#B5B3A4', '#B5B3A4', '#B5B3A4', '#B5B3A4', '#B5B3A4', '#B5B3A4'
     ];
 
     return refHeights.map((h, i) => ({
       day: dayLabels[i],
       h,
       color: barColors[i],
-      isPeak: i === 4
+      isPeak: hasData && i === 4
     }));
-  }, []);
+  }, [entries.length]);
 
-  // 4. Focus weekly progress: dynamically computed, defaulting to 65% matching reference image
+  // 4. Focus weekly progress: dynamically computed, 0% if no works
   const focusPct = useMemo(() => {
+    if (works.length === 0) return 0;
     if (dynamicMetrics?.weeklyProgress !== undefined && dynamicMetrics.weeklyProgress !== 61) {
       return dynamicMetrics.weeklyProgress;
     }
     return 65;
-  }, [dynamicMetrics]);
+  }, [works.length, dynamicMetrics]);
 
   // 7 Focus line graph points mapped within technical chart area (y: 0=100%, 22=50%, 44=0%)
   const focusPoints = useMemo(() => {
     const xCoords = [8, 22, 36, 50, 64, 78, 92];
+    if (works.length === 0) {
+      // Baseline flat at 0%
+      return xCoords.map(x => [x, 43]);
+    }
     // Dynamic steep upward progression matching reference: M: 23%, T: 39%, W: 52%, T: 64%, F: 75%, S: 84%, S: 93%
     const basePts = [34, 27, 21, 16, 11, 7, 3];
     return xCoords.map((x, idx) => [x, basePts[idx]]);
-  }, []);
+  }, [works.length]);
 
   // Dynamic set of days with active records/events for calendar markers
   const activeDaysSet = useMemo(() => {

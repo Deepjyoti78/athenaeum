@@ -26,3 +26,7 @@ dist-ssr
 # Testing / Automation artifacts
 .playwright-mcp/
 
+# Local server database files
+server/data/vaults/
+server/data/users.json
+

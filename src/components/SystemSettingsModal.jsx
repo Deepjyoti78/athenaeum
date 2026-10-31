@@ -21,10 +21,14 @@ import {
   Cpu,
   Lock,
   Archive,
-  Fingerprint
+  Fingerprint,
+  LogOut
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export function SystemSettingsModal({ isOpen, onClose, works = [], actions = [], entries = [] }) {
+  const { currentUser, updateProfile, logout } = useAuth();
+
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'profile' | 'storage' | 'audit' | 'export'
   const [isRunningCheck, setIsRunningCheck] = useState(false);
   const [checkProgress, setCheckProgress] = useState(100);
@@ -33,44 +37,35 @@ export function SystemSettingsModal({ isOpen, onClose, works = [], actions = [],
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedDbPath, setCopiedDbPath] = useState(false);
 
-  // User Profile state with localStorage persistence
+  // User Profile state
   const [isEditingUser, setIsEditingUser] = useState(false);
-  const [userName, setUserName] = useState(() => {
-    return localStorage.getItem('atn_user_name') || 'Deepjyoti';
-  });
-  const [userRole, setUserRole] = useState(() => {
-    return localStorage.getItem('atn_user_role') || 'Lead Curator & Systems Architect';
-  });
-  const [operatorId, setOperatorId] = useState(() => {
-    return localStorage.getItem('atn_operator_id') || 'OPR-7821-LDN';
-  });
-  const [clearanceLevel, setClearanceLevel] = useState(() => {
-    return localStorage.getItem('atn_clearance_level') || 'LEVEL 5 (ROOT_VAULT)';
-  });
-  const [nodeStation, setNodeStation] = useState(() => {
-    return localStorage.getItem('atn_node_station') || 'DESK_ALPHA_01';
-  });
+  const [userName, setUserName] = useState(currentUser?.name || 'Deepjyoti');
+  const [userRole, setUserRole] = useState(currentUser?.role || 'Lead Curator & Systems Architect');
+  const [operatorId, setOperatorId] = useState(currentUser?.operatorId || 'OPR-7821-LDN');
+  const [clearanceLevel, setClearanceLevel] = useState(currentUser?.clearance || 'LEVEL 5 (ROOT_VAULT)');
+  const [nodeStation, setNodeStation] = useState(currentUser?.station || 'DESK_ALPHA_01');
   const [savedUserFeedback, setSavedUserFeedback] = useState(false);
 
   useEffect(() => {
-    const storedName = localStorage.getItem('atn_user_name');
-    if (storedName) setUserName(storedName);
-    const storedRole = localStorage.getItem('atn_user_role');
-    if (storedRole) setUserRole(storedRole);
-    const storedId = localStorage.getItem('atn_operator_id');
-    if (storedId) setOperatorId(storedId);
-    const storedClearance = localStorage.getItem('atn_clearance_level');
-    if (storedClearance) setClearanceLevel(storedClearance);
-    const storedNode = localStorage.getItem('atn_node_station');
-    if (storedNode) setNodeStation(storedNode);
-  }, []);
+    if (currentUser) {
+      setUserName(currentUser.name || 'Deepjyoti');
+      setUserRole(currentUser.role || 'Lead Curator & Systems Architect');
+      setOperatorId(currentUser.operatorId || 'OPR-7821-LDN');
+      setClearanceLevel(currentUser.clearance || 'LEVEL 5 (ROOT_VAULT)');
+      setNodeStation(currentUser.station || 'DESK_ALPHA_01');
+    }
+  }, [currentUser]);
 
   const handleSaveUser = () => {
-    localStorage.setItem('atn_user_name', userName.trim());
-    localStorage.setItem('atn_user_role', userRole.trim());
-    localStorage.setItem('atn_operator_id', operatorId.trim());
-    localStorage.setItem('atn_clearance_level', clearanceLevel.trim());
-    localStorage.setItem('atn_node_station', nodeStation.trim());
+    if (updateProfile) {
+      updateProfile({
+        name: userName.trim(),
+        role: userRole.trim(),
+        operatorId: operatorId.trim(),
+        clearance: clearanceLevel.trim(),
+        station: nodeStation.trim()
+      });
+    }
     setIsEditingUser(false);
     setSavedUserFeedback(true);
     setTimeout(() => setSavedUserFeedback(false), 2000);
@@ -719,12 +714,25 @@ export function SystemSettingsModal({ isOpen, onClose, works = [], actions = [],
             <span className="hidden sm:inline">VAULT CHECKSUM: <strong className="text-[#3E523A]">0x9AF4</strong></span>
           </div>
 
-          <button
-            onClick={onClose}
-            className="px-3.5 py-1 bg-[#171714] text-[#FAF8F3] text-[8px] font-bold uppercase hover:bg-black transition-colors"
-          >
-            CLOSE
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => {
+                if (logout) logout();
+                onClose();
+              }}
+              className="px-3 py-1 border border-[#9A3B3B] bg-[#F7ECEC] text-[#9A3B3B] hover:bg-[#9A3B3B] hover:text-[#FAF8F3] text-[8px] font-bold uppercase transition-colors flex items-center space-x-1"
+              title="Sign out of current vault"
+            >
+              <LogOut className="w-2.5 h-2.5" />
+              <span>SIGN OUT</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="px-3.5 py-1 bg-[#171714] text-[#FAF8F3] text-[8px] font-bold uppercase hover:bg-black transition-colors"
+            >
+              CLOSE
+            </button>
+          </div>
         </div>
 
       </div>
