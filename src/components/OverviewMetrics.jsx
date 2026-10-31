@@ -74,13 +74,13 @@ export function OverviewMetrics({ onNavigate }) {
 
   // 7-day activity bar chart distribution matching reference image (Thursday highest)
   const bars = [
-    { day: 'M', h: 14, isPeak: false },
-    { day: 'T', h: 20, isPeak: false },
-    { day: 'W', h: 28, isPeak: false },
-    { day: 'T', h: 52, isPeak: true },
-    { day: 'F', h: 36, isPeak: false },
-    { day: 'S', h: 24, isPeak: false },
-    { day: 'S', h: 12, isPeak: false }
+    { day: 'M', h: 18, isPeak: false },
+    { day: 'T', h: 26, isPeak: false },
+    { day: 'W', h: 36, isPeak: false },
+    { day: 'T', h: 54, isPeak: true },
+    { day: 'F', h: 42, isPeak: false },
+    { day: 'S', h: 28, isPeak: false },
+    { day: 'S', h: 16, isPeak: false }
   ];
 
   const numeralStyle = {
@@ -290,26 +290,26 @@ export function OverviewMetrics({ onNavigate }) {
               <div><span className="font-bold text-[#171714]">{maintenanceWorksCount}</span> Maintenance</div>
             </div>
 
-            {/* Circular Donut Gauge with "7 WORKS" inside matching Image 2 */}
-            <div className="relative w-12 h-12 flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 44 44" className="w-12 h-12 -rotate-90">
-                <circle cx="22" cy="22" r="16" fill="none" stroke="#D2CEBF" strokeWidth="4" />
+            {/* Circular Donut Gauge with "7 WORKS" inside — larger size matching reference */}
+            <div className="relative w-[62px] h-[62px] flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 52 52" className="w-[62px] h-[62px] -rotate-90">
+                <circle cx="26" cy="26" r="21" fill="none" stroke="#D2CEBF" strokeWidth="5" />
                 <circle
-                  cx="22"
-                  cy="22"
-                  r="16"
+                  cx="26"
+                  cy="26"
+                  r="21"
                   fill="none"
                   stroke="#5A6D52"
-                  strokeWidth="4"
-                  strokeDasharray="100"
-                  strokeDashoffset="35"
+                  strokeWidth="5"
+                  strokeDasharray="132"
+                  strokeDashoffset="45"
                   strokeLinecap="butt"
                 />
               </svg>
               {/* Text inside the Donut: 7 WORKS */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
-                <span className="font-bold text-[10px] text-[#171714]">{activeWorksCount}</span>
-                <span className="text-[5px] font-mono font-bold uppercase tracking-wider text-[#555]">WORKS</span>
+                <span className="font-bold text-[14px] text-[#171714] leading-tight select-none">{activeWorksCount}</span>
+                <span className="text-[6.5px] font-mono font-bold uppercase tracking-wider text-[#555] mt-0.5 select-none">WORKS</span>
               </div>
             </div>
           </div>
@@ -341,22 +341,22 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: 7-bar Activity Histogram matching Image 2 */}
-          <div className="pt-1">
-            <div className="flex items-end justify-center space-x-2 h-11 pb-0.5">
+          {/* Bottom: 7-bar Activity Histogram with thicker bars reducing empty space */}
+          <div className="pt-0.5">
+            <div className="flex items-end justify-between px-2 h-14 pb-0.5">
               {bars.map((b, i) => (
                 <div 
                   key={i} 
-                  className="flex flex-col items-center space-y-1 w-2.5 group/bar cursor-pointer"
+                  className="flex flex-col items-center space-y-1 group/bar cursor-pointer"
                   title={`${b.day}: entries`}
                 >
                   <div
-                    className={`w-[4px] rounded-[0.5px] transition-colors ${
+                    className={`w-[8px] rounded-[0.5px] transition-all duration-200 group-hover/bar:brightness-90 ${
                       b.isPeak ? 'bg-[#4B5E44]' : 'bg-[#5B6D55]'
                     }`}
-                    style={{ height: `${Math.round(b.h * 0.75)}px` }}
+                    style={{ height: `${b.h}px` }}
                   />
-                  <span className="text-[7px] font-mono font-bold text-[#171714]">
+                  <span className="text-[7.5px] font-mono font-bold text-[#171714]">
                     {b.day}
                   </span>
                 </div>
@@ -387,62 +387,57 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Line graph with Y-axis markers (100, 50, 0) + Area Shading matching Image 2 */}
+          {/* Bottom: Line graph without 0-100 labels, spanning edge-to-edge Mon-Sun */}
           <div className="pt-0.5 flex flex-col justify-between">
-            <div className="flex items-center">
-              {/* Y-axis labels: 100, 50, 0 */}
-              <div className="flex flex-col justify-between h-8 text-[6px] font-mono text-[#77766B] pr-1 leading-none text-right">
-                <span>100</span>
-                <span>50</span>
-                <span>0</span>
-              </div>
+            {/* Line graph canvas: full width Mon to Sun */}
+            <div className="w-full">
+              <svg viewBox="0 0 120 38" className="w-full h-9 overflow-visible">
+                <defs>
+                  <linearGradient id="focusAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.35" />
+                    <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.02" />
+                  </linearGradient>
+                </defs>
+                {/* Horizontal baseline & midpoint guide */}
+                <line x1="6" y1="20" x2="114" y2="20" stroke="#D2CEBF" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="6" y1="34" x2="114" y2="34" stroke="#D2CEBF" strokeWidth="0.75" />
 
-              {/* Line graph canvas */}
-              <div className="flex-1">
-                <svg viewBox="0 0 110 32" className="w-full h-8 overflow-visible">
-                  <defs>
-                    <linearGradient id="focusAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#74866A" stopOpacity="0.32" />
-                      <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.02" />
-                    </linearGradient>
-                  </defs>
-                  {/* Faint horizontal baseline & midpoint */}
-                  <line x1="5" y1="16" x2="105" y2="16" stroke="#D2CEBF" strokeWidth="0.5" strokeDasharray="2 2" />
-                  <line x1="5" y1="31" x2="105" y2="31" stroke="#D2CEBF" strokeWidth="0.5" />
+                {/* Gradient area underneath line */}
+                <polygon
+                  points="6,28 23,22 42,19 60,20 79,14 97,12 114,6 114,34 6,34"
+                  fill="url(#focusAreaGrad)"
+                />
+                {/* Connected Polyline from Monday (x=6) to Sunday (x=114) */}
+                <polyline
+                  fill="none"
+                  stroke="#171714"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  points="6,28 23,22 42,19 60,20 79,14 97,12 114,6"
+                />
+                {/* 7 Circular Data Points for M, T, W, T, F, S, S */}
+                {[
+                  [6, 28],
+                  [23, 22],
+                  [42, 19],
+                  [60, 20],
+                  [79, 14],
+                  [97, 12],
+                  [114, 6]
+                ].map(([cx, cy], idx) => (
+                  <circle key={idx} cx={cx} cy={cy} r="2.2" fill="#171714" />
+                ))}
+              </svg>
 
-                  {/* Gradient area */}
-                  <polygon
-                    points="5,24 21,17 38,15 54,16 71,11 88,10 105,6 105,31 5,31"
-                    fill="url(#focusAreaGrad)"
-                  />
-                  {/* Connected Polyline */}
-                  <polyline
-                    fill="none"
-                    stroke="#171714"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    points="5,24 21,17 38,15 54,16 71,11 88,10 105,6"
-                  />
-                  {/* 7 Circular Data Points */}
-                  <circle cx="5" cy="24" r="1.8" fill="#171714" />
-                  <circle cx="21" cy="17" r="1.8" fill="#171714" />
-                  <circle cx="38" cy="15" r="1.8" fill="#171714" />
-                  <circle cx="54" cy="16" r="1.8" fill="#171714" />
-                  <circle cx="71" cy="11" r="1.8" fill="#171714" />
-                  <circle cx="88" cy="10" r="1.8" fill="#171714" />
-                  <circle cx="105" cy="6" r="2" fill="#171714" />
-                </svg>
-
-                {/* Weekday labels */}
-                <div className="flex justify-between px-0.5 text-[6.5px] font-mono font-bold text-[#55544B] mt-0.5">
-                  <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
-                </div>
+              {/* Weekday labels spanning Mon to Sun aligned with data points */}
+              <div className="flex justify-between px-0.5 text-[7px] font-mono font-bold text-[#55544B] mt-0.5">
+                <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
               </div>
             </div>
 
             {/* Subtext */}
-            <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-0.5 pl-4">
+            <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-0.5">
               {"+ 12% vs last week"}
             </div>
           </div>

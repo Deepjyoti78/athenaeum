@@ -53,11 +53,11 @@ export function UpcomingActions({
           <table className="w-full text-left border-collapse text-[8.5px] font-mono">
             <thead>
               <tr className="border-b border-[#D5D1C4] text-[#66655A] uppercase text-[7.5px] font-mono tracking-wider">
-                <th className="py-1.5 px-3 font-normal w-14">TIME</th>
-                <th className="py-1.5 px-3 font-normal">ACTION</th>
-                <th className="py-1.5 px-3 font-normal">WORK</th>
-                <th className="py-1.5 px-3 font-normal w-28">STATUS</th>
-                <th className="py-1.5 px-3 font-normal w-20 text-right">PRIORITY</th>
+                <th className="py-1.5 px-2 font-normal w-12">TIME</th>
+                <th className="py-1.5 px-2 font-normal">ACTION</th>
+                <th className="py-1.5 px-2 font-normal max-w-[130px]">WORK</th>
+                <th className="py-1.5 px-2 font-normal w-24">STATUS</th>
+                <th className="py-1.5 px-2 font-normal w-16 text-right">PRIORITY</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#DCD8CB]">
@@ -70,24 +70,24 @@ export function UpcomingActions({
                     onClick={() => inspectRecord && inspectRecord('action', item)}
                   >
                     {/* Time */}
-                    <td className="py-2 px-3 text-[#66655A] font-mono whitespace-nowrap">
+                    <td className="py-1.5 px-2 text-[#66655A] font-mono whitespace-nowrap">
                       {item.time}
                     </td>
 
                     {/* Action Title */}
-                    <td className="py-2 px-3 text-[#171714] font-bold text-[9px] whitespace-nowrap group-hover:underline">
+                    <td className="py-1.5 px-2 text-[#171714] font-bold text-[8.5px] truncate max-w-[150px] group-hover:underline">
                       <span className={isCompleted ? 'line-through text-[#88877A]' : ''}>
                         {item.action}
                       </span>
                     </td>
 
                     {/* Linked Work */}
-                    <td className="py-2 px-3 text-[#55544B] whitespace-nowrap truncate max-w-[180px]">
+                    <td className="py-1.5 px-2 text-[#55544B] whitespace-nowrap truncate max-w-[130px]">
                       {item.work}
                     </td>
 
                     {/* Status with half-moon / dot icon */}
-                    <td className="py-2 px-3 whitespace-nowrap">
+                    <td className="py-1.5 px-2 whitespace-nowrap">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -97,13 +97,13 @@ export function UpcomingActions({
                         className="flex items-center space-x-1.5 hover:underline cursor-pointer"
                       >
                         {item.status === 'In progress' ? (
-                          <span className="w-2 h-2 rounded-full border border-[#74866A] bg-[#74866A] inline-block" />
+                          <span className="w-2 h-2 rounded-full border border-[#74866A] bg-[#74866A] inline-block flex-shrink-0" />
                         ) : isCompleted ? (
-                          <span className="w-2 h-2 rounded-full bg-[#4B5E44] inline-block" />
+                          <span className="w-2 h-2 rounded-full bg-[#4B5E44] inline-block flex-shrink-0" />
                         ) : item.status === 'Waiting' ? (
-                          <span className="w-2 h-2 rounded-full border border-[#6A7B8E] bg-[#6A7B8E] inline-block" />
+                          <span className="w-2 h-2 rounded-full border border-[#6A7B8E] bg-[#6A7B8E] inline-block flex-shrink-0" />
                         ) : (
-                          <span className="w-2 h-2 rounded-full border border-[#88877A] bg-transparent inline-block" />
+                          <span className="w-2 h-2 rounded-full border border-[#88877A] bg-transparent inline-block flex-shrink-0" />
                         )}
                         <span className={`font-medium ${isCompleted ? 'text-[#4B5E44]' : 'text-[#171714]'}`}>
                           {item.status}
@@ -112,19 +112,19 @@ export function UpcomingActions({
                     </td>
 
                     {/* Priority Dots */}
-                    <td className="py-2 px-3 text-right whitespace-nowrap">
+                    <td className="py-1.5 px-2 text-right whitespace-nowrap">
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
                           onChangePriority && onChangePriority(item.id);
                         }}
                         title="Click to cycle priority (1-5)"
-                        className="inline-flex space-x-0.5"
+                        className="inline-flex items-center justify-end space-x-0.5"
                       >
                         {[1, 2, 3, 4, 5].map((lvl) => (
                           <span
                             key={lvl}
-                            className={`w-1.5 h-1.5 rounded-full inline-block ${
+                            className={`w-1.5 h-1.5 rounded-full inline-block flex-shrink-0 ${
                               lvl <= (item.priority || 1) ? 'bg-[#171714]' : 'bg-[#D2CEBF]'
                             }`}
                           />
