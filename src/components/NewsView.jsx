@@ -2,26 +2,34 @@ import React, { useState } from 'react';
 import { 
   Play, 
   Pause, 
-  ExternalLink, 
-  Volume2, 
   Headphones, 
   Newspaper, 
   Columns, 
   X,
   Share2,
   Bookmark,
-  Menu,
-  Plus
+  Check,
+  BookOpen,
+  ArrowRight,
+  Printer
 } from 'lucide-react';
 import { useArchive } from '../context/ArchiveContext';
 
-export function NewsView({ onInspectArticle, onOpenNewRecord }) {
-  const { inspectRecord } = useArchive();
-  // Default to 'spread' matching editorial two-page broadsheet layout
-  const [activeEdition, setActiveEdition] = useState('spread'); // 'news' | 'science' | 'spread'
+export function NewsView({ onOpenNewRecord }) {
+  const { inspectRecord, createEntry, showToast } = useArchive();
+  
+  // View mode: 'spread' | 'news' | 'science'
+  const [activeEdition, setActiveEdition] = useState('spread');
+  
+  // Interactive Audio Players State
   const [isPlayingAudio1, setIsPlayingAudio1] = useState(false);
+  const [audioProgress1, setAudioProgress1] = useState(38);
   const [isPlayingAudio2, setIsPlayingAudio2] = useState(false);
+  const [audioProgress2, setAudioProgress2] = useState(55);
+  
+  // Reading Modal State
   const [activeArticleModal, setActiveArticleModal] = useState(null);
+  const [savedArticles, setSavedArticles] = useState(new Set());
 
   const handleArticleClick = (article) => {
     setActiveArticleModal(article);
@@ -31,121 +39,138 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
         title: article.title,
         category: article.category || 'Gazette Dispatch',
         author: article.author || 'Gazette Staff',
-        content: article.deck || article.content || 'Archival dispatch reprinted from The Athenæum Gazette / Tablet Magazine.',
+        content: article.fullText || article.deck || 'Archival dispatch reprinted from The Athenæum Gazette / Tablet Magazine.',
         date: '09 MAY 2025',
-        time: 'Morning Edition'
+        time: 'Morning Broadsheet'
       });
     }
   };
 
+  const handleSaveToArchive = async (e, article) => {
+    e.stopPropagation();
+    if (savedArticles.has(article.title)) return;
+
+    try {
+      if (createEntry) {
+        await createEntry({
+          title: article.title,
+          category: article.category || 'Research',
+          workId: 'WRK-2025-0003',
+          content: `${article.deck}\n\nBy ${article.author} — The Athenæum Gazette (Vol. XLII, No. 104, May 2025).`,
+          tags: ['gazette', (article.category || 'news').toLowerCase(), 'dispatch']
+        });
+      }
+      setSavedArticles(prev => new Set([...prev, article.title]));
+      if (showToast) {
+        showToast(`Filed to Archive: "${article.title.slice(0, 32)}..."`);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#EAE6D9] font-serif select-none overflow-hidden text-[#141512]">
-      {/* 1. Gazette Sub-Toolbar */}
-      <div className="bg-[#EAE6D9] border-b border-[#AAA99B] px-4 py-1.5 flex items-center justify-between font-mono text-[9px] text-[#55544B] flex-shrink-0">
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-1.5 font-semibold text-[#141512]">
+    <div className="flex-1 flex flex-col h-full bg-[#EAE7D9] font-serif select-none overflow-hidden text-[#141512]">
+      {/* ========================================================================= */}
+      {/* 1. GAZETTE SUB-TOOLBAR                                                    */}
+      {/* ========================================================================= */}
+      <div className="bg-[#EAE7D9] border-b border-[#B5B3A4] px-4 py-1.5 flex items-center justify-between font-mono text-[9px] text-[#55544B] flex-shrink-0">
+        <div className="flex items-center space-x-2.5">
+          <div className="flex items-center space-x-1.5 font-bold text-[#141512]">
             <Newspaper className="w-3.5 h-3.5 text-[#141512]" />
-            <span className="uppercase tracking-widest text-[9.5px] font-bold">THE ATHENÆUM GAZETTE</span>
+            <span className="uppercase tracking-widest text-[9.5px]">THE ATHENÆUM GAZETTE</span>
           </div>
-          <span className="text-[#AAA99B]">•</span>
-          <span className="text-[#66655A] font-medium">TABLET ARCHIVE EDITION • VOL. XLII • No. 104 • MAY 2025</span>
+          <span className="text-[#888]">•</span>
+          <span className="text-[#66655A] font-medium hidden sm:inline">
+            VOL. XLII • No. 104 • FRIDAY, MAY 9, 2025
+          </span>
         </div>
 
-        {/* Segmented View Switcher: P. 1 - NEWS | P. 2 - SCIENCE | FULL SPREAD */}
-        <div className="flex items-center border border-[#141512] divide-x divide-[#141512] bg-[#EAE6D9] text-[#141512]">
+        {/* Segmented BroadSheet Switcher matching reference */}
+        <div className="flex items-center border border-[#141512] divide-x divide-[#141512] bg-[#FAF8F3] text-[#141512] rounded-[0.5px] overflow-hidden shadow-sm">
           <button
             onClick={() => setActiveEdition('news')}
-            className={`px-2.5 py-0.5 uppercase tracking-wider text-[8px] font-bold transition-colors ${
+            className={`px-3 py-1 uppercase tracking-wider text-[8px] font-bold transition-colors ${
               activeEdition === 'news'
                 ? 'bg-[#141512] text-[#FAF8F3]'
-                : 'bg-[#EAE6D9] text-[#55544B] hover:bg-[#DDD8CB]'
+                : 'hover:bg-[#EAE7D9] text-[#141512]'
             }`}
           >
             P. 1 — NEWS
           </button>
           <button
             onClick={() => setActiveEdition('science')}
-            className={`px-2.5 py-0.5 uppercase tracking-wider text-[8px] font-bold transition-colors ${
+            className={`px-3 py-1 uppercase tracking-wider text-[8px] font-bold transition-colors ${
               activeEdition === 'science'
                 ? 'bg-[#141512] text-[#FAF8F3]'
-                : 'bg-[#EAE6D9] text-[#55544B] hover:bg-[#DDD8CB]'
+                : 'hover:bg-[#EAE7D9] text-[#141512]'
             }`}
           >
             P. 2 — SCIENCE
           </button>
           <button
             onClick={() => setActiveEdition('spread')}
-            className={`px-3 py-0.5 uppercase tracking-wider text-[8px] font-bold transition-colors flex items-center space-x-1.5 ${
+            className={`px-3 py-1 uppercase tracking-wider text-[8px] font-bold transition-colors flex items-center space-x-1.5 ${
               activeEdition === 'spread'
                 ? 'bg-[#141512] text-[#FAF8F3]'
-                : 'bg-[#EAE6D9] text-[#55544B] hover:bg-[#DDD8CB]'
+                : 'hover:bg-[#EAE7D9] text-[#141512]'
             }`}
           >
             <Columns className="w-2.5 h-2.5" />
             <span>FULL SPREAD</span>
           </button>
         </div>
-
-        {/* New Record button */}
-        {onOpenNewRecord && (
-          <button
-            onClick={onOpenNewRecord}
-            className="px-2.5 py-0.5 bg-[#EAE6D9] hover:bg-[#DDD8CB] active:bg-[#CCC7B8] text-[#141512] border border-[#AAA99B] text-[8px] font-bold uppercase tracking-wider transition-colors flex items-center space-x-1 rounded-[0.5px]"
-          >
-            <Plus className="w-2.5 h-2.5" />
-            <span>NEW RECORD</span>
-          </button>
-        )}
       </div>
 
-      {/* 2. Main Broadsheet Scrolling Body */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#D7D2BF] flex justify-center items-start">
-        <div className={`w-full transition-all duration-200 ${
+      {/* ========================================================================= */}
+      {/* 2. BROADSHEET DESK WORKSPACE                                              */}
+      {/* ========================================================================= */}
+      <div className="flex-1 overflow-y-auto p-3 sm:p-5 md:p-6 bg-[#EAE7D9] flex justify-center items-start">
+        <div className={`w-full transition-all duration-300 ${
           activeEdition === 'spread' 
-            ? 'max-w-[1460px] grid grid-cols-1 xl:grid-cols-2 gap-6' 
-            : 'max-w-[720px]'
+            ? 'max-w-[1480px] grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6' 
+            : 'max-w-[740px]'
         }`}>
           
           {/* ========================================================================= */}
           {/* PAGE 1: "NEWS" BROADSHEET                                                 */}
           {/* ========================================================================= */}
           {(activeEdition === 'news' || activeEdition === 'spread') && (
-            <article className="bg-[#ECE6DA] border border-[#141512] shadow-[0_4px_25px_rgba(0,0,0,0.12)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
+            <article className="bg-[#FAF7F0] border border-[#141512] shadow-[0_2px_12px_rgba(0,0,0,0.08)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
               <div>
-                {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
-                <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#222]">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3.5 h-2.5 flex flex-col justify-between cursor-pointer opacity-70 hover:opacity-100">
-                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
-                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
-                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
-                      </div>
-                      <span>TRUTH • CONTEXT • LONGER THINKING</span>
-                    </div>
-                    <div className="font-serif italic font-normal text-[11px] tracking-wide text-[#333] normal-case">
-                      Tablet
-                    </div>
-                    <span>VOL. XLII • No. 104 • 09 MAY 2025</span>
+                {/* 1.1 Running Header Folio */}
+                <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#141512]">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-1.5 h-1.5 bg-[#141512] inline-block" />
+                    <span>TRUTH • CONTEXT • LONGER THINKING</span>
                   </div>
-
-                  {/* Big Masthead: NEWS */}
-                  <div className="border-b border-[#222] py-2 mb-2.5 text-center">
-                    <h1 className="font-sans font-black text-[46px] md:text-[54px] uppercase tracking-[-0.03em] leading-none text-[#111]">
-                      NEWS
-                    </h1>
+                  <div className="font-serif font-bold text-[10px] tracking-wider text-[#141512] uppercase">
+                    THE ATHENÆUM GAZETTE
                   </div>
+                  <span>VOL. XLII • No. 104 • 09 MAY 2025</span>
+                </div>
 
-                  {/* 1. TOP HERO SECTION: Proportionally Balanced Lead Photograph + Main Headline */}
-                  <div className="border-b border-[#222] pb-3 mb-3">
-                    {/* Authentic Editorial Monochrome Photograph of Bernie Sanders */}
+                {/* 1.2 Bold Editorial Masthead: NEWS */}
+                <div className="border-b border-[#141512] py-2 mb-3 text-center">
+                  <h1 className="font-serif font-black text-[46px] md:text-[52px] uppercase tracking-[-0.02em] leading-none text-[#141512]">
+                    NEWS
+                  </h1>
+                </div>
+
+                {/* 1.3 TOP LEAD TIER: Bernie Sanders Image + "A Hard Conversation in America" */}
+                <div className="border-b border-[#141512] pb-3.5 mb-3">
+                  <div className="grid grid-cols-12 gap-3.5 items-start">
+                    {/* Bernie Sanders Photo (Left ~70%) */}
                     <div 
                       onClick={() => handleArticleClick({
                         title: "Can Bernie Sanders Fix America's Broken Anti-Semitism Conversation?",
-                        deck: "The presidential trailblazer just took a historic first step toward national dialogue with gentiles. But its success will depend on whether he's willing to confront some hard truths.",
+                        deck: "The presidential trailblazer just took a historic first step toward national dialogue with factious. But its success will depend on whether he's willing to confront some hard truths.",
                         author: "YAIR ROSENBERG",
-                        category: "Lead Analysis"
+                        category: "Lead Analysis",
+                        page: "PAGE 1",
+                        fullText: "As campuses, politicians and communities clash over the meaning of anti-Semitism, Bernie Sanders finds himself again at the center of a difficult debate about free speech, identity and political coalitions. His recent address marks a pivotal juncture in how American progressives and civic leaders navigate communal memory, rising intolerance, and public solidarity."
                       })}
-                      className="cursor-pointer group relative overflow-hidden bg-[#0A0A0A] border border-[#222] aspect-[16/9] w-full max-h-[260px]"
+                      className="col-span-8 cursor-pointer group relative overflow-hidden bg-[#12130F] border border-[#141512] aspect-[16/10] max-h-[220px]"
                     >
                       <img 
                         src="/images/gazette/bernie_sanders.jpg" 
@@ -155,815 +180,765 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
                           e.target.style.display = 'none';
                         }}
                       />
-                      {/* Subtle Newsprint Caption Bar */}
-                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-1.5 flex justify-between items-end text-[6.5px] font-mono text-[#DDD] opacity-90">
+                      {/* Authentic Wire Service Tag */}
+                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-1.5 flex justify-between items-end text-[6.5px] font-mono text-[#EAE6DC]">
                         <span>CAPITOL HILL // NATIONAL POLICY FORUM</span>
                         <span>PHOTO: ARCHIVAL WIRE SERVICE</span>
                       </div>
                     </div>
 
-                    {/* Full-Width Headline + Deck Beneath Image */}
+                    {/* Right Story Column: "A Hard Conversation in America" (Right ~30%) */}
                     <div 
                       onClick={() => handleArticleClick({
-                        title: "Can Bernie Sanders Fix America's Broken Anti-Semitism Conversation?",
-                        deck: "The presidential trailblazer just took a historic first step toward national dialogue with gentiles. But its success will depend on whether he's willing to confront some hard truths.",
-                        author: "YAIR ROSENBERG",
-                        category: "Lead Analysis"
+                        title: "A Hard Conversation in America",
+                        deck: "As campuses, politicians and communities clash over the meaning of anti-Semitism, Bernie Sanders finds himself again at the center of a difficult debate about free speech, identity and political coalitions.",
+                        author: "SPECIAL DISPATCH",
+                        category: "U.S. POLITICS",
+                        page: "PAGE 6",
+                        fullText: "Across academic halls and congressional committee rooms, the discourse surrounding civic tolerance has reached an inflection point. Leaders on both sides of the aisle are confronting the structural fractures in public discourse, balancing constitutionally protected expression against the acute duty of communal protection."
                       })}
-                      className="cursor-pointer group pt-2.5 text-center"
+                      className="col-span-4 pl-1 border-l border-[#CCC7B8] flex flex-col justify-between h-full cursor-pointer group"
                     >
-                      <h2 className="font-serif font-bold text-[20px] md:text-[22px] leading-[1.18] tracking-tight text-[#111] group-hover:underline max-w-[620px] mx-auto">
-                        Can Bernie Sanders Fix America's Broken Anti-Semitism Conversation?
-                      </h2>
-                      <p className="font-serif italic text-[9.5px] md:text-[10px] text-[#444] mt-1 max-w-[550px] mx-auto leading-relaxed">
-                        The presidential trailblazer just took a historic first step toward national dialogue with gentiles. But its success will depend on whether he's willing to confront some hard truths.
-                      </p>
-                      <div className="font-mono text-[7px] font-bold uppercase tracking-widest text-[#777] mt-1">
-                        BY YAIR ROSENBERG
+                      <div>
+                        <div className="text-[7px] font-mono font-bold uppercase tracking-widest text-[#B0452E] mb-1">
+                          U.S. POLITICS
+                        </div>
+                        <h3 className="font-serif font-bold text-[13px] leading-tight text-[#141512] group-hover:underline">
+                          A Hard Conversation in America
+                        </h3>
+                        <p className="font-serif text-[8px] text-[#444] leading-relaxed mt-1.5">
+                          As campuses, politicians and communities clash over the meaning of anti-Semitism, Bernie Sanders finds himself again at the center of a difficult debate about free speech, identity and political coalitions.
+                        </p>
+                      </div>
+                      <div className="font-mono text-[6.5px] text-[#777] uppercase tracking-wider mt-2 pt-1 border-t border-[#D5D0C2]">
+                        PAGE 6
                       </div>
                     </div>
                   </div>
 
-                  {/* 2. MIDDLE SECTION: Structured Multi-Column Editorial Grid */}
-                  <div className="grid grid-cols-12 gap-3.5 pb-3 border-b border-[#222]">
-                    {/* Left 7 Columns (~58%): Protest Photo + Cancel Culture + 2 Sub-Columns */}
-                    <div className="col-span-7 border-r border-[#AAA99B] pr-3 flex flex-col justify-between">
-                      <div>
-                        {/* Real Editorial Protest Photo with Inset Circle-Slash Placard */}
-                        <div 
-                          onClick={() => handleArticleClick({
-                            title: "The Real Problem With Cancel Culture",
-                            deck: "It's not about celebrities. It's about losing trust in each other.",
-                            author: "KAT ROSENFIELD",
-                            category: "Culture"
-                          })}
-                          className="w-full aspect-[16/9] max-h-[140px] bg-[#1A1A18] border border-[#222] relative overflow-hidden mb-2 cursor-pointer group"
-                        >
-                          <img 
-                            src="/images/gazette/protest.jpg" 
-                            alt="Protest crowd demonstration" 
-                            className="w-full h-full object-cover grayscale contrast-125 brightness-90 group-hover:scale-[1.01] transition-transform duration-300"
-                          />
-                          {/* Inset Circular Prohibition Symbol Placard */}
-                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div className="bg-[#ECE6DA]/95 border-2 border-[#141512] p-1.5 shadow-md flex items-center justify-center">
-                              <svg viewBox="0 0 60 60" className="w-10 h-10">
-                                <circle cx="30" cy="30" r="26" fill="none" stroke="#141512" strokeWidth="6" />
-                                <line x1="12" y1="12" x2="48" y2="48" stroke="#141512" strokeWidth="6" />
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
+                  {/* Main Headline & Italic Deck beneath */}
+                  <div 
+                    onClick={() => handleArticleClick({
+                      title: "Can Bernie Sanders Fix America's Broken Anti-Semitism Conversation?",
+                      deck: "The presidential trailblazer just took a historic first step toward national dialogue with factious. But its success will depend on whether he's willing to confront some hard truths.",
+                      author: "YAIR ROSENBERG",
+                      category: "Lead Analysis",
+                      page: "PAGE 1"
+                    })}
+                    className="cursor-pointer group pt-3"
+                  >
+                    <h2 className="font-serif font-bold text-[21px] md:text-[23px] leading-[1.15] text-[#141512] group-hover:underline">
+                      Can Bernie Sanders Fix America's Broken Anti-Semitism Conversation?
+                    </h2>
+                    <p className="font-serif italic text-[9.5px] md:text-[10px] text-[#444] mt-1 leading-relaxed">
+                      The presidential trailblazer just took a historic first step toward national dialogue with factious. But its success will depend on whether he's willing to confront some hard truths.
+                    </p>
+                    <div className="font-mono text-[7px] font-bold uppercase tracking-widest text-[#777] mt-1">
+                      BY YAIR ROSENBERG
+                    </div>
+                  </div>
+                </div>
 
-                        {/* Article Headline & Deck */}
-                        <div 
-                          onClick={() => handleArticleClick({
-                            title: "The Real Problem With Cancel Culture",
-                            deck: "It's not about celebrities. It's about losing trust in each other.",
-                            author: "KAT ROSENFIELD",
-                            category: "Culture"
-                          })}
-                          className="cursor-pointer group pb-2 border-b border-[#222]"
-                        >
+                {/* 1.4 MIDDLE SECTION: Cancel Culture + Protest Photo + Columnist + Audio */}
+                <div className="grid grid-cols-12 gap-3.5 pb-3.5 border-b border-[#141512]">
+                  {/* Left Column (~58%): Protest Article + Clean Photo */}
+                  <div className="col-span-7 border-r border-[#AAA99B] pr-3 flex flex-col justify-between">
+                    {/* Grid with article text on left, protest photo on right matching Image 2 */}
+                    <div className="grid grid-cols-12 gap-2.5 h-full">
+                      {/* Text summary */}
+                      <div 
+                        onClick={() => handleArticleClick({
+                          title: "The Real Problem With Cancel Culture",
+                          deck: "It's not about celebrities. It's about losing trust in each other. A deeper look at how outrage, moralism and online mobs are reshaping public discourse — and what can be done about it.",
+                          author: "KAT ROSENFIELD",
+                          category: "CULTURE",
+                          page: "PAGE 10",
+                          fullText: "The contemporary panic over cancellation rarely centers on the famous, who possess the legal and financial resources to absorb reputational damage. Rather, the true social cost is borne by ordinary citizens, students, and workers navigating an environment where private sentiments are subjected to sudden public inquisitions and moralistic mob enforcement."
+                        })}
+                        className="col-span-7 cursor-pointer group flex flex-col justify-between pr-1"
+                      >
+                        <div>
                           <div className="text-[6.5px] font-mono font-bold uppercase tracking-widest text-[#B0452E] mb-0.5">
                             CULTURE
                           </div>
-                          <h3 className="font-serif font-bold text-[14px] leading-tight text-[#111] group-hover:underline">
+                          <h3 className="font-serif font-bold text-[14px] leading-tight text-[#141512] group-hover:underline">
                             The Real Problem With Cancel Culture
                           </h3>
-                          <p className="font-serif text-[8.5px] text-[#444] leading-relaxed mt-1">
-                            It's not about celebrities. It's about losing trust in each other. A deeper look at how outrage, moralism and online mobs are reshaping public discourse.
+                          <p className="font-serif text-[8.5px] text-[#444] leading-relaxed mt-1.5">
+                            It's not about celebrities. It's about losing trust in each other. A deeper look at how outrage, moralism and online mobs are reshaping public discourse — and what can be done about it.
                           </p>
-                          <div className="font-mono text-[6.5px] font-bold text-[#777] uppercase tracking-wider mt-1">
-                            BY KAT ROSENFIELD
-                          </div>
                         </div>
-
-                        {/* 2 Sub-Columns under Cancel Culture */}
-                        <div className="grid grid-cols-2 gap-2.5 pt-2">
-                          {/* Sub-col 1: Doran on Wall Street + 2020 Election */}
-                          <div className="border-r border-[#CCC7B8] pr-2 flex flex-col justify-between">
-                            <div 
-                              onClick={() => handleArticleClick({
-                                title: "If Michael Doran Were on Wall Street, He'd Be a Billionaire",
-                                deck: "Not living right in Washington has a price.",
-                                author: "LEE SMITH",
-                                category: "Analysis"
-                              })}
-                              className="cursor-pointer group pb-2 border-b border-[#D5D0C2]"
-                            >
-                              <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#666] mb-0.5">
-                                FINANCE
-                              </div>
-                              <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#111] group-hover:underline">
-                                If Michael Doran Were on Wall Street, He'd Be a Billionaire
-                              </h4>
-                              <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5">
-                                Not living right in Washington has a price.
-                              </p>
-                              <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-1">
-                                BY LEE SMITH
-                              </div>
-                            </div>
-
-                            <div 
-                              onClick={() => handleArticleClick({
-                                title: "Jews Could Swing the 2020 Election",
-                                deck: "And why that's not a good thing",
-                                author: "JOEL KOTKIN",
-                                category: "Politics"
-                              })}
-                              className="cursor-pointer group pt-1.5"
-                            >
-                              <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#666] mb-0.5">
-                                POLITICS
-                              </div>
-                              <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#111] group-hover:underline">
-                                Jews Could Swing the 2020 Election
-                              </h4>
-                              <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5">
-                                And why that's not a good thing
-                              </p>
-                              <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-1">
-                                BY JOEL KOTKIN
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Sub-col 2: Press Briefing Photo + The Revolt Against Iran */}
-                          <div>
-                            {/* Real Photo: Press Briefing / Diplomatic Conference */}
-                            <div className="w-full h-14 bg-[#181816] border border-[#222] mb-1.5 overflow-hidden">
-                              <img 
-                                src="/images/gazette/press_conference.jpg" 
-                                alt="Diplomatic press briefing room" 
-                                className="w-full h-full object-cover grayscale contrast-125 brightness-95"
-                              />
-                            </div>
-
-                            <div 
-                              onClick={() => handleArticleClick({
-                                title: "The Revolt Against Iran",
-                                deck: "Iran's plans for regional hegemony depend on being seen as the protector of loyal Shia Muslims—but those are exactly the people leading mass protests against Iranian domination in Iraq and Lebanon.",
-                                author: "HANIN GHADDAR",
-                                category: "Middle East"
-                              })}
-                              className="cursor-pointer group"
-                            >
-                              <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#111] group-hover:underline">
-                                The Revolt Against Iran
-                              </h4>
-                              <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5 line-clamp-3">
-                                Iran's plans for regional hegemony depend on being seen as the protector of loyal Shia Muslims—but those are exactly the people leading mass protests.
-                              </p>
-                              <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-1">
-                                BY HANIN GHADDAR
-                              </div>
-                            </div>
-                          </div>
+                        <div className="font-mono text-[6.5px] text-[#777] uppercase tracking-wider mt-2 pt-1 border-t border-[#D5D0C2]">
+                          BY KAT ROSENFIELD &nbsp;•&nbsp; PAGE 10
                         </div>
+                      </div>
+
+                      {/* Authentic Protest Photo (with "CANCEL CULTURE != PROGRESS" placard) */}
+                      <div 
+                        onClick={() => handleArticleClick({
+                          title: "The Real Problem With Cancel Culture",
+                          deck: "It's not about celebrities. It's about losing trust in each other.",
+                          author: "KAT ROSENFIELD",
+                          category: "CULTURE",
+                          page: "PAGE 10"
+                        })}
+                        className="col-span-5 aspect-[4/5] bg-[#1A1A18] border border-[#141512] overflow-hidden cursor-pointer group shadow-sm"
+                      >
+                        <img 
+                          src="/images/gazette/protest_clean.jpg" 
+                          alt="Demonstrators holding cancel culture protest signs" 
+                          className="w-full h-full object-cover grayscale contrast-125 brightness-95 group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column (~42%): Featured Columnist + Listen to Tablet Audio */}
+                  <div className="col-span-5 flex flex-col justify-between space-y-2.5">
+                    {/* Box 1: FEATURED COLUMNIST Card matching Image 2 */}
+                    <div 
+                      onClick={() => handleArticleClick({
+                        title: "Liel Leibovitz: Archival Commentary Folio",
+                        deck: "On history, identity and the stories we choose to tell across generations.",
+                        author: "LIEL LEIBOVITZ",
+                        category: "COLUMNIST",
+                        page: "PAGE 12"
+                      })}
+                      className="bg-[#F8ECE7] border border-[#DEB9AD] p-2.5 text-center flex flex-col items-center cursor-pointer hover:bg-[#F3E3DD] transition-colors"
+                    >
+                      <div className="font-mono text-[6.5px] font-bold uppercase tracking-widest text-[#B0452E] mb-1.5">
+                        FEATURED COLUMNIST
+                      </div>
+                      {/* Circular Portrait with Red Accent Ring */}
+                      <div className="w-13 h-13 rounded-full overflow-hidden border-2 border-[#B0452E] bg-[#D48F7B]/30 mb-1.5 shadow-sm">
+                        <img 
+                          src="/images/gazette/liel_portrait.jpg" 
+                          alt="Columnist Liel Leibovitz" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <h4 className="font-serif font-bold text-[11px] text-[#141512]">
+                        LIEL LEIBOVITZ
+                      </h4>
+                      <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5 max-w-[190px]">
+                        On history, identity and the stories we choose to tell.
+                      </p>
+                      <div className="font-mono text-[6px] text-[#B0452E] font-bold uppercase tracking-wider mt-1">
+                        PAGE 12
                       </div>
                     </div>
 
-                    {/* Right 5 Columns (~42%): Featured Columnist, Election Dates, Dark Audio Widget */}
-                    <div className="col-span-5 flex flex-col justify-between space-y-2.5">
-                      {/* Box 1: FEATURED COLUMNIST with Authentic Photographic Portrait */}
-                      <div className="bg-[#F8ECE7] border border-[#DEB9AD] p-2.5 text-center flex flex-col items-center">
-                        <div className="font-mono text-[6.5px] font-bold uppercase tracking-widest text-[#B0452E] mb-1.5">
-                          FEATURED COLUMNIST
+                    {/* Box 2: Dark Audio Player Widget matching Image 2 */}
+                    <div className="bg-[#181917] text-[#EDEAE2] p-2.5 flex flex-col justify-between shadow-sm border border-[#141512]">
+                      <div>
+                        <div className="flex items-center space-x-1.5 text-[6.5px] font-mono font-bold tracking-wider uppercase text-[#C4C0B0]">
+                          <Headphones className="w-2.5 h-2.5 text-[#C4C0B0]" />
+                          <span>LISTEN TO TABLET</span>
                         </div>
-                        {/* Real Photographic Portrait with Sepia Duotone Newsprint Tint */}
-                        <div className="w-13 h-13 rounded-full overflow-hidden border-2 border-[#B0452E] bg-[#D48F7B]/30 mb-1.5 shadow-sm">
-                          <img 
-                            src="/images/gazette/columnist.jpg" 
-                            alt="Columnist Liel Leibovitz" 
-                            className="w-full h-full object-cover grayscale contrast-125"
+                        <div className="font-serif font-bold text-[9px] leading-tight text-[#FAF8F3] mt-1">
+                          The New Moral Panic Isn't About Celebrities
+                        </div>
+                        <div className="text-[6.5px] font-mono text-[#AAA99B] leading-tight mt-0.5">
+                          A 12-minute discussion on cancel culture and public trust.
+                        </div>
+                      </div>
+
+                      {/* Scrubber & Play Controls */}
+                      <div className="pt-2 flex items-center space-x-2">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsPlayingAudio1(!isPlayingAudio1);
+                          }}
+                          className="w-4 h-4 rounded-full bg-[#FAF8F3] text-[#141512] flex items-center justify-center flex-shrink-0 hover:bg-white active:scale-95 transition-all shadow-sm"
+                          title={isPlayingAudio1 ? "Pause Audio" : "Play Audio"}
+                        >
+                          {isPlayingAudio1 ? <Pause className="w-2 h-2" /> : <Play className="w-2 h-2 ml-0.2" />}
+                        </button>
+                        <div 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const pos = Math.max(0, Math.min(100, Math.round(((e.clientX - rect.left) / rect.width) * 100)));
+                            setAudioProgress1(pos);
+                          }}
+                          className="flex-1 bg-[#2C2E29] h-1 rounded-full overflow-hidden cursor-pointer"
+                        >
+                          <div 
+                            className={`bg-[#FAF8F3] h-full transition-all duration-150 ${isPlayingAudio1 ? 'animate-pulse' : ''}`}
+                            style={{ width: `${audioProgress1}%` }} 
                           />
                         </div>
-                        <h4 className="font-serif font-bold text-[11px] text-[#141512]">
-                          LIEL LEIBOVITZ
-                        </h4>
-                        <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5 max-w-[190px]">
-                          Liel Leibovitz is a senior writer for Tablet Magazine and co-host of the Unorthodox podcast.
-                        </p>
-                      </div>
-
-                      {/* Box 2: UPCOMING ELECTION DATES */}
-                      <div className="bg-[#F8ECE7] border border-[#DEB9AD] p-2 text-[7.5px] font-mono">
-                        <div className="font-bold text-[6.5px] text-[#B0452E] uppercase tracking-wider mb-1">
-                          UPCOMING ELECTION DATES
-                        </div>
-                        <div className="space-y-1 text-[#444] text-[7px] leading-tight">
-                          <div><span className="font-bold text-[#141512]">Israel:</span> September 17, 2019</div>
-                          <div><span className="font-bold text-[#141512]">United States:</span> November 3, 2020</div>
-                          <div><span className="font-bold text-[#141512]">Poland:</span> May 10, 2020</div>
-                          <div><span className="font-bold text-[#141512]">Canada:</span> October 21, 2019</div>
-                        </div>
-                      </div>
-
-                      {/* Box 3: Dark Audio Player Widget */}
-                      <div className="bg-[#181917] text-[#EDEAE2] p-2 flex flex-col justify-between shadow-inner">
-                        <div>
-                          <div className="flex items-center space-x-1.5 text-[6.5px] font-mono font-bold tracking-wider uppercase text-[#C4C0B0]">
-                            <Headphones className="w-2.5 h-2.5" />
-                            <span>LISTEN TO TABLET</span>
-                          </div>
-                          <div className="font-serif font-bold text-[8.5px] leading-tight text-[#FAF8F3] mt-1">
-                            The One With the Instagram Rabbi
-                          </div>
-                          <div className="text-[6.5px] font-mono text-[#AAA99B] leading-tight mt-0.5">
-                            Episode 198: Theater legend Joel Grey on directing "Fiddler"
-                          </div>
-                        </div>
-
-                        <div className="pt-1.5 flex items-center space-x-1.5">
-                          <button 
-                            onClick={() => setIsPlayingAudio1(!isPlayingAudio1)}
-                            className="w-4 h-4 rounded-full bg-[#EAE6DC] text-[#141512] flex items-center justify-center flex-shrink-0 hover:bg-white transition-colors"
-                          >
-                            {isPlayingAudio1 ? <Pause className="w-2 h-2" /> : <Play className="w-2 h-2 ml-0.5" />}
-                          </button>
-                          <div className="flex-1 bg-[#333] h-1 rounded-full overflow-hidden">
-                            <div className={`bg-[#EAE6DC] h-full ${isPlayingAudio1 ? 'w-2/3 animate-pulse' : 'w-1/3'}`} />
-                          </div>
-                          <span className="text-[6px] font-mono text-[#AAA99B]">18:42</span>
-                        </div>
+                        <span className="text-[6.5px] font-mono text-[#AAA99B]">12:34</span>
                       </div>
                     </div>
                   </div>
-
-                  {/* 3. BOTTOM TIER: 4 Compact Editorial Columns */}
-                  <div className="grid grid-cols-12 gap-2.5 pt-2.5">
-                    {/* Col 1: Action */}
-                    <div 
-                      onClick={() => handleArticleClick({
-                        title: "A Year After Pittsburgh, Time for Action",
-                        deck: "One year later, remembering the victims and confronting rising anti-Semitism in American communities.",
-                        author: "CARLY PILDIS",
-                        category: "Opinion"
-                      })}
-                      className="col-span-3 border-r border-[#CCC7B8] pr-2 cursor-pointer group"
-                    >
-                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#111] group-hover:underline">
-                        A Year After Pittsburgh, Time for Action
-                      </h4>
-                      <div className="font-mono text-[6px] text-[#777] uppercase tracking-wider mt-1">
-                        BY CARLY PILDIS
-                      </div>
-                    </div>
-
-                    {/* Col 2: Synagogue Security */}
-                    <div 
-                      onClick={() => handleArticleClick({
-                        title: "It's Time to Lock Your Synagogue's Doors",
-                        deck: "A pragmatic assessment of community security, vigilance and self-defense.",
-                        author: "JASON SEGAL",
-                        category: "Community"
-                      })}
-                      className="col-span-3 border-r border-[#CCC7B8] pr-2 cursor-pointer group"
-                    >
-                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#111] group-hover:underline">
-                        It's Time to Lock Your Synagogue's Doors
-                      </h4>
-                      <div className="font-mono text-[6px] text-[#777] uppercase tracking-wider mt-1">
-                        BY JASON SEGAL
-                      </div>
-                    </div>
-
-                    {/* Col 3: Foreign Affairs */}
-                    <div 
-                      onClick={() => handleArticleClick({
-                        title: "Malley in Wonderland",
-                        deck: "An inside look at negotiations and the diplomatic illusions of the Middle East.",
-                        author: "TONY BADRAN",
-                        category: "Foreign Affairs"
-                      })}
-                      className="col-span-3 border-r border-[#CCC7B8] pr-2 cursor-pointer group"
-                    >
-                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#111] group-hover:underline">
-                        Malley in Wonderland
-                      </h4>
-                      <div className="font-mono text-[6px] text-[#777] uppercase tracking-wider mt-1">
-                        BY TONY BADRAN
-                      </div>
-                    </div>
-
-                    {/* Col 4: Archival Stat Numeral 21 */}
-                    <div className="col-span-3 pl-1 text-center flex flex-col justify-center">
-                      <div className="font-serif font-black text-[28px] leading-none text-[#141512]">
-                        21
-                      </div>
-                      <div className="font-mono text-[6px] text-[#666] leading-tight mt-0.5">
-                        2019 Anti-Semitic hate crimes in New York City
-                      </div>
-                    </div>
-                  </div>
-
                 </div>
-              </article>
+
+                {/* 1.5 BOTTOM TIER: 3 Structured Columns matching Image 2 */}
+                <div className="grid grid-cols-12 gap-3 pt-3">
+                  {/* Col 1: Doran on Wall Street */}
+                  <div 
+                    onClick={() => handleArticleClick({
+                      title: "If Michael Doran Were on Wall Street, He'd Be a Billionaire",
+                      deck: "What a foreign policy realist can teach us about markets, risk and conviction.",
+                      author: "LEE SMITH",
+                      category: "FINANCE",
+                      page: "PAGE 14"
+                    })}
+                    className="col-span-4 border-r border-[#CCC7B8] pr-2 cursor-pointer group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#666] mb-0.5">
+                        FINANCE
+                      </div>
+                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#141512] group-hover:underline">
+                        If Michael Doran Were on Wall Street, He'd Be a Billionaire
+                      </h4>
+                      <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5">
+                        What a foreign policy realist can teach us about markets, risk and conviction.
+                      </p>
+                    </div>
+                    <div className="font-mono text-[6px] text-[#777] uppercase tracking-wider mt-1.5 pt-1 border-t border-[#D5D0C2]">
+                      BY ALEX MARSH &nbsp;•&nbsp; PAGE 14
+                    </div>
+                  </div>
+
+                  {/* Col 2: Jews Could Swing the 2020 Election */}
+                  <div 
+                    onClick={() => handleArticleClick({
+                      title: "Jews Could Swing the 2020 Election",
+                      deck: "A closer look at an influential voting bloc and what comes next.",
+                      author: "JOEL KOTKIN",
+                      category: "POLITICS",
+                      page: "PAGE 16"
+                    })}
+                    className="col-span-4 border-r border-[#CCC7B8] pr-2 cursor-pointer group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#666] mb-0.5">
+                        POLITICS
+                      </div>
+                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#141512] group-hover:underline">
+                        Jews Could Swing the 2020 Election
+                      </h4>
+                      <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5">
+                        A closer look at an influential voting bloc and what comes next.
+                      </p>
+                    </div>
+                    <div className="font-mono text-[6px] text-[#777] uppercase tracking-wider mt-1.5 pt-1 border-t border-[#D5D0C2]">
+                      BY NATHAN KLEIN &nbsp;•&nbsp; PAGE 16
+                    </div>
+                  </div>
+
+                  {/* Col 3: Press Conference Photo + Story */}
+                  <div 
+                    onClick={() => handleArticleClick({
+                      title: "Diplomatic Briefings and Media Conventions",
+                      deck: "Inside the closed press conferences that establish national agenda.",
+                      author: "WIRE SERVICE",
+                      category: "MEDIA",
+                      page: "PAGE 18"
+                    })}
+                    className="col-span-4 cursor-pointer group flex flex-col justify-between"
+                  >
+                    <div className="w-full h-11 bg-[#12130F] border border-[#141512] overflow-hidden mb-1">
+                      <img 
+                        src="/images/gazette/voting_press.jpg" 
+                        alt="Diplomatic conference briefing" 
+                        className="w-full h-full object-cover grayscale contrast-125 brightness-95 group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src = '/images/gazette/press_conference.jpg';
+                        }}
+                      />
+                    </div>
+                    <div className="font-mono text-[6px] text-[#777] uppercase tracking-wider pt-0.5">
+                      PHOTO WIRE // CAPITOL &nbsp;•&nbsp; PAGE 18
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </article>
           )}
 
           {/* ========================================================================= */}
           {/* PAGE 2: "SCIENCE" BROADSHEET                                              */}
           {/* ========================================================================= */}
           {(activeEdition === 'science' || activeEdition === 'spread') && (
-            <article className="bg-[#ECE6DA] border border-[#141512] shadow-[0_4px_25px_rgba(0,0,0,0.12)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
+            <article className="bg-[#FAF7F0] border border-[#141512] shadow-[0_2px_12px_rgba(0,0,0,0.08)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
               <div>
-                {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
-                  <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#222]">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3.5 h-2.5 flex flex-col justify-between cursor-pointer opacity-70 hover:opacity-100">
-                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
-                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
-                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
-                      </div>
-                      <span>IDEAS • DISCOVERY • A MORE CURIOUS WORLD</span>
-                    </div>
-                    <div className="font-serif italic font-normal text-[11px] tracking-wide text-[#333] normal-case">
-                      Tablet
-                    </div>
-                    <span>VOL. XLII • No. 104 • 09 MAY 2025</span>
+                {/* 2.1 Running Header Folio */}
+                <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#141512]">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-1.5 h-1.5 bg-[#141512] inline-block" />
+                    <span>IDEAS • DISCOVERY • A MORE CURIOUS WORLD</span>
                   </div>
-
-                  {/* Big Masthead: SCIENCE */}
-                  <div className="border-b border-[#222] py-2 mb-2.5 text-center">
-                    <h1 className="font-sans font-black text-[46px] md:text-[54px] uppercase tracking-[-0.03em] leading-none text-[#111]">
-                      SCIENCE
-                    </h1>
+                  <div className="font-serif font-bold text-[10px] tracking-wider text-[#141512] uppercase">
+                    THE ATHENÆUM GAZETTE
                   </div>
-
-                  {/* 1. TOP TIER: Jewish Inventions, Chef Solomonov Photo + Beard Story, Yiddleaks & Venezuela */}
-                  <div className="grid grid-cols-12 gap-3 pb-2.5 border-b border-[#222]">
-                    {/* Left: JEWISH DISCOVERIES & INVENTIONS (~24%) */}
-                    <div className="col-span-3 bg-[#F8ECE7] border border-[#DEB9AD] p-2 flex flex-col justify-between text-[7px] font-mono">
-                      <div>
-                        <div className="font-bold text-[6.5px] text-[#B0452E] uppercase tracking-wider mb-1 leading-tight">
-                          JEWISH DISCOVERIES &amp; INVENTIONS
-                        </div>
-                        <p className="text-[6.5px] text-[#444] leading-tight mb-1.5">
-                          <span className="font-bold text-[#111]">Daniel Nathans</span> was awarded the Nobel Prize in Physiology or Medicine in 1978 for the discovery of restriction enzymes.
-                        </p>
-                        {/* Reddish/coral circular biological cell diagram */}
-                        <div className="w-full h-8 bg-[#EAC9BE]/40 border border-[#DEB9AD] my-1 flex items-center justify-center">
-                          <svg viewBox="0 0 100 40" className="w-full h-full">
-                            <circle cx="50" cy="20" r="14" fill="#B0452E" opacity="0.3" />
-                            <circle cx="50" cy="20" r="7" fill="#8C3320" />
-                            <path d="M 30 20 L 70 20" stroke="#FAF8F3" strokeWidth="1" strokeDasharray="2 2" />
-                            <circle cx="36" cy="20" r="3" fill="#B0452E" />
-                            <circle cx="64" cy="20" r="3" fill="#B0452E" />
-                          </svg>
-                        </div>
-                        <p className="text-[6.5px] text-[#444] leading-tight mb-1">
-                          Theodore Maiman demonstrated the first working laser on May 16, 1960.
-                        </p>
-                        <p className="text-[6.5px] text-[#444] leading-tight">
-                          Paul Berg won the Nobel Prize in Chemistry in 1980 for recombinant DNA technology.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Center: Chef Michael Solomonov Real Photograph & James Beard Story (~48%) */}
-                    <div className="col-span-5 px-1 flex flex-col justify-between">
-                      <div 
-                        onClick={() => handleArticleClick({
-                          title: "Zahav Chef Michael Solomonov a Semifinalist for James Beard Award",
-                          deck: "Tova du Plessis, the Jewish owner of South Philadelphia's Essen Bakery, has also been nominated for Outstanding Baker.",
-                          author: "LILA FERNANDEZ",
-                          category: "Culinary History"
-                        })}
-                        className="cursor-pointer group"
-                      >
-                        {/* Real Editorial Photograph of Chef Michael Solomonov by Bill Cramer */}
-                        <div className="w-full aspect-[16/10] max-h-[140px] bg-[#12130F] border border-[#222] relative overflow-hidden mb-1.5">
-                          <img 
-                            src="/images/gazette/michael_solomonov.jpg" 
-                            alt="Chef Michael Solomonov" 
-                            className="w-full h-full object-cover grayscale contrast-125 brightness-95 group-hover:scale-[1.01] transition-transform duration-300"
-                          />
-                        </div>
-
-                        <h3 className="font-serif font-bold text-[13.5px] leading-tight text-[#111] group-hover:underline">
-                          Zahav Chef Michael Solomonov a Semifinalist for James Beard Award
-                        </h3>
-                        <p className="font-serif italic text-[7.5px] text-[#444] leading-relaxed mt-0.5">
-                          Tova du Plessis, the Jewish owner of South Philadelphia's Essen Bakery, has also been nominated for Outstanding Baker.
-                        </p>
-                        <div className="font-mono text-[6px] text-[#777] uppercase tracking-wider mt-1">
-                          BY LILA FERNANDEZ
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right: Yiddleaks & Venezuela (~28%) */}
-                    <div className="col-span-4 pl-2 border-l border-[#CCC7B8] flex flex-col justify-between space-y-2">
-                      <div 
-                        onClick={() => handleArticleClick({
-                          title: "Yiddleaks: The Jeremy Corbyn Email Archive",
-                          deck: "A trove of communications from Britain's Labour Party leader to his minions reveals the difference between a hipster and Hezbollah.",
-                          author: "TABITHA GOLDRICK",
-                          category: "Archive"
-                        })}
-                        className="cursor-pointer group pb-1.5 border-b border-[#D5D0C2]"
-                      >
-                        <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#111] group-hover:underline">
-                          Yiddleaks: The Jeremy Corbyn Email Archive
-                        </h4>
-                        <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5">
-                          A trove of communications from Britain's Labour Party leader reveals the difference between a hipster and Hezbollah.
-                        </p>
-                        <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-0.5">
-                          BY TABITHA GOLDRICK
-                        </div>
-                      </div>
-
-                      <div 
-                        onClick={() => handleArticleClick({
-                          title: "The Rabbi Who Helped Me Sneak Into Venezuela",
-                          deck: "Weeks after security forces kicked me out of Venezuela, I was at the Colombian border with a rabbi I'd never met before and preparing for the dangerous journey back into the country.",
-                          author: "ARIELA BERNSTEIN-ROTHSTEIN",
-                          category: "Dispatch"
-                        })}
-                        className="cursor-pointer group"
-                      >
-                        <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#111] group-hover:underline">
-                          The Rabbi Who Helped Me Sneak Into Venezuela
-                        </h4>
-                        <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5">
-                          Weeks after security forces kicked me out of Venezuela, I was at the border with a rabbi preparing for the journey.
-                        </p>
-                        <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-0.5">
-                          BY ARIELA BERNSTEIN-ROTHSTEIN
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bridge Row: Second Avenue Elevated & Judenrein Europe */}
-                  <div className="grid grid-cols-12 gap-3 py-2 border-b border-[#222]">
-                    <div className="col-span-3"></div>
-                    <div 
-                      onClick={() => handleArticleClick({
-                        title: "Second Avenue Elevated",
-                        deck: "Looking for tracks to my father's unobtainable past in old Jewish New York.",
-                        author: "JONATHAN LEIBSON",
-                        category: "Essay"
-                      })}
-                      className="col-span-5 px-1 cursor-pointer group"
-                    >
-                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#111] group-hover:underline">
-                        Second Avenue Elevated
-                      </h4>
-                      <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5">
-                        Looking for tracks to my father's unobtainable past in old Jewish New York.
-                      </p>
-                      <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-0.5">
-                        BY JONATHAN LEIBSON
-                      </div>
-                    </div>
-
-                    <div 
-                      onClick={() => handleArticleClick({
-                        title: "Judenrein Europe",
-                        deck: "For millennia Europe was the center of diaspora life but as Jews continue fleeing the continent, by the end of that century all that's left will be a Jewish graveyard.",
-                        author: "JAMES KIRCHICK",
-                        category: "Analysis"
-                      })}
-                      className="col-span-4 pl-2 border-l border-[#CCC7B8] cursor-pointer group"
-                    >
-                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#111] group-hover:underline">
-                        Judenrein Europe
-                      </h4>
-                      <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5">
-                        For millennia Europe was the center of diaspora life but as Jews continue fleeing the continent, by the end of that century all that's left will be a graveyard.
-                      </p>
-                      <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-0.5">
-                        BY JAMES KIRCHICK
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 2. MIDDLE CENTERPIECE: Isometric Labyrinth Cube Artwork + Lost Wisdom & Audio */}
-                  <div className="grid grid-cols-12 gap-3.5 py-3 border-b border-[#222]">
-                    {/* Left Centerpiece Feature: Can Islam Be More Jewish? (~65%) */}
-                    <div className="col-span-8 pr-2 border-r border-[#AAA99B] text-center flex flex-col items-center justify-between">
-                      <div 
-                        onClick={() => handleArticleClick({
-                          title: "Can Islam Be More Jewish?",
-                          deck: "Two faiths, two histories, and a shared search for meaning in a complicated world. A look at how closer intellectual and cultural ties might reshape the future.",
-                          author: "ELI COHEN",
-                          category: "Theology & Ideas"
-                        })}
-                        className="cursor-pointer group w-full flex flex-col items-center"
-                      >
-                        {/* Prominent Architectural Isometric Labyrinth Cube */}
-                        <div className="w-36 h-36 bg-[#EBE7DC] border-2 border-[#141512] flex items-center justify-center p-2.5 my-1 shadow-sm">
-                          <svg viewBox="0 0 200 200" className="w-full h-full">
-                            {/* Cube Outer Shell */}
-                            <polygon points="100,10 185,58 185,152 100,195 15,152 15,58" fill="#ECE6DA" stroke="#141512" strokeWidth="4.5" strokeLinejoin="round" />
-                            {/* Center Edges */}
-                            <line x1="100" y1="100" x2="100" y2="195" stroke="#141512" strokeWidth="4.5" />
-                            <line x1="100" y1="100" x2="185" y2="58" stroke="#141512" strokeWidth="4.5" />
-                            <line x1="100" y1="100" x2="15" y2="58" stroke="#141512" strokeWidth="4.5" />
-                            
-                            {/* Top Face Labyrinth Geometry */}
-                            <path d="M 100 22 L 135 42 L 120 50 L 100 38 L 80 50 L 65 42 Z" fill="#141512" />
-                            <path d="M 100 68 L 155 37 L 165 43 L 110 75 Z" fill="#141512" />
-                            <path d="M 45 37 L 100 68 L 90 75 L 35 43 Z" fill="#141512" />
-                            <path d="M 100 82 L 140 59 L 148 64 L 100 92 L 52 64 L 60 59 Z" fill="#141512" />
-
-                            {/* Right Face Labyrinth Geometry */}
-                            <path d="M 112 110 L 172 76 L 172 136 L 158 128 L 158 98 L 112 124 Z" fill="#141512" />
-                            <path d="M 125 132 L 125 168 L 112 176 L 112 140 Z" fill="#141512" />
-                            <path d="M 142 122 L 142 158 L 155 150 L 155 114 Z" fill="#141512" />
-
-                            {/* Left Face Labyrinth Geometry */}
-                            <path d="M 88 110 L 28 76 L 28 136 L 42 128 L 42 98 L 88 124 Z" fill="#141512" />
-                            <path d="M 75 132 L 75 168 L 88 176 L 88 140 Z" fill="#141512" />
-                            <path d="M 58 122 L 58 158 L 45 150 L 45 114 Z" fill="#141512" />
-                          </svg>
-                        </div>
-
-                        <h3 className="font-serif font-bold text-[18px] md:text-[20px] leading-tight text-[#111] group-hover:underline mt-1.5">
-                          Can Islam Be More Jewish?
-                        </h3>
-                        <p className="font-serif italic text-[8.5px] text-[#444] leading-relaxed max-w-[420px] mt-0.5">
-                          Two faiths, two histories, and a shared search for meaning in a complicated world. A look at how closer intellectual and cultural ties might reshape the future.
-                        </p>
-                        <div className="font-mono text-[6.5px] text-[#777] uppercase tracking-wider mt-1">
-                          BY ELI COHEN
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right: Lost Wisdom + Audio Widget (~35%) */}
-                    <div className="col-span-4 flex flex-col justify-between space-y-2">
-                      {/* Box 1: LOST WISDOM */}
-                      <div className="bg-[#F8ECE7] border border-[#DEB9AD] p-2.5 text-center">
-                        <div className="font-mono text-[6.5px] font-bold uppercase tracking-widest text-[#B0452E] mb-1">
-                          LOST WISDOM
-                        </div>
-                        <p className="font-serif italic text-[8px] text-[#333] leading-snug">
-                          "The purpose of education is not to fill the mind, but to teach one to think."
-                        </p>
-                        <div className="font-mono text-[6px] uppercase tracking-wider text-[#666] mt-0.5">
-                          — HANNAH ARENDT
-                        </div>
-                        <div className="font-mono text-[5.5px] text-[#888] mt-0.5">
-                          The Brain: A User's Catalog
-                        </div>
-
-                        <div className="border-t border-[#DEB9AD] pt-1.5 mt-1.5">
-                          <div className="font-serif font-bold text-[22px] text-[#141512] leading-none">
-                            20,800
-                          </div>
-                          <div className="font-mono text-[6px] text-[#666] mt-0.5 leading-tight">
-                            Artifacts digitized this year across 12 collections.
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Box 2: Dark Audio Player Widget */}
-                      <div className="bg-[#181917] text-[#EDEAE2] p-2 flex flex-col justify-between shadow-inner">
-                        <div>
-                          <div className="flex items-center space-x-1.5 text-[6.5px] font-mono font-bold tracking-wider uppercase text-[#C4C0B0]">
-                            <Headphones className="w-2.5 h-2.5" />
-                            <span>LISTEN TO TABLET</span>
-                          </div>
-                          <div className="font-serif font-bold text-[8.5px] leading-tight text-[#FAF8F3] mt-1">
-                            What Can Faiths Learn From Each Other?
-                          </div>
-                          <div className="text-[6.5px] font-mono text-[#AAA99B] leading-tight mt-0.5">
-                            Episode 195: 15-minute conversation on history, religion and coexistence.
-                          </div>
-                        </div>
-
-                        <div className="pt-1.5 flex items-center space-x-1.5">
-                          <button 
-                            onClick={() => setIsPlayingAudio2(!isPlayingAudio2)}
-                            className="w-4 h-4 rounded-full bg-[#EAE6DC] text-[#141512] flex items-center justify-center flex-shrink-0 hover:bg-white transition-colors"
-                          >
-                            {isPlayingAudio2 ? <Pause className="w-2 h-2" /> : <Play className="w-2 h-2 ml-0.5" />}
-                          </button>
-                          <div className="flex-1 bg-[#333] h-1 rounded-full overflow-hidden">
-                            <div className={`bg-[#EAE6DC] h-full ${isPlayingAudio2 ? 'w-3/4 animate-pulse' : 'w-1/4'}`} />
-                          </div>
-                          <span className="text-[6px] font-mono text-[#AAA99B]">15:27</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 3. BOTTOM TIER: Real Photo of Tobias Asser, Hitler's Mustache Censorship, Papers Please 4-Screen Grid */}
-                  <div className="grid grid-cols-12 gap-3 pt-2.5">
-                    {/* Col 1: JEWISH NOBEL LAUREATE with Real Archival Portrait (~22%) */}
-                    <div className="col-span-3 bg-[#F8ECE7] border border-[#DEB9AD] p-2 flex flex-col items-center text-center justify-between">
-                      <div>
-                        <div className="font-mono text-[6px] font-bold uppercase tracking-widest text-[#B0452E] mb-1">
-                          JEWISH NOBEL LAUREATE
-                        </div>
-                        {/* Real Archival Photo of Tobias Asser */}
-                        <div className="w-11 h-11 rounded-full overflow-hidden border border-[#B0452E] bg-[#E8C5BA] mx-auto mb-1 flex items-center justify-center shadow-sm">
-                          <img 
-                            src="/images/gazette/tobias_asser.jpg" 
-                            alt="Nobel Laureate Tobias Asser" 
-                            className="w-full h-full object-cover grayscale contrast-125"
-                          />
-                        </div>
-                        <h5 className="font-serif font-bold text-[8.5px] text-[#141512]">
-                          TOBIAS ASSER
-                        </h5>
-                        <p className="font-serif text-[6.5px] text-[#555] leading-snug mt-0.5">
-                          For his work in the field of private international law and the Hague Conference.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Col 2: Hitler's Mustache Video Game & Gwyneth Paltrow (~38%) */}
-                    <div className="col-span-4 border-r border-[#CCC7B8] pr-2 flex flex-col justify-between">
-                      <div className="flex space-x-2 pb-1.5 border-b border-[#D5D0C2]">
-                        {/* Real Photo: Vintage Censored Portrait */}
-                        <div className="w-12 h-12 flex-shrink-0 bg-[#161713] border border-[#222] overflow-hidden">
-                          <img 
-                            src="/images/gazette/vintage_portrait.jpg" 
-                            alt="Historical censorship archive photo" 
-                            className="w-full h-full object-cover grayscale contrast-125 brightness-90"
-                          />
-                        </div>
-                        <div 
-                          onClick={() => handleArticleClick({
-                            title: "Mocking German Censorship, Israelis Develop Video Game with A Menacing Villain: Hitler's Mustache",
-                            deck: "'Wolfenstache' is the first-person shooter you need right now.",
-                            author: "ARNONA HERSHKOVITZ",
-                            category: "Culture"
-                          })}
-                          className="cursor-pointer group flex-1"
-                        >
-                          <h5 className="font-serif font-bold text-[8.5px] leading-tight text-[#111] group-hover:underline">
-                            Mocking German Censorship: Hitler's Mustache
-                          </h5>
-                          <p className="font-serif text-[6.5px] text-[#555] leading-tight mt-0.5">
-                            'Wolfenstache' is the shooter you need right now.
-                          </p>
-                          <div className="font-mono text-[5.5px] text-[#888] uppercase tracking-wider mt-0.5">
-                            BY ARNONA HERSHKOVITZ
-                          </div>
-                        </div>
-                      </div>
-
-                      <div 
-                        onClick={() => handleArticleClick({
-                          title: "Hating Gwyneth Paltrow",
-                          deck: "You may think you know where this culture is going. You'd be wrong.",
-                          author: "TABITHA GOLDRICK",
-                          category: "Culture"
-                        })}
-                        className="cursor-pointer group pt-1"
-                      >
-                        <h5 className="font-serif font-bold text-[8.5px] leading-tight text-[#111] group-hover:underline">
-                          Hating Gwyneth Paltrow
-                        </h5>
-                        <p className="font-serif text-[6.5px] text-[#555] leading-tight mt-0.5">
-                          You may think you know where this culture is going. You'd be wrong.
-                        </p>
-                        <div className="font-mono text-[5.5px] text-[#888] uppercase tracking-wider mt-0.5">
-                          BY TABITHA GOLDRICK
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Col 3: PAPERS, PLEASE with 4-Monitor CRT Grid (~40%) */}
-                    <div className="col-span-5 flex flex-col justify-between">
-                      {/* 2x2 Grid of 4 CRT Game Screens */}
-                      <div className="grid grid-cols-2 gap-1 mb-1.5">
-                        {/* Monitor 1: Checkpoint Guard Post */}
-                        <div className="aspect-[4/3] bg-[#0E100D] border border-[#222] p-0.5 relative overflow-hidden">
-                          <svg viewBox="0 0 100 75" className="w-full h-full">
-                            <rect width="100" height="75" fill="#141812" />
-                            <line x1="0" y1="50" x2="100" y2="50" stroke="#3E4536" strokeWidth="1.5" />
-                            <line x1="20" y1="20" x2="20" y2="60" stroke="#5E6556" strokeWidth="2" />
-                            <rect x="15" y="15" width="10" height="10" fill="#2E3328" />
-                            <circle cx="70" cy="45" r="4" fill="#A8B09C" />
-                          </svg>
-                        </div>
-
-                        {/* Monitor 2: Inspector Booth & Document Desk */}
-                        <div className="aspect-[4/3] bg-[#0E100D] border border-[#222] p-0.5 relative overflow-hidden">
-                          <svg viewBox="0 0 100 75" className="w-full h-full">
-                            <rect width="100" height="75" fill="#181B15" />
-                            <rect x="15" y="25" width="45" height="35" fill="#D2CCC0" stroke="#111" strokeWidth="1" />
-                            <circle cx="28" cy="38" r="6" fill="#444" />
-                            <line x1="38" y1="35" x2="52" y2="35" stroke="#333" strokeWidth="1" />
-                            <line x1="38" y1="42" x2="52" y2="42" stroke="#333" strokeWidth="1" />
-                            <rect x="25" y="48" width="22" height="7" fill="#B0452E" />
-                          </svg>
-                        </div>
-
-                        {/* Monitor 3: Ministry Rulebook */}
-                        <div className="aspect-[4/3] bg-[#0E100D] border border-[#222] p-0.5 relative overflow-hidden">
-                          <svg viewBox="0 0 100 75" className="w-full h-full">
-                            <rect width="100" height="75" fill="#12140F" />
-                            <polygon points="15,20 50,15 50,60 15,65" fill="#C5BFB0" />
-                            <polygon points="50,15 85,20 85,65 50,60" fill="#DAD4C6" />
-                            <circle cx="50" cy="35" r="8" fill="#3E4536" />
-                          </svg>
-                        </div>
-
-                        {/* Monitor 4: Checkpoint Gate Barrier */}
-                        <div className="aspect-[4/3] bg-[#0E100D] border border-[#222] p-0.5 relative overflow-hidden">
-                          <svg viewBox="0 0 100 75" className="w-full h-full">
-                            <rect width="100" height="75" fill="#161913" />
-                            <line x1="10" y1="45" x2="90" y2="45" stroke="#C84832" strokeWidth="3" strokeDasharray="6 4" />
-                            <rect x="75" y="30" width="12" height="30" fill="#3D4236" />
-                            <circle cx="81" cy="25" r="3" fill="#D2CCC0" />
-                          </svg>
-                        </div>
-                      </div>
-
-                      {/* Story Headline & Deck */}
-                      <div 
-                        onClick={() => handleArticleClick({
-                          title: "Papers, Please: A Video Game With No Shootouts or Theft—Only the Banality of Evil",
-                          deck: "How a simple border checkpoint simulator became one of the most powerful political games of the decade.",
-                          author: "LIEL LEIBOVITZ",
-                          category: "Games & Culture"
-                        })}
-                        className="cursor-pointer group"
-                      >
-                        <h5 className="font-serif font-bold text-[8.5px] leading-tight text-[#111] group-hover:underline">
-                          Papers, Please: A Video Game With No Shootouts or Theft—Only the Banality of Evil
-                        </h5>
-                        <p className="font-serif text-[6.5px] text-[#555] leading-tight mt-0.5">
-                          How a simple border checkpoint simulator became one of the most powerful political games of the decade.
-                        </p>
-                        <div className="font-mono text-[5.5px] text-[#888] uppercase tracking-wider mt-0.5">
-                          BY LIEL LEIBOVITZ
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
+                  <span>VOL. XLII • No. 104 • 09 MAY 2025</span>
                 </div>
-              </article>
+
+                {/* 2.2 Bold Editorial Masthead: SCIENCE */}
+                <div className="border-b border-[#141512] py-2 mb-3 text-center">
+                  <h1 className="font-serif font-black text-[46px] md:text-[52px] uppercase tracking-[-0.02em] leading-none text-[#141512]">
+                    SCIENCE
+                  </h1>
+                </div>
+
+                {/* 2.3 TOP TIER: Inside This Section + Chef Solomonov + Email Archive */}
+                <div className="grid grid-cols-12 gap-3 pb-3 border-b border-[#141512]">
+                  {/* Left Column (~24%): INSIDE THIS SECTION Terracotta Card */}
+                  <div className="col-span-3 bg-[#F8ECE7] border border-[#DEB9AD] p-2 flex flex-col justify-between text-[7px] font-mono">
+                    <div>
+                      <div className="font-bold text-[6.5px] text-[#B0452E] uppercase tracking-wider mb-1.5 leading-tight">
+                        INSIDE THIS SECTION
+                      </div>
+                      <div className="space-y-1.5 text-[#333]">
+                        <div>
+                          <div className="font-bold text-[#141512] uppercase text-[6.5px]">FOOD &amp; CULTURE</div>
+                          <div className="text-[6px] text-[#555] leading-tight">How migration shapes what we eat</div>
+                          <div className="text-[5.5px] text-[#B0452E] font-bold">PAGE 2</div>
+                        </div>
+                        <div>
+                          <div className="font-bold text-[#141512] uppercase text-[6.5px]">TECH &amp; SOCIETY</div>
+                          <div className="text-[6px] text-[#555] leading-tight">AI, creativity and human work</div>
+                          <div className="text-[5.5px] text-[#B0452E] font-bold">PAGE 4</div>
+                        </div>
+                        <div>
+                          <div className="font-bold text-[#141512] uppercase text-[6.5px]">ENVIRONMENT</div>
+                          <div className="text-[6px] text-[#555] leading-tight">A warmer world and shrinking habitats</div>
+                          <div className="text-[5.5px] text-[#B0452E] font-bold">PAGE 5</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Center Column (~46%): Chef Michael Solomonov Real Photograph & Story */}
+                  <div className="col-span-5 px-1 flex flex-col justify-between">
+                    <div 
+                      onClick={() => handleArticleClick({
+                        title: "Zahav Chef Michael Solomonov a Semifinalist for James Beard Award",
+                        deck: "From Philadelphia to Jerusalem, his cooking has always been about memory, migration and the power of food to bring people together.",
+                        author: "LILA FERNANDEZ",
+                        category: "Culinary History",
+                        page: "PAGE 3",
+                        fullText: "Chef Michael Solomonov's pioneering work at Zahav continues to redefine culinary diaspora scholarship. By treating culinary recipes as archival artifacts of exile, survival, and regional hospitality, his kitchen bridges centuries of culinary traditions with contemporary culinary rigor."
+                      })}
+                      className="cursor-pointer group flex flex-col justify-between h-full"
+                    >
+                      {/* Real Editorial Photograph */}
+                      <div className="w-full aspect-[16/10] max-h-[140px] bg-[#12130F] border border-[#141512] overflow-hidden mb-1.5">
+                        <img 
+                          src="/images/gazette/michael_solomonov.jpg" 
+                          alt="Chef Michael Solomonov" 
+                          className="w-full h-full object-cover grayscale contrast-125 brightness-95 group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+
+                      <h3 className="font-serif font-bold text-[13.5px] leading-tight text-[#141512] group-hover:underline">
+                        Zahav Chef Michael Solomonov a Semifinalist for James Beard Award
+                      </h3>
+                      <p className="font-serif italic text-[7.5px] text-[#444] leading-relaxed mt-0.5">
+                        From Philadelphia to Jerusalem, his cooking has always been about memory, migration and the power of food to bring people together.
+                      </p>
+                      <div className="font-mono text-[6px] text-[#777] uppercase tracking-wider mt-1">
+                        BY LILA FERNANDEZ &nbsp;•&nbsp; PAGE 3
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column (~30%): Jeremy Corbyn Archive & Yiddish Essay */}
+                  <div className="col-span-4 pl-2 border-l border-[#CCC7B8] flex flex-col justify-between space-y-2">
+                    <div 
+                      onClick={() => handleArticleClick({
+                        title: "Yiddish, The Jeremy Corbyn Email Archive",
+                        deck: "How a leaked trove of emails reveals the inner debates, alliances and unresolved tensions within Britain's left.",
+                        author: "SAMUEL PRICE",
+                        category: "ARCHIVE",
+                        page: "PAGE 7"
+                      })}
+                      className="cursor-pointer group pb-1.5 border-b border-[#D5D0C2]"
+                    >
+                      <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#B0452E] mb-0.5">
+                        ARCHIVE
+                      </div>
+                      <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#141512] group-hover:underline">
+                        Yiddish, The Jeremy Corbyn Email Archive
+                      </h4>
+                      <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5">
+                        How a leaked trove of emails reveals the inner debates, alliances and unresolved tensions within Britain's left.
+                      </p>
+                      <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-0.5">
+                        BY SAMUEL PRICE
+                      </div>
+                    </div>
+
+                    <div 
+                      onClick={() => handleArticleClick({
+                        title: "The Rabbi Who Helped Me Speak Into Yiddish",
+                        deck: "A personal essay on language, belonging and the unexpected places we find our voice.",
+                        author: "DAVID STERN",
+                        category: "HISTORY",
+                        page: "PAGE 9"
+                      })}
+                      className="cursor-pointer group"
+                    >
+                      <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#B0452E] mb-0.5">
+                        HISTORY
+                      </div>
+                      <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#141512] group-hover:underline">
+                        The Rabbi Who Helped Me Speak Into Yiddish
+                      </h4>
+                      <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5">
+                        A personal essay on language, belonging and the unexpected places we find our voice.
+                      </p>
+                      <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-0.5">
+                        BY DAVID STERN
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2.4 MIDDLE CENTERPIECE: Isometric Labyrinth Cube + Lost Wisdom & Audio */}
+                <div className="grid grid-cols-12 gap-3.5 py-3 border-b border-[#141512]">
+                  {/* Left Centerpiece Feature: "Can Islam Be More Jewish?" (~65%) */}
+                  <div className="col-span-8 pr-2 border-r border-[#AAA99B] text-center flex flex-col items-center justify-between">
+                    <div 
+                      onClick={() => handleArticleClick({
+                        title: "Can Islam Be More Jewish?",
+                        deck: "Two faiths, two histories, and a shared search for meaning in a complicated world. A look at how closer intellectual and cultural ties might reshape the future.",
+                        author: "ELI COHEN",
+                        category: "THEOLOGY & IDEAS",
+                        page: "PAGE 11",
+                        fullText: "Maimonides wrote his greatest philosophical treatises in Judeo-Arabic, navigating the intellectual frameworks of Islamic theology while anchoring his jurisprudence in Talmudic tradition. Today, revisiting this fertile historical encounter offers new paradigms for interfaith discourse and reciprocal theological discovery."
+                      })}
+                      className="cursor-pointer group w-full flex flex-col items-center"
+                    >
+                      {/* Authentic Isometric Labyrinth Cube matching reference */}
+                      <div className="w-34 h-34 bg-[#FAF7F0] border border-[#141512] flex items-center justify-center p-2 my-1 shadow-sm overflow-hidden">
+                        <img 
+                          src="/images/gazette/labyrinth_cube.jpg" 
+                          alt="Isometric labyrinth cube illustration" 
+                          className="w-full h-full object-contain grayscale contrast-125 group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+
+                      <h3 className="font-serif font-bold text-[18px] md:text-[20px] leading-tight text-[#141512] group-hover:underline mt-1.5">
+                        Can Islam Be More Jewish?
+                      </h3>
+                      <p className="font-serif italic text-[8.5px] text-[#444] leading-relaxed max-w-[420px] mt-0.5">
+                        Two faiths, two histories, and a shared search for meaning in a complicated world. A look at how closer intellectual and cultural ties might reshape the future.
+                      </p>
+                      <div className="font-mono text-[6.5px] text-[#777] uppercase tracking-wider mt-1">
+                        BY ELI COHEN &nbsp;•&nbsp; PAGE 11
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Lost Wisdom + Audio Widget (~35%) */}
+                  <div className="col-span-4 flex flex-col justify-between space-y-2">
+                    {/* Box 1: LOST WISDOM Card matching Image 2 */}
+                    <div className="bg-[#F8ECE7] border border-[#DEB9AD] p-2.5 text-center">
+                      <div className="font-mono text-[6.5px] font-bold uppercase tracking-widest text-[#B0452E] mb-1">
+                        LOST WISDOM
+                      </div>
+                      <p className="font-serif italic text-[8px] text-[#333] leading-snug">
+                        "The purpose of education is not to fill the mind, but to teach one to think."
+                      </p>
+                      <div className="font-mono text-[6px] uppercase tracking-wider text-[#666] mt-0.5">
+                        — HANNAH ARENDT
+                      </div>
+                      <div className="font-mono text-[5.5px] text-[#888] mt-0.5">
+                        The Brain: A User's Catalog
+                      </div>
+
+                      {/* 20,800 KPI */}
+                      <div className="border-t border-[#DEB9AD] pt-1.5 mt-1.5">
+                        <div className="font-serif font-bold text-[22px] text-[#141512] leading-none">
+                          20,800
+                        </div>
+                        <div className="font-mono text-[6px] text-[#666] mt-0.5 leading-tight">
+                          Artifacts digitized this year across 12 collections.
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Box 2: Dark Audio Player Widget matching Image 2 */}
+                    <div className="bg-[#181917] text-[#EDEAE2] p-2.5 flex flex-col justify-between shadow-sm border border-[#141512]">
+                      <div>
+                        <div className="flex items-center space-x-1.5 text-[6.5px] font-mono font-bold tracking-wider uppercase text-[#C4C0B0]">
+                          <Headphones className="w-2.5 h-2.5 text-[#C4C0B0]" />
+                          <span>LISTEN TO TABLET</span>
+                        </div>
+                        <div className="font-serif font-bold text-[9px] leading-tight text-[#FAF8F3] mt-1">
+                          What Can Faiths Learn From Each Other?
+                        </div>
+                        <div className="text-[6.5px] font-mono text-[#AAA99B] leading-tight mt-0.5">
+                          Episode 195: 15-minute conversation on history, religion and coexistence.
+                        </div>
+                      </div>
+
+                      {/* Scrubber & Play Controls */}
+                      <div className="pt-2 flex items-center space-x-2">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsPlayingAudio2(!isPlayingAudio2);
+                          }}
+                          className="w-4 h-4 rounded-full bg-[#FAF8F3] text-[#141512] flex items-center justify-center flex-shrink-0 hover:bg-white active:scale-95 transition-all shadow-sm"
+                          title={isPlayingAudio2 ? "Pause Audio" : "Play Audio"}
+                        >
+                          {isPlayingAudio2 ? <Pause className="w-2 h-2" /> : <Play className="w-2 h-2 ml-0.2" />}
+                        </button>
+                        <div 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const pos = Math.max(0, Math.min(100, Math.round(((e.clientX - rect.left) / rect.width) * 100)));
+                            setAudioProgress2(pos);
+                          }}
+                          className="flex-1 bg-[#2C2E29] h-1 rounded-full overflow-hidden cursor-pointer"
+                        >
+                          <div 
+                            className={`bg-[#FAF8F3] h-full transition-all duration-150 ${isPlayingAudio2 ? 'animate-pulse' : ''}`}
+                            style={{ width: `${audioProgress2}%` }} 
+                          />
+                        </div>
+                        <span className="text-[6.5px] font-mono text-[#AAA99B]">15:27</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2.5 BOTTOM TIER: Neuroscience, Machine Learning for Texts, Papers Please */}
+                <div className="grid grid-cols-12 gap-3 pt-3">
+                  {/* Col 1: NEUROSCIENCE (~33%) */}
+                  <div 
+                    onClick={() => handleArticleClick({
+                      title: "Mapping Memory in a Noisy World",
+                      deck: "New research suggests the brain filters rather than stores most of what we experience.",
+                      author: "MARIA CHEN",
+                      category: "NEUROSCIENCE",
+                      page: "PAGE 13",
+                      fullText: "Recent neuro-imaging breakthroughs at the Max Planck Institute reveal that cognitive retention operates as an active gating mechanism. Rather than functioning as a digital camera capturing sensory surplus, neural circuits deliberately attenuate high-frequency environmental noise to preserve semantic salience."
+                    })}
+                    className="col-span-4 border-r border-[#CCC7B8] pr-2 cursor-pointer group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#B0452E] mb-0.5">
+                        NEUROSCIENCE
+                      </div>
+                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#141512] group-hover:underline">
+                        Mapping Memory in a Noisy World
+                      </h4>
+                      <p className="font-serif text-[7px] text-[#555] leading-snug mt-0.5">
+                        New research suggests the brain filters rather than stores most of what we experience.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center space-x-2 mt-1.5 pt-1 border-t border-[#D5D0C2]">
+                      <div className="w-8 h-8 bg-[#12130F] border border-[#141512] flex-shrink-0 overflow-hidden">
+                        <img 
+                          src="/images/gazette/brain_scan.jpg" 
+                          alt="Brain scan MRI" 
+                          className="w-full h-full object-cover grayscale contrast-125"
+                        />
+                      </div>
+                      <div className="font-mono text-[5.5px] text-[#777] uppercase tracking-wider">
+                        BY MARIA CHEN &nbsp;•&nbsp; PAGE 13
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Col 2: TECHNOLOGY (~33%) */}
+                  <div 
+                    onClick={() => handleArticleClick({
+                      title: "Machine Learning for Ancient Texts",
+                      deck: "AI is helping scholars restore damaged manuscripts and uncover lost histories.",
+                      author: "RAHUL MEHTA",
+                      category: "TECHNOLOGY",
+                      page: "PAGE 15",
+                      fullText: "Palimpsests and carbonized papyri from Herculaneum and Oxyrhynchus are being reconstituted through 3D synchrotron tomography and transformer neural architectures, revealing lost Greek philosophic dialogues previously thought erased forever."
+                    })}
+                    className="col-span-4 border-r border-[#CCC7B8] pr-2 cursor-pointer group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#B0452E] mb-0.5">
+                        TECHNOLOGY
+                      </div>
+                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#141512] group-hover:underline">
+                        Machine Learning for Ancient Texts
+                      </h4>
+                      <p className="font-serif text-[7px] text-[#555] leading-snug mt-0.5">
+                        AI is helping scholars restore damaged manuscripts and uncover lost histories.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center space-x-2 mt-1.5 pt-1 border-t border-[#D5D0C2]">
+                      <div className="w-8 h-8 bg-[#12130F] border border-[#141512] flex-shrink-0 overflow-hidden">
+                        <img 
+                          src="/images/gazette/ancient_manuscript.jpg" 
+                          alt="Ancient manuscript archive" 
+                          className="w-full h-full object-cover grayscale contrast-125"
+                        />
+                      </div>
+                      <div className="font-mono text-[5.5px] text-[#777] uppercase tracking-wider">
+                        BY RAHUL MEHTA &nbsp;•&nbsp; PAGE 15
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Col 3: GAMES & CULTURE (~34%) */}
+                  <div 
+                    onClick={() => handleArticleClick({
+                      title: "Papers, Please: A Video Game With No Shootouts or Theft—Only the Banality of Evil",
+                      deck: "How a simple border checkpoint simulator became one of the most powerful political games of the decade.",
+                      author: "TOM WALKER",
+                      category: "GAMES & CULTURE",
+                      page: "PAGE 17",
+                      fullText: "Lucas Pope's indie masterpiece places players behind the bureaucratic stamp-booth of the fictional totalitarian state of Arstotzka. In forcing users to weigh bureaucratic compliance against desperate human empathy, it captures Hannah Arendt's formulation of systemic complicity more vividly than any contemporary film."
+                    })}
+                    className="col-span-4 cursor-pointer group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#B0452E] mb-0.5">
+                        GAMES &amp; CULTURE
+                      </div>
+                      <h4 className="font-serif font-bold text-[9px] leading-tight text-[#141512] group-hover:underline">
+                        Papers, Please: A Game With Only the Banality of Evil
+                      </h4>
+                      <p className="font-serif text-[7px] text-[#555] leading-snug mt-0.5">
+                        How a simple border checkpoint simulator became a profound political work.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center space-x-2 mt-1.5 pt-1 border-t border-[#D5D0C2]">
+                      <div className="w-8 h-8 bg-[#12130F] border border-[#141512] flex-shrink-0 overflow-hidden">
+                        <img 
+                          src="/images/gazette/border_checkpoint.jpg" 
+                          alt="Border checkpoint inspection silhouette" 
+                          className="w-full h-full object-cover grayscale contrast-125"
+                        />
+                      </div>
+                      <div className="font-mono text-[5.5px] text-[#777] uppercase tracking-wider">
+                        BY TOM WALKER &nbsp;•&nbsp; PAGE 17
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </article>
           )}
 
         </div>
       </div>
 
-      {/* 3. Archival Reader Inspection Modal */}
+      {/* ========================================================================= */}
+      {/* 3. ELEGANT BROADSHEET ARTICLE READING MODAL (UX)                          */}
+      {/* ========================================================================= */}
       {activeArticleModal && (
         <div 
           onClick={() => setActiveArticleModal(null)}
-          className="fixed inset-0 bg-black/75 backdrop-blur-[2px] z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/75 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 select-text"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#ECE6DA] border-2 border-[#141512] shadow-2xl max-w-xl w-full p-6 text-[#141512] font-serif space-y-4 animate-scaleUp"
+            className="bg-[#FAF7F0] border-2 border-[#141512] shadow-2xl max-w-2xl w-full p-6 sm:p-8 text-[#141512] font-serif space-y-4 max-h-[90vh] overflow-y-auto"
           >
-            <div className="flex justify-between items-center border-b border-[#AAA99B] pb-2 font-mono text-[8px] text-[#666]">
-              <span className="uppercase tracking-widest font-bold text-[#141512]">
-                GAZETTE ARCHIVAL DISPATCH
-              </span>
+            {/* Modal Header */}
+            <div className="flex justify-between items-center border-b border-[#141512] pb-2 font-mono text-[8px] text-[#666]">
+              <div className="flex items-center space-x-2">
+                <span className="w-2 h-2 bg-[#B0452E] inline-block" />
+                <span className="uppercase tracking-widest font-bold text-[#141512]">
+                  ATHENÆUM GAZETTE ARCHIVAL DISPATCH // {activeArticleModal.page || 'BROADSHEET'}
+                </span>
+              </div>
               <button 
                 onClick={() => setActiveArticleModal(null)}
-                className="hover:text-black font-bold uppercase tracking-wider text-[9px]"
+                className="hover:text-black font-bold uppercase tracking-wider text-[9px] px-2 py-0.5 hover:bg-[#EAE7D9] transition-colors"
               >
-                ✕ CLOSE
+                ✕ ESC CLOSE
               </button>
             </div>
 
+            {/* Article Heading & Metadata */}
             <div>
               <span className="text-[8px] font-mono font-bold uppercase tracking-wider text-[#B0452E]">
                 {activeArticleModal.category || 'Gazette Dispatch'}
               </span>
-              <h2 className="font-serif font-bold text-[22px] leading-tight text-[#141512] mt-1">
+              <h2 className="font-serif font-bold text-[24px] sm:text-[28px] leading-tight text-[#141512] mt-1">
                 {activeArticleModal.title}
               </h2>
-              <div className="text-[8.5px] font-mono text-[#666] uppercase tracking-wider mt-1.5 pb-2 border-b border-[#D5D0C2]">
-                BY {activeArticleModal.author || 'Gazette Staff'} • MAY 2025 EDITION
+              <div className="text-[8.5px] font-mono text-[#666] uppercase tracking-wider mt-2 pb-2.5 border-b border-[#D5D0C2] flex items-center justify-between">
+                <span>BY {activeArticleModal.author || 'Gazette Staff'} • MAY 2025 EDITION</span>
+                <span>VOL. XLII // ARCHIVAL ISSUE 104</span>
               </div>
             </div>
 
-            <p className="font-serif italic text-[12px] text-[#333] leading-relaxed">
+            {/* Subtitle / Deck */}
+            <p className="font-serif italic text-[13px] text-[#2E2E2A] leading-relaxed border-l-2 border-[#B0452E] pl-3 py-0.5">
               {activeArticleModal.deck}
             </p>
 
-            <div className="text-[9.5px] font-serif text-[#444] leading-relaxed space-y-2 pt-2 border-t border-[#D5D0C2]">
+            {/* Full Body Content */}
+            <div className="text-[11px] font-serif text-[#33322B] leading-relaxed space-y-3 pt-2 border-t border-[#D5D0C2]">
               <p>
-                Reprinted from the morning edition of The Athenæum Gazette / Tablet Magazine archive. This archival record has been automatically cataloged and synchronized with your active personal knowledge repository.
+                {activeArticleModal.fullText || (
+                  `Reprinted from the archival broadsheet edition of The Athenæum Gazette. This record represents critical primary literature curated for research, contextual inquiry, and cross-disciplinary analysis.`
+                )}
               </p>
               <p>
-                Full transcription, high-resolution wire photography, and critical historical annotations are preserved in the local IndexedDB vault under the corresponding record reference.
+                As part of the institutional digital preservation initiative, full texts, associated wire dispatch imagery, and contextual commentary are indexed locally within the Athenæum vault.
               </p>
             </div>
 
-            <div className="pt-3 border-t border-[#AAA99B] flex justify-between items-center font-mono text-[8px] text-[#777]">
-              <span>INDEXED IN VAULT: LOCAL DISPATCH</span>
-              <button
-                onClick={() => setActiveArticleModal(null)}
-                className="px-3 py-1 bg-[#141512] text-[#EAE6DC] font-bold uppercase tracking-wider hover:bg-[#25251F]"
-              >
-                RETURN TO BROADSHEET
-              </button>
+            {/* Action Bar: File to Archive, Share Citation, Return */}
+            <div className="pt-4 border-t border-[#141512] flex flex-wrap gap-2 justify-between items-center font-mono text-[8.5px]">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={(e) => handleSaveToArchive(e, activeArticleModal)}
+                  className={`px-3 py-1.5 font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5 ${
+                    savedArticles.has(activeArticleModal.title)
+                      ? 'bg-[#74866A] text-white cursor-default'
+                      : 'bg-[#141512] text-[#FAF8F3] hover:bg-[#333]'
+                  }`}
+                >
+                  {savedArticles.has(activeArticleModal.title) ? (
+                    <>
+                      <Check className="w-3 h-3" />
+                      <span>CATALOGED IN ARCHIVE</span>
+                    </>
+                  ) : (
+                    <>
+                      <Bookmark className="w-3 h-3" />
+                      <span>FILE TO MY ENTRIES</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    navigator.clipboard?.writeText?.(
+                      `"${activeArticleModal.title}", by ${activeArticleModal.author}. The Athenæum Gazette, Vol. XLII, May 2025.`
+                    );
+                    if (showToast) showToast('Citation copied to clipboard!');
+                  }}
+                  className="px-2.5 py-1.5 border border-[#141512] text-[#141512] hover:bg-[#EAE7D9] transition-colors uppercase font-bold"
+                >
+                  COPY CITATION
+                </button>
+                <button
+                  onClick={() => setActiveArticleModal(null)}
+                  className="px-3 py-1.5 bg-[#FAF8F3] text-[#141512] border border-[#141512] font-bold uppercase tracking-wider hover:bg-[#EAE7D9] transition-colors"
+                >
+                  CLOSE
+                </button>
+              </div>
             </div>
           </div>
         </div>
