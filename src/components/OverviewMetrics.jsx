@@ -20,18 +20,18 @@ export function OverviewMetrics({ onNavigate }) {
   const creativeWorksCount = dynamicMetrics?.worksBreakdown?.creative ?? (isReady ? works.filter(w => w.type === 'Creative').length : 1);
   const maintenanceWorksCount = dynamicMetrics?.worksBreakdown?.maintenance ?? (isReady ? works.filter(w => w.type === 'Maintenance').length : 1);
 
-  // Donut Gauge dashoffset calculation for circular gauge (r=26, circumference=163.4)
+  // Donut Gauge dashoffset calculation for circular gauge (r=32, circumference=201.06)
   const totalWorks = works.length > 0 ? works.length : 7;
   const donutProgress = totalWorks > 0 ? Math.min(1, Math.max(0.1, activeWorksCount / totalWorks)) : 0.65;
-  const donutDashoffset = Math.round(163.4 * (1 - (donutProgress * 0.72)));
+  const donutDashoffset = Math.round(201.06 * (1 - (donutProgress * 0.72)));
 
   // 3. Entries this week: dynamically computed
   const entriesCount = dynamicMetrics?.totalEntries ?? (isReady ? entries.length : 18);
 
-  // 8-bar Activity Histogram matching reference image
+  // 7-day Activity Histogram matching reference image (M, T, W, T, F, S, S)
   const bars = useMemo(() => {
-    const refHeights = [21, 21, 28, 41, 54, 27, 19, 7];
-    const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S', ''];
+    const refHeights = [21, 21, 28, 41, 54, 27, 19];
+    const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     const barColors = [
       '#74866A', // M
       '#74866A', // T
@@ -39,8 +39,7 @@ export function OverviewMetrics({ onNavigate }) {
       '#3E5139', // T
       '#2E3D2A', // F (Peak)
       '#3E5139', // S
-      '#4B5E45', // S
-      '#74866A'  // final
+      '#4B5E45'  // S
     ];
 
     return refHeights.map((h, i) => ({
@@ -135,7 +134,7 @@ export function OverviewMetrics({ onNavigate }) {
   };
 
   return (
-    <div className="space-y-1 select-none font-mono max-w-[1024px]">
+    <div className="space-y-1 select-none font-mono">
       {/* Section Header */}
       <div className="flex items-center justify-between text-[10px] uppercase font-mono font-bold text-[#171714]">
         <div className="flex items-center space-x-1.5">
@@ -336,26 +335,26 @@ export function OverviewMetrics({ onNavigate }) {
               <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">{maintenanceWorksCount}</span> Maintenance</div>
             </div>
 
-            {/* Circular Gauge: Prominent Ring matching reference */}
-            <div className="relative w-[64px] sm:w-[68px] h-[64px] sm:h-[68px] flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
-                <circle cx="32" cy="32" r="26" fill="#ECE9DD" />
-                <circle cx="32" cy="32" r="26" fill="none" stroke="#D5D1C3" strokeWidth="5.5" />
+            {/* Circular Gauge: Prominent Ring lifted & enlarged matching request */}
+            <div className="relative w-[78px] sm:w-[84px] h-[78px] sm:h-[84px] flex items-center justify-center flex-shrink-0 -translate-y-2.5">
+              <svg viewBox="0 0 80 80" className="w-full h-full -rotate-90">
+                <circle cx="40" cy="40" r="32" fill="#ECE9DD" />
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#D5D1C3" strokeWidth="6.5" />
                 <circle
-                  cx="32"
-                  cy="32"
-                  r="26"
+                  cx="40"
+                  cy="40"
+                  r="32"
                   fill="none"
                   stroke="#3E523A"
-                  strokeWidth="5.5"
-                  strokeDasharray="163.4"
+                  strokeWidth="6.5"
+                  strokeDasharray="201.06"
                   strokeDashoffset={donutDashoffset}
                   strokeLinecap="butt"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
-                <span className="font-bold text-[16px] text-[#171714] leading-none select-none">{activeWorksCount}</span>
-                <span className="text-[6.5px] font-mono font-bold uppercase tracking-wider text-[#555] mt-0.5 select-none">WORKS</span>
+                <span className="font-bold text-[20px] text-[#171714] leading-none select-none">{activeWorksCount}</span>
+                <span className="text-[7.5px] font-mono font-bold uppercase tracking-wider text-[#555] mt-1 select-none">WORKS</span>
               </div>
             </div>
           </div>
@@ -387,17 +386,17 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: 8 slim vertical bars exactly matching reference image */}
+          {/* Bottom: 7 slim vertical bars spanning the card width without empty space on right */}
           <div className="h-[86px] flex flex-col justify-end pb-0.5">
-            <div className="flex items-end justify-between px-1 h-[68px] max-w-[136px]">
+            <div className="flex items-end justify-between px-2 sm:px-3 h-[68px] w-full">
               {bars.map((b, i) => (
                 <div 
                   key={i} 
                   className="flex flex-col items-center space-y-1 group/bar cursor-pointer"
-                  title={`${b.h} activity on ${b.day || 'weekend'}`}
+                  title={`${b.h} activity on ${b.day}`}
                 >
                   <div
-                    className="w-[8px] rounded-[0.5px] transition-all duration-200 group-hover/bar:brightness-75"
+                    className="w-[10px] sm:w-[12px] rounded-[0.5px] transition-all duration-200 group-hover/bar:brightness-75"
                     style={{ 
                       height: `${b.h}px`,
                       backgroundColor: b.color
@@ -444,8 +443,8 @@ export function OverviewMetrics({ onNavigate }) {
                 <span>0</span>
               </div>
 
-              {/* Framed Chart Plotting Area (constrained max-width, open top & right) */}
-              <div className="flex-1 flex flex-col pr-1 max-w-[140px]">
+              {/* Framed Chart Plotting Area (open top & right) */}
+              <div className="flex-1 flex flex-col pr-1">
                 <div className="w-full relative h-[52px]">
                   <svg 
                     viewBox="0 0 100 48" 

@@ -172,34 +172,32 @@ function AthenaeumApp() {
             {/* View Switcher: Shows Selected Active Page */}
             {activeNav === 'dashboard' && (
               <main className="flex-1 overflow-y-auto p-3.5 space-y-3.5 bg-[#E9E5D8]">
-                <div className="max-w-[1024px] space-y-3.5">
-                  {/* Section A: Overview Metrics */}
-                  <OverviewMetrics 
-                    onNavigate={handleNavigate}
-                  />
+                {/* Section A: Overview Metrics */}
+                <OverviewMetrics 
+                  onNavigate={handleNavigate}
+                />
 
-                  {/* Section B: Recent Works Grid */}
-                  <RecentWorks
-                    works={works}
-                    selectedWorkId={selectedRecord?.id || 'WRK-2025-0003'}
-                    onSelectWork={handleSelectWork}
-                    onViewAll={() => setActiveNav('works')}
-                  />
+                {/* Section B: Recent Works Grid */}
+                <RecentWorks
+                  works={works}
+                  selectedWorkId={selectedRecord?.id || 'WRK-2025-0003'}
+                  onSelectWork={handleSelectWork}
+                  onViewAll={() => setActiveNav('works')}
+                />
 
-                  {/* Section C & D: Upcoming Actions (60%) & Daily Log (40%) precisely aligning with 3:2 ratio */}
-                  <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 pb-3">
-                    <div className="lg:col-span-3">
-                      <UpcomingActions
-                        actions={actions}
-                        onToggleActionStatus={toggleActionStatus}
-                        onChangePriority={cycleActionPriority}
-                      />
-                    </div>
-                    <div className="lg:col-span-2">
-                      <DailyLog
-                        onViewLog={() => setActiveNav('daily-log')}
-                      />
-                    </div>
+                {/* Section C & D: Upcoming Actions (60%) & Daily Log (40%) precisely aligning with 3:2 ratio */}
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 pb-3">
+                  <div className="lg:col-span-3">
+                    <UpcomingActions
+                      actions={actions}
+                      onToggleActionStatus={toggleActionStatus}
+                      onChangePriority={cycleActionPriority}
+                    />
+                  </div>
+                  <div className="lg:col-span-2">
+                    <DailyLog
+                      onViewLog={() => setActiveNav('daily-log')}
+                    />
                   </div>
                 </div>
               </main>
