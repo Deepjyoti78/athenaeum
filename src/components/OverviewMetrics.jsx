@@ -23,8 +23,8 @@ export function OverviewMetrics({ onNavigate }) {
   // Donut Gauge dashoffset calculation
   const totalWorks = works.length > 0 ? works.length : 7;
   const donutProgress = totalWorks > 0 ? Math.min(1, Math.max(0.1, activeWorksCount / totalWorks)) : 0.65;
-  // Circumference = 132 for r=21. Gauge sweeps ~65% when healthy
-  const donutDashoffset = Math.round(132 * (1 - (donutProgress * 0.72)));
+  // Circumference = 126 for r=20. Gauge sweeps ~65% when healthy
+  const donutDashoffset = Math.round(126 * (1 - (donutProgress * 0.72)));
 
   // 3. Entries this week: dynamically computed
   const entriesCount = dynamicMetrics?.totalEntries ?? (isReady ? entries.length : 18);
@@ -63,8 +63,8 @@ export function OverviewMetrics({ onNavigate }) {
     const maxVal = Math.max(...counts, 1);
     const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     return counts.map((count, i) => {
-      // Scale bar height between 16px and 54px to fill vertical space
-      const h = Math.round(16 + (count / maxVal) * 38);
+      // Scale bar height cleanly between 12px and 42px to avoid vertical overflow
+      const h = Math.round(12 + (count / maxVal) * 30);
       return {
         day: dayLabels[i],
         h,
@@ -86,20 +86,19 @@ export function OverviewMetrics({ onNavigate }) {
     return 65;
   }, [works, dynamicMetrics]);
 
-  // Dynamic Focus line graph points scaled to focusPct
+  // Dynamic Focus line graph points scaled to compact 32px height to prevent any text overlap
   const focusPoints = useMemo(() => {
     const xCoords = [3, 18.67, 34.33, 50, 65.67, 81.33, 97];
-    // Baseline y=41, upper peak y=6
-    // End target y corresponds to focusPct
-    const targetY = 41 - ((focusPct / 100) * 35);
+    // Baseline y=28, upper peak y=4 (total height 24)
+    const targetY = 28 - ((focusPct / 100) * 24);
     const yPoints = [
-      Math.min(38, Math.round(targetY + 16)),
-      Math.min(36, Math.round(targetY + 11)),
-      Math.min(33, Math.round(targetY + 6)),
-      Math.min(33, Math.round(targetY + 7)),
-      Math.min(28, Math.round(targetY - 1)),
-      Math.min(26, Math.round(targetY - 3)),
-      Math.max(6, Math.round(targetY - 8))
+      Math.min(26, Math.round(targetY + 11)),
+      Math.min(24, Math.round(targetY + 8)),
+      Math.min(22, Math.round(targetY + 5)),
+      Math.min(22, Math.round(targetY + 6)),
+      Math.min(18, Math.round(targetY - 1)),
+      Math.min(16, Math.round(targetY - 2)),
+      Math.max(4, Math.round(targetY - 6))
     ];
     return xCoords.map((x, idx) => [x, yPoints[idx]]);
   }, [focusPct]);
@@ -364,33 +363,33 @@ export function OverviewMetrics({ onNavigate }) {
 
           {/* Bottom: Works Categories & Circular Donut Gauge with Center Label */}
           <div className="pt-1 flex items-center justify-between">
-            <div className="space-y-0.5 text-[8px] font-mono text-[#33322B]">
+            <div className="space-y-0.5 text-[8px] font-mono text-[#33322B] pr-1">
               <div><span className="font-bold text-[#171714]">{projectWorksCount}</span> Projects</div>
               <div><span className="font-bold text-[#171714]">{researchWorksCount}</span> Research</div>
               <div><span className="font-bold text-[#171714]">{creativeWorksCount}</span> Creative</div>
               <div><span className="font-bold text-[#171714]">{maintenanceWorksCount}</span> Maintenance</div>
             </div>
 
-            {/* Circular Donut Gauge with "7 WORKS" inside — larger size matching reference */}
-            <div className="relative w-[62px] h-[62px] flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 52 52" className="w-[62px] h-[62px] -rotate-90">
-                <circle cx="26" cy="26" r="21" fill="none" stroke="#D2CEBF" strokeWidth="5" />
+            {/* Circular Donut Gauge with "7 WORKS" inside — cleanly proportioned */}
+            <div className="relative w-[52px] h-[52px] flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 52 52" className="w-[52px] h-[52px] -rotate-90">
+                <circle cx="26" cy="26" r="20" fill="none" stroke="#D2CEBF" strokeWidth="4.5" />
                 <circle
                   cx="26"
                   cy="26"
-                  r="21"
+                  r="20"
                   fill="none"
                   stroke="#5A6D52"
-                  strokeWidth="5"
-                  strokeDasharray="132"
+                  strokeWidth="4.5"
+                  strokeDasharray="126"
                   strokeDashoffset={donutDashoffset}
                   strokeLinecap="butt"
                 />
               </svg>
               {/* Text inside the Donut: 7 WORKS */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
-                <span className="font-bold text-[14px] text-[#171714] leading-tight select-none">{activeWorksCount}</span>
-                <span className="text-[6.5px] font-mono font-bold uppercase tracking-wider text-[#555] mt-0.5 select-none">WORKS</span>
+                <span className="font-bold text-[13px] text-[#171714] leading-tight select-none">{activeWorksCount}</span>
+                <span className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#555] mt-0.5 select-none">WORKS</span>
               </div>
             </div>
           </div>
@@ -424,7 +423,7 @@ export function OverviewMetrics({ onNavigate }) {
 
           {/* Bottom: 7-bar Activity Histogram with thicker bars reducing empty space */}
           <div className="pt-0.5">
-            <div className="flex items-end justify-between px-2 h-14 pb-0.5">
+            <div className="flex items-end justify-between px-2 h-12 pb-0.5">
               {bars.map((b, i) => (
                 <div 
                   key={i} 
@@ -468,12 +467,12 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Technical Archival Line Graph filling the space from Mon to Sun */}
-          <div className="flex flex-col justify-end pt-1">
-            {/* Graph Canvas: fills height and width with technical archival grid */}
-            <div className="w-full relative h-[50px]">
+          {/* Bottom: Technical Archival Line Graph filling the space from Mon to Sun without vertical overlap */}
+          <div className="flex flex-col justify-end pt-0.5">
+            {/* Graph Canvas: compact 34px height to prevent text collision */}
+            <div className="w-full relative h-[34px]">
               <svg 
-                viewBox="0 0 100 44" 
+                viewBox="0 0 100 32" 
                 preserveAspectRatio="none" 
                 className="w-full h-full overflow-visible"
               >
@@ -486,19 +485,18 @@ export function OverviewMetrics({ onNavigate }) {
                 </defs>
 
                 {/* Horizontal Technical Grid Guidelines */}
-                <line x1="0" y1="11" x2="100" y2="11" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="21" x2="100" y2="21" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="31" x2="100" y2="31" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="41" x2="100" y2="41" stroke="#B8B4A5" strokeWidth="0.75" />
+                <line x1="0" y1="8" x2="100" y2="8" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="18" x2="100" y2="18" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="28" x2="100" y2="28" stroke="#B8B4A5" strokeWidth="0.75" />
 
                 {/* Vertical Day Alignment Ticks */}
                 {[3, 18.67, 34.33, 50, 65.67, 81.33, 97].map((xVal, idx) => (
                   <line 
                     key={idx} 
                     x1={xVal} 
-                    y1="41" 
+                    y1="28" 
                     x2={xVal} 
-                    y2="44" 
+                    y2="31" 
                     stroke="#88877B" 
                     strokeWidth="0.75" 
                   />
@@ -506,7 +504,7 @@ export function OverviewMetrics({ onNavigate }) {
 
                 {/* Shaded Area Under Curve */}
                 <polygon
-                  points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,41 3,41`}
+                  points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,28 3,28`}
                   fill="url(#focusAreaGrad)"
                 />
 
@@ -514,7 +512,7 @@ export function OverviewMetrics({ onNavigate }) {
                 <polyline
                   fill="none"
                   stroke="#171714"
-                  strokeWidth="2"
+                  strokeWidth="1.8"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   points={focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')}
@@ -523,15 +521,15 @@ export function OverviewMetrics({ onNavigate }) {
                 {/* 7 Circular Data Points matching Mon - Sun */}
                 {focusPoints.map(([cx, cy], idx) => (
                   <g key={idx}>
-                    <circle cx={cx} cy={cy} r="2.5" fill="#171714" />
-                    <circle cx={cx} cy={cy} r="1" fill="#FAF8F3" />
+                    <circle cx={cx} cy={cy} r="2.2" fill="#171714" />
+                    <circle cx={cx} cy={cy} r="0.8" fill="#FAF8F3" />
                   </g>
                 ))}
               </svg>
             </div>
 
-            {/* Weekday labels spanning Mon to Sun, exactly positioned under the data ticks */}
-            <div className="flex justify-between text-[7px] font-mono font-bold text-[#55544B] mt-1 select-none px-0.5">
+            {/* Weekday labels spanning Mon to Sun, cleanly positioned below the data ticks */}
+            <div className="flex justify-between text-[7px] font-mono font-bold text-[#55544B] mt-0.5 select-none px-0.5">
               <span className="w-2.5 text-center">M</span>
               <span className="w-2.5 text-center">T</span>
               <span className="w-2.5 text-center">W</span>
@@ -541,7 +539,7 @@ export function OverviewMetrics({ onNavigate }) {
               <span className="w-2.5 text-center">S</span>
             </div>
 
-            {/* Subtext with trend indicator */}
+            {/* Subtext with trend indicator with dedicated vertical spacing */}
             <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-0.5 select-none">
               <span className="text-[#4B5E44] font-bold">▲ +12%</span> vs last week
             </div>

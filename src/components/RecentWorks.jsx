@@ -122,22 +122,22 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
                 </h3>
 
                 <div className="space-y-0.5 text-[8px] font-mono text-[#55544B] pt-0.5 border-t border-[#D5D1C4]">
-                  <div className="flex justify-between">
-                    <span className="text-[#66655A]">Type:</span>
-                    <span className="font-semibold text-[#171714]">{work.type || 'Project'}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#66655A] flex-shrink-0">Type:</span>
+                    <span className="font-semibold text-[#171714] truncate text-right pl-2">{work.type || 'Project'}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[#66655A]">Status:</span>
-                    <div className="flex items-center space-x-1.5">
-                      <span className={`w-1.5 h-1.5 rounded-full inline-block ${
+                    <span className="text-[#66655A] flex-shrink-0">Status:</span>
+                    <div className="flex items-center space-x-1.5 flex-shrink-0 pl-2">
+                      <span className={`w-1.5 h-1.5 rounded-full inline-block flex-shrink-0 ${
                         work.status === 'In progress' ? 'bg-[#74866A]' : 'bg-[#88877A]'
                       }`} />
-                      <span className="font-semibold text-[#171714]">{work.status || 'In progress'}</span>
+                      <span className="font-semibold text-[#171714] truncate">{work.status || 'In progress'}</span>
                     </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#66655A]">Updated:</span>
-                    <span className="text-[#55544B]">{work.updated || 'Today 09:18'}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#66655A] flex-shrink-0">Updated:</span>
+                    <span className="text-[#55544B] truncate text-right pl-2">{work.updated || 'Today 09:18'}</span>
                   </div>
                 </div>
               </div>
