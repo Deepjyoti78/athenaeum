@@ -492,12 +492,12 @@ export function CalendarView() {
                       onClick={() => handleSelectDate(cell.dateObj)}
                       className={`h-full min-h-0 border p-1.5 flex flex-col justify-between transition-colors select-none relative group overflow-hidden ${
                         !cell.isCurrentMonth
-                          ? 'border-[#C8C4B6] bg-[#DFDBD0]/70 hover:bg-[#D5D0C2] cursor-pointer'
+                          ? 'border-[#C8C4B6] bg-[#E9E5DA] hover:bg-[#DFD9CD] cursor-pointer'
                           : isSelected
-                            ? 'border-2 border-[#141512] bg-[#DDD8CB] cursor-pointer shadow-sm'
+                            ? 'border-2 border-[#141512] bg-[#DFD9CD] cursor-pointer shadow-sm'
                             : isToday
-                              ? 'border border-[#55544B] bg-[#E8E4D6] hover:bg-[#DDD8CB] cursor-pointer'
-                              : 'border-[#AAA99B] bg-[#E8E4D6] hover:bg-[#DDD8CB] cursor-pointer'
+                              ? 'border border-[#55544B] bg-[#EFEBE2] hover:bg-[#E6E1D7] cursor-pointer'
+                              : 'border-[#AAA99B] bg-[#EFEBE2] hover:bg-[#E6E1D7] cursor-pointer'
                       }`}
                     >
                       {/* Top row of cell: Date & Category Indicator Dot */}
@@ -539,7 +539,7 @@ export function CalendarView() {
                         <div className="mt-auto pt-1 overflow-hidden">
                           <div 
                             title={`${firstEvent.time} — ${firstEvent.title}`}
-                            className="text-[7.5px] font-mono font-medium text-[#141512] bg-[#DDD8CB] px-1 py-0.5 border border-[#AAA99B] truncate hover:bg-[#D4CEBF] transition-colors"
+                            className="text-[7.5px] font-mono font-medium text-[#141512] bg-[#D7D3C7] px-1 py-0.5 border border-[#AAA99B] truncate hover:bg-[#CCC7B8] transition-colors"
                           >
                             {firstEvent.title}
                           </div>
@@ -617,8 +617,8 @@ export function CalendarView() {
                         onClick={() => handleSelectDate(dayDate)}
                         className={`h-full border p-2 flex flex-col transition-colors cursor-pointer overflow-y-auto ${
                           isSelected 
-                            ? 'border-2 border-[#141512] bg-[#DDD8CB]' 
-                            : 'border-[#AAA99B] bg-[#E8E4D6] hover:bg-[#DDD8CB]'
+                            ? 'border-2 border-[#141512] bg-[#DFD9CD]' 
+                            : 'border-[#AAA99B] bg-[#EFEBE2] hover:bg-[#E6E1D7]'
                         }`}
                       >
                         <div className="border-b border-[#AAA99B] pb-1 mb-2 text-center">
@@ -675,7 +675,7 @@ export function CalendarView() {
                         key={dateKey} 
                         onClick={() => handleSelectDate(dateObj)}
                         className={`border p-2.5 transition-colors cursor-pointer ${
-                          isSelected ? 'border-2 border-[#141512] bg-[#DDD8CB]' : 'border-[#AAA99B] bg-[#E8E4D6] hover:bg-[#DDD8CB]'
+                          isSelected ? 'border-2 border-[#141512] bg-[#DFD9CD]' : 'border-[#AAA99B] bg-[#EFEBE2] hover:bg-[#E6E1D7]'
                         }`}
                       >
                         <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-[#AAA99B] font-bold text-[9px]">
@@ -803,8 +803,8 @@ export function CalendarView() {
                         onClick={() => handleInspect(item)}
                         className={`p-2 border transition-colors space-y-1 cursor-pointer ${
                           isChecked 
-                            ? 'border-[#C8C4B6] bg-[#DFDBD0]/60 opacity-75' 
-                            : 'border-[#AAA99B] bg-[#EAE6D9] hover:bg-[#E2DDD0]'
+                            ? 'border-[#C8C4B6] bg-[#E9E5DA]/80 opacity-75' 
+                            : 'border-[#AAA99B] bg-[#FAF6EB] hover:bg-[#F3EFE3]'
                         }`}
                       >
                         {/* Top Row: Time, Title, Tag Badge & Menu */}
@@ -885,7 +885,7 @@ export function CalendarView() {
               MONTH OVERVIEW
             </div>
 
-            <div className="grid grid-cols-4 divide-x divide-[#AAA99B] border border-[#AAA99B] bg-[#EAE6D9] p-2 text-center shadow-sm">
+            <div className="grid grid-cols-4 divide-x divide-[#AAA99B] border border-[#AAA99B] bg-[#E9E5DA] p-2 text-center shadow-sm">
               <div className="px-1">
                 <div className="text-[20px] font-bold text-[#141512] leading-none" style={numeralStyle}>
                   {entries.length || 18}
