@@ -20,58 +20,36 @@ export function OverviewMetrics({ onNavigate }) {
   const creativeWorksCount = dynamicMetrics?.worksBreakdown?.creative ?? (isReady ? works.filter(w => w.type === 'Creative').length : 1);
   const maintenanceWorksCount = dynamicMetrics?.worksBreakdown?.maintenance ?? (isReady ? works.filter(w => w.type === 'Maintenance').length : 1);
 
+  // Donut Gauge dashoffset calculation for circular gauge (r=26, circumference=163.4)
+  const totalWorks = works.length > 0 ? works.length : 7;
+  const donutProgress = totalWorks > 0 ? Math.min(1, Math.max(0.1, activeWorksCount / totalWorks)) : 0.65;
+  const donutDashoffset = Math.round(163.4 * (1 - (donutProgress * 0.72)));
+
   // 3. Entries this week: dynamically computed
   const entriesCount = dynamicMetrics?.totalEntries ?? (isReady ? entries.length : 18);
 
-  // Works categories with counts and relative proportions for horizontal progress bars
-  const worksCategories = useMemo(() => {
-    const rawCategories = [
-      { label: 'Projects', count: projectWorksCount },
-      { label: 'Research', count: researchWorksCount },
-      { label: 'Creative', count: creativeWorksCount },
-      { label: 'Maintenance', count: maintenanceWorksCount }
-    ];
-    // In reference image: Projects (3) is ~80%, Research (2) is ~53%, Creative (1) is ~27%, Maintenance (1) is ~27%
-    const maxVal = Math.max(...rawCategories.map(c => c.count), 3) * 1.25;
-    return rawCategories.map(cat => ({
-      ...cat,
-      fillPct: Math.min(100, Math.max(8, Math.round((cat.count / maxVal) * 100)))
-    }));
-  }, [projectWorksCount, researchWorksCount, creativeWorksCount, maintenanceWorksCount]);
-
-  // Seven-day activity tiles: Monday through Sunday with dynamic counts & fill
-  const activityTiles = useMemo(() => {
-    const days = [
-      { day: 'M', defaultVal: 2 },
-      { day: 'T', defaultVal: 3 },
-      { day: 'W', defaultVal: 4 },
-      { day: 'T', defaultVal: 5, isHighlighted: true }, // Highlighted day matching reference image
-      { day: 'F', defaultVal: 3 },
-      { day: 'S', defaultVal: 2 },
-      { day: 'S', defaultVal: 1 }
+  // 8-bar Activity Histogram matching reference image
+  const bars = useMemo(() => {
+    const refHeights = [21, 21, 28, 41, 54, 27, 19, 7];
+    const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S', ''];
+    const barColors = [
+      '#74866A', // M
+      '#74866A', // T
+      '#4B5E45', // W
+      '#3E5139', // T
+      '#2E3D2A', // F (Peak)
+      '#3E5139', // S
+      '#4B5E45', // S
+      '#74866A'  // final
     ];
 
-    const counts = days.map((d, i) => {
-      let count = d.defaultVal;
-      if (isReady && entries.length > 0) {
-        const matched = entries.filter(e => {
-          if (!e.date) return false;
-          const match = e.date.match(/(\d{1,2})/);
-          if (!match) return false;
-          const dayNum = parseInt(match[1], 10);
-          return dayNum === (5 + i);
-        }).length;
-        if (matched > 0) count = matched;
-      }
-      return { ...d, count };
-    });
-
-    const maxCount = Math.max(...counts.map(c => c.count), 5);
-    return counts.map(c => ({
-      ...c,
-      fillPct: Math.min(100, Math.max(14, Math.round((c.count / maxCount) * 70)))
+    return refHeights.map((h, i) => ({
+      day: dayLabels[i],
+      h,
+      color: barColors[i],
+      isPeak: i === 4
     }));
-  }, [entries, isReady]);
+  }, []);
 
   // 4. Focus weekly progress: dynamically computed
   const focusPct = useMemo(() => {
@@ -80,26 +58,18 @@ export function OverviewMetrics({ onNavigate }) {
     }
     if (works.length > 0) {
       const avgProg = Math.round(works.reduce((acc, w) => acc + (Number(w.progress) || 0), 0) / works.length);
-      return avgProg > 0 ? avgProg : 61;
+      return avgProg > 0 ? avgProg : 65;
     }
-    return 61;
+    return 65;
   }, [works, dynamicMetrics]);
 
-  // Annotated Weekly Progress Timeline data points & coordinates
-  const focusTimeline = useMemo(() => {
-    const basePcts = [42, 58, 62, 68, 70, 60, 74];
-    const diff = focusPct - 61;
-    const pcts = basePcts.map((p, i) => {
-      if (i === 6) return Math.min(99, Math.max(10, focusPct > 0 ? focusPct + 13 : 74));
-      return Math.min(99, Math.max(10, p + Math.round(diff * (i / 6))));
-    });
-    const xCoords = [6, 20.67, 35.33, 50, 64.67, 79.33, 94];
-    return pcts.map((p, idx) => {
-      const x = xCoords[idx];
-      const y = 42 - ((p / 100) * 32);
-      return { x, y, pct: p, isLatest: idx === 6 };
-    });
-  }, [focusPct]);
+  // 7 Focus line graph points mapped within framed technical chart box (y: 0=100%, 22=50%, 44=0%)
+  const focusPoints = useMemo(() => {
+    const xCoords = [8, 22, 36, 50, 64, 78, 92];
+    // Progress curve matching reference image: M: 25%, T: 42%, W: 56%, T: 56%, F: 72%, S: 72%, S: 88%
+    const basePts = [33, 25.5, 19.4, 19.4, 12.3, 12.3, 5.3];
+    return xCoords.map((x, idx) => [x, basePts[idx]]);
+  }, []);
 
   // Dynamic set of days with active records/events for calendar markers
   const activeDaysSet = useMemo(() => {
@@ -336,7 +306,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 3: WORKS & NATURAL HISTORY ANATOMICAL SPECIMEN        */}
+        {/* COLUMN 3: WORKS & CIRCULAR GAUGE                             */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
@@ -361,86 +331,42 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Engraved Winged Specimen / Entomological Armature */}
-          <div className="h-[86px] flex flex-col justify-center">
-            <div className="relative w-full h-[76px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
-              {/* Subtle background technical grid */}
-              <div 
-                className="absolute inset-0 opacity-12 pointer-events-none"
-                style={{
-                  backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
-                  backgroundSize: '10px 10px'
-                }}
-              />
+          {/* Bottom: Works Categories & Donut Gauge exactly matching reference image */}
+          <div className="flex items-center justify-between h-[86px]">
+            <div className="space-y-1.5 text-[8px] leading-[14px] font-mono text-[#33322B] pr-1">
+              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">{projectWorksCount}</span> Projects</div>
+              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">{researchWorksCount}</span> Research</div>
+              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">{creativeWorksCount}</span> Creative</div>
+              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">{maintenanceWorksCount}</span> Maintenance</div>
+            </div>
 
-              <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
-                {/* Proportion Guide Circle */}
-                <circle cx="44" cy="35" r="26" fill="none" stroke="#C4BFA0" strokeWidth="0.5" strokeDasharray="1.5 2" />
-
-                {/* Symmetrical Entomological Winged Specimen (center x=44, y=35) */}
-                <g stroke="#26231B" strokeWidth="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                  {/* Left Membranous Wing */}
-                  <path 
-                    d="M 44,27 C 28,12 10,18 8,30 C 8,42 26,44 44,38" 
-                    fill="#74866A" 
-                    fillOpacity="0.18" 
-                    stroke="#383327" 
-                    strokeWidth="0.8" 
-                  />
-                  {/* Left Wing Venation */}
-                  <path d="M 44,27 C 26,24 16,30 10,34" stroke="#524C3A" strokeWidth="0.5" />
-                  <path d="M 28,25 C 22,34 16,38 12,40" stroke="#665F49" strokeWidth="0.4" />
-                  <path d="M 36,26 C 30,36 24,42 18,42" stroke="#665F49" strokeWidth="0.4" />
-
-                  {/* Right Membranous Wing */}
-                  <path 
-                    d="M 44,27 C 60,12 78,18 80,30 C 80,42 62,44 44,38" 
-                    fill="#74866A" 
-                    fillOpacity="0.18" 
-                    stroke="#383327" 
-                    strokeWidth="0.8" 
-                  />
-                  {/* Right Wing Venation */}
-                  <path d="M 44,27 C 62,24 72,30 78,34" stroke="#524C3A" strokeWidth="0.5" />
-                  <path d="M 60,25 C 66,34 72,38 76,40" stroke="#665F49" strokeWidth="0.4" />
-                  <path d="M 52,26 C 58,36 64,42 70,42" stroke="#665F49" strokeWidth="0.4" />
-
-                  {/* Head & Antennae */}
-                  <ellipse cx="44" cy="19" rx="3" ry="3.5" fill="#C2B9A5" />
-                  <path d="M 42,16 Q 36,9 31,11" strokeWidth="0.6" />
-                  <path d="M 46,16 Q 52,9 57,11" strokeWidth="0.6" />
-
-                  {/* Thorax */}
-                  <path d="M 40,23 C 38,28 39,32 44,34 C 49,32 50,28 48,23 Z" fill="#B3A892" />
-                  <line x1="41" y1="28" x2="47" y2="28" strokeWidth="0.5" />
-
-                  {/* Segmented Abdomen */}
-                  <ellipse cx="44" cy="45" rx="4.5" ry="11" fill="#A89C86" />
-                  <line x1="40" y1="38" x2="48" y2="38" strokeWidth="0.5" />
-                  <line x1="39.5" y1="43" x2="48.5" y2="43" strokeWidth="0.5" />
-                  <line x1="40" y1="48" x2="48" y2="48" strokeWidth="0.5" />
-                  <line x1="41.5" y1="53" x2="46.5" y2="53" strokeWidth="0.5" />
-
-                  {/* Articulated Fore & Hind Legs */}
-                  <path d="M 40,24 Q 28,21 24,16" strokeWidth="0.6" />
-                  <path d="M 48,24 Q 60,21 64,16" strokeWidth="0.6" />
-                  <path d="M 40,32 Q 28,38 25,50" strokeWidth="0.6" />
-                  <path d="M 48,32 Q 60,38 63,50" strokeWidth="0.6" />
-                </g>
-
-                {/* Engraved Plate Typography on Right */}
-                <text x="96" y="20" fill="#171714" fontSize="5.8" fontFamily="serif" fontStyle="italic" fontWeight="bold">Tab. IV — SPECIMEN ALATUM</text>
-                <text x="96" y="30" fill="#55544B" fontSize="4.8" fontFamily="monospace">Ordo: Coleoptera • Structura</text>
-                <text x="96" y="40" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">ACTIVE: {activeWorksCount} WORKS // 4 SECTORS</text>
-                <text x="96" y="50" fill="#55544B" fontSize="4.8" fontFamily="monospace">Projects: {projectWorksCount} • Research: {researchWorksCount}</text>
-                <text x="96" y="60" fill="#77766B" fontSize="4.2" fontFamily="monospace">CODEX BIOLOGICA • FABRICA</text>
+            {/* Circular Gauge: Prominent Ring matching reference */}
+            <div className="relative w-[64px] sm:w-[68px] h-[64px] sm:h-[68px] flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
+                <circle cx="32" cy="32" r="26" fill="#ECE9DD" />
+                <circle cx="32" cy="32" r="26" fill="none" stroke="#D5D1C3" strokeWidth="5.5" />
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="26"
+                  fill="none"
+                  stroke="#3E523A"
+                  strokeWidth="5.5"
+                  strokeDasharray="163.4"
+                  strokeDashoffset={donutDashoffset}
+                  strokeLinecap="butt"
+                />
               </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
+                <span className="font-bold text-[16px] text-[#171714] leading-none select-none">{activeWorksCount}</span>
+                <span className="text-[6.5px] font-mono font-bold uppercase tracking-wider text-[#555] mt-0.5 select-none">WORKS</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 4: ENTRIES & BOTANICAL HERBARIUM TAXONOMY             */}
+        {/* COLUMN 4: ENTRIES & HISTOGRAM (matching reference image)     */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
@@ -465,77 +391,33 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Engraved Botanical Leaf Taxonomy Plate */}
-          <div className="h-[86px] flex flex-col justify-center">
-            <div className="relative w-full h-[76px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
-              {/* Subtle background technical grid */}
-              <div 
-                className="absolute inset-0 opacity-12 pointer-events-none"
-                style={{
-                  backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
-                  backgroundSize: '10px 10px'
-                }}
-              />
-
-              <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
-                {/* Botanical Leaf Specimen (center x=40, y=35) */}
-                <g stroke="#26231B" strokeWidth="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                  {/* Leaf Lamina Blade with soft olive tint */}
-                  <path 
-                    d="M 40,10 C 22,18 20,44 40,58 C 60,44 58,18 40,10 Z" 
-                    fill="#74866A" 
-                    fillOpacity="0.2" 
-                    stroke="#383327" 
-                    strokeWidth="0.9" 
+          {/* Bottom: 8 slim vertical bars exactly matching reference image */}
+          <div className="h-[86px] flex flex-col justify-end pb-0.5">
+            <div className="flex items-end justify-between px-1 h-[68px]">
+              {bars.map((b, i) => (
+                <div 
+                  key={i} 
+                  className="flex flex-col items-center space-y-1 group/bar cursor-pointer"
+                  title={`${b.h} activity on ${b.day || 'weekend'}`}
+                >
+                  <div
+                    className="w-[8px] rounded-[0.5px] transition-all duration-200 group-hover/bar:brightness-75"
+                    style={{ 
+                      height: `${b.h}px`,
+                      backgroundColor: b.color
+                    }}
                   />
-
-                  {/* Central Costa Midrib */}
-                  <path d="M 40,10 L 40,64" stroke="#26231B" strokeWidth="1" />
-
-                  {/* Primary & Secondary Lateral Veins */}
-                  <path d="M 40,18 Q 30,22 25,24" stroke="#4F4837" strokeWidth="0.6" />
-                  <path d="M 40,18 Q 50,22 55,24" stroke="#4F4837" strokeWidth="0.6" />
-
-                  <path d="M 40,26 Q 28,30 22,34" stroke="#4F4837" strokeWidth="0.6" />
-                  <path d="M 40,26 Q 52,30 58,34" stroke="#4F4837" strokeWidth="0.6" />
-
-                  <path d="M 40,34 Q 28,38 23,43" stroke="#4F4837" strokeWidth="0.6" />
-                  <path d="M 40,34 Q 52,38 57,43" stroke="#4F4837" strokeWidth="0.6" />
-
-                  <path d="M 40,43 Q 32,47 28,51" stroke="#4F4837" strokeWidth="0.5" />
-                  <path d="M 40,43 Q 48,47 52,51" stroke="#4F4837" strokeWidth="0.5" />
-
-                  {/* Tertiary Reticulate Veinlets */}
-                  <line x1="33" y1="21" x2="31" y2="28" stroke="#69614B" strokeWidth="0.4" strokeDasharray="1 1" />
-                  <line x1="47" y1="21" x2="49" y2="28" stroke="#69614B" strokeWidth="0.4" strokeDasharray="1 1" />
-                  <line x1="30" y1="29" x2="28" y2="36" stroke="#69614B" strokeWidth="0.4" strokeDasharray="1 1" />
-                  <line x1="50" y1="29" x2="52" y2="36" stroke="#69614B" strokeWidth="0.4" strokeDasharray="1 1" />
-                </g>
-
-                {/* Cellular Inset Detail Circle (x=73, y=42) */}
-                <circle cx="72" cy="40" r="11" fill="#EAE7D9" stroke="#524C3A" strokeWidth="0.75" />
-                <circle cx="72" cy="40" r="9.5" fill="none" stroke="#74866A" strokeWidth="0.4" strokeDasharray="1 1.5" />
-                {/* Microscopic honeycomb plant tissue cells */}
-                {[
-                  [72, 36], [68, 38], [76, 38], [68, 42], [76, 42], [72, 44]
-                ].map(([cx, cy], idx) => (
-                  <circle key={`cell-${idx}`} cx={cx} cy={cy} r="1.8" fill="#B5AC98" stroke="#3A3528" strokeWidth="0.4" />
-                ))}
-                <text x="72" y="55" fill="#69614B" fontSize="4" fontFamily="monospace" textAnchor="middle">CELLULA</text>
-
-                {/* Engraved Botanical Typography on Right */}
-                <text x="96" y="20" fill="#171714" fontSize="5.8" fontFamily="serif" fontStyle="italic" fontWeight="bold">Tab. VII — HERBARIUM TAXONOMIA</text>
-                <text x="96" y="30" fill="#55544B" fontSize="4.8" fontFamily="monospace">Nervatio reticulata • Folium</text>
-                <text x="96" y="40" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">ENTRIES: {entriesCount} SPECIMENS // WK-18</text>
-                <text x="96" y="50" fill="#55544B" fontSize="4.8" fontFamily="monospace">Status: Indexatum • Archival DB</text>
-                <text x="96" y="60" fill="#77766B" fontSize="4.2" fontFamily="monospace">COLLECTIO BOTANICA • MAY 2025</text>
-              </svg>
+                  <span className="text-[7.5px] font-mono font-bold text-[#171714] select-none text-center">
+                    {b.day}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 5: FOCUS & CELESTIAL ASTROLABE / ARMILLARY SPHERE     */}
+        {/* COLUMN 5: FOCUS & FRAMED WEEKLY PROGRESS GRAPH               */}
         {/* ============================================================ */}
         <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[178px]">
           {/* Top: Header, Number, Subtitle below */}
@@ -556,68 +438,103 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Engraved Celestial Astrolabe / Armillary Sphere */}
-          <div className="h-[86px] flex flex-col justify-center">
-            <div className="relative w-full h-[76px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
-              {/* Subtle background technical grid */}
-              <div 
-                className="absolute inset-0 opacity-12 pointer-events-none"
-                style={{
-                  backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
-                  backgroundSize: '10px 10px'
-                }}
-              />
+          {/* Bottom: Technical Archival Chart matching reference image */}
+          <div className="h-[86px] flex flex-col justify-end">
+            <div className="flex items-start">
+              {/* Y-Axis: 100, 50, 0 aligned with top border, middle dashed line, and baseline */}
+              <div className="flex flex-col justify-between h-[52px] text-[7px] font-mono text-[#66655B] select-none text-right pr-1.5 w-[18px] flex-shrink-0 leading-none py-[1px]">
+                <span>100</span>
+                <span>50</span>
+                <span>0</span>
+              </div>
 
-              <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
-                {/* Celestial Armillary Sphere / Astrolabe (center x=44, y=35) */}
-                <g stroke="#26231B" strokeWidth="0.8" fill="none">
-                  {/* Outer Meridian Ring */}
-                  <circle cx="44" cy="35" r="26" stroke="#26231B" strokeWidth="1" />
-                  <circle cx="44" cy="35" r="24" stroke="#74866A" strokeWidth="0.5" strokeDasharray="1 1.5" />
+              {/* Framed Chart Plotting Area */}
+              <div className="flex-1 flex flex-col pr-1">
+                <div className="w-full relative h-[52px]">
+                  <svg 
+                    viewBox="0 0 100 48" 
+                    preserveAspectRatio="none" 
+                    className="w-full h-full overflow-visible"
+                  >
+                    <defs>
+                      <linearGradient id="focusAreaGradExp" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#74866A" stopOpacity="0.4" />
+                        <stop offset="70%" stopColor="#74866A" stopOpacity="0.1" />
+                        <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
+                      </linearGradient>
+                    </defs>
 
-                  {/* Meridian degree tick marks */}
-                  {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(deg => {
-                    const rad = (deg * Math.PI) / 180;
-                    const x1 = 44 + Math.cos(rad) * 24;
-                    const y1 = 35 + Math.sin(rad) * 24;
-                    const x2 = 44 + Math.cos(rad) * 26;
-                    const y2 = 35 + Math.sin(rad) * 26;
-                    return <line key={`adeg-${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#383327" strokeWidth="0.75" />;
-                  })}
+                    {/* Chart Box Background Tint */}
+                    <rect x="0" y="0" width="100" height="44" fill="#E4DFC2" fillOpacity="0.3" />
 
-                  {/* Inclined Ecliptic Zodiac Band (23.5 degrees) */}
-                  <ellipse cx="44" cy="35" rx="23" ry="11" transform="rotate(-24 44 35)" stroke="#3E5139" strokeWidth="0.9" fill="#74866A" fillOpacity="0.12" />
-                  
-                  {/* Horizontal Celestial Equator */}
-                  <ellipse cx="44" cy="35" rx="24" ry="7" stroke="#524C3A" strokeWidth="0.7" />
+                    {/* Chart Box Borders (Solid Framed Box) */}
+                    <rect x="0" y="0" width="100" height="44" fill="none" stroke="#BDB9AA" strokeWidth="0.75" />
 
-                  {/* Polar Axis Pin */}
-                  <line x1="44" y1="6" x2="44" y2="64" stroke="#171714" strokeWidth="1" />
-                  <circle cx="44" cy="6" r="1.5" fill="#171714" />
-                  <circle cx="44" cy="64" r="1.5" fill="#171714" />
+                    {/* Middle Dashed Guideline at 50% */}
+                    <line x1="0" y1="22" x2="100" y2="22" stroke="#C5C1B2" strokeWidth="0.6" strokeDasharray="2 2" />
 
-                  {/* Central Earth / Focal Pivot Sphere */}
-                  <circle cx="44" cy="35" r="5" fill="#C2B9A5" stroke="#26231B" strokeWidth="0.8" />
-                  <circle cx="44" cy="35" r="1.5" fill="#171714" />
+                    {/* Vertical Day Alignment Ticks below baseline */}
+                    {[8, 22, 36, 50, 64, 78, 92].map((xVal, idx) => (
+                      <line 
+                        key={idx} 
+                        x1={xVal} 
+                        y1="44" 
+                        x2={xVal} 
+                        y2="47.5" 
+                        stroke="#88877B" 
+                        strokeWidth="0.75" 
+                      />
+                    ))}
 
-                  {/* Constellation Stars / Reticle points */}
+                    {/* Shaded Area Under Curve */}
+                    <polygon
+                      points={`8,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 92,${focusPoints[6][1]} 92,44 8,44`}
+                      fill="url(#focusAreaGradExp)"
+                    />
+
+                    {/* Connected Polyline: Sharp Charcoal Archival Line */}
+                    <polyline
+                      fill="none"
+                      stroke="#171714"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      points={focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')}
+                    />
+
+                    {/* 7 Circular Data Points matching Mon - Sun */}
+                    {focusPoints.map(([cx, cy], idx) => (
+                      <circle key={idx} cx={cx} cy={cy} r={idx === 6 ? 2.6 : 2.2} fill="#171714" />
+                    ))}
+                  </svg>
+                </div>
+
+                {/* Weekday labels spanning Mon to Sun, directly aligned under each day tick */}
+                <div className="relative w-full h-3 mt-1">
                   {[
-                    [32, 22], [54, 20], [30, 42], [58, 44], [44, 22]
-                  ].map(([sx, sy], idx) => (
-                    <circle key={`star-${idx}`} cx={sx} cy={sy} r="0.9" fill="#171714" />
+                    { label: 'M', x: '8%' },
+                    { label: 'T', x: '22%' },
+                    { label: 'W', x: '36%' },
+                    { label: 'T', x: '50%' },
+                    { label: 'F', x: '64%' },
+                    { label: 'S', x: '78%' },
+                    { label: 'S', x: '92%' },
+                  ].map((d, i) => (
+                    <span
+                      key={i}
+                      className="absolute -translate-x-1/2 text-[7.5px] font-mono font-bold text-[#55544B] select-none text-center"
+                      style={{ left: d.x }}
+                    >
+                      {d.label}
+                    </span>
                   ))}
+                </div>
+              </div>
+            </div>
 
-                  {/* Sight Alidade Rule */}
-                  <line x1="24" y1="46" x2="64" y2="24" stroke="#26231B" strokeWidth="0.8" strokeDasharray="4 1" />
-                </g>
-
-                {/* Engraved Astronomical Typography on Right */}
-                <text x="96" y="20" fill="#171714" fontSize="5.8" fontFamily="serif" fontStyle="italic" fontWeight="bold">Tab. XII — ASTROLABIUM PLANUM</text>
-                <text x="96" y="30" fill="#55544B" fontSize="4.8" fontFamily="monospace">Sphaera armillaris • Gradus</text>
-                <text x="96" y="40" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">FOCUS: {focusPct}% // COHERENTIA</text>
-                <text x="96" y="50" fill="#55544B" fontSize="4.8" fontFamily="monospace">Altitudo: 44.8° • Azimuth OK</text>
-                <text x="96" y="60" fill="#77766B" fontSize="4.2" fontFamily="monospace">OBSERVATORIUM • ATHENÆUM</text>
-              </svg>
+            {/* + 12% vs last week exactly matching reference image */}
+            <div className="text-[7.5px] font-mono font-medium text-[#171714] select-none mt-1 pl-[18px]">
+              + 12% vs last week
             </div>
           </div>
         </div>
