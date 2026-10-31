@@ -39,26 +39,26 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#181917] font-serif select-none overflow-hidden text-[#141512]">
+    <div className="flex-1 flex flex-col h-full bg-[#EAE6D9] font-serif select-none overflow-hidden text-[#141512]">
       {/* 1. Gazette Sub-Toolbar */}
-      <div className="bg-[#242522] border-b border-[#353630] px-4 py-1.5 flex items-center justify-between font-mono text-[9px] text-[#A6A498] flex-shrink-0">
+      <div className="bg-[#EAE6D9] border-b border-[#AAA99B] px-4 py-1.5 flex items-center justify-between font-mono text-[9px] text-[#55544B] flex-shrink-0">
         <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-1.5 font-semibold text-[#EDE8DB]">
-            <Newspaper className="w-3.5 h-3.5 text-[#C8C4B4]" />
+          <div className="flex items-center space-x-1.5 font-semibold text-[#141512]">
+            <Newspaper className="w-3.5 h-3.5 text-[#141512]" />
             <span className="uppercase tracking-widest text-[9.5px] font-bold">THE ATHENÆUM GAZETTE</span>
           </div>
-          <span className="text-[#555]">•</span>
-          <span className="text-[#888] font-medium">TABLET ARCHIVE EDITION • VOL. XLII • No. 104 • MAY 2025</span>
+          <span className="text-[#AAA99B]">•</span>
+          <span className="text-[#66655A] font-medium">TABLET ARCHIVE EDITION • VOL. XLII • No. 104 • MAY 2025</span>
         </div>
 
         {/* Segmented View Switcher: P. 1 - NEWS | P. 2 - SCIENCE | FULL SPREAD */}
-        <div className="flex items-center space-x-1 bg-[#141512] p-0.5 border border-[#3A3B34]">
+        <div className="flex items-center border border-[#141512] divide-x divide-[#141512] bg-[#EAE6D9] text-[#141512]">
           <button
             onClick={() => setActiveEdition('news')}
             className={`px-2.5 py-0.5 uppercase tracking-wider text-[8px] font-bold transition-colors ${
               activeEdition === 'news'
-                ? 'bg-[#EAE6DC] text-[#141512]'
-                : 'text-[#888] hover:text-[#EDE8DB]'
+                ? 'bg-[#141512] text-[#FAF8F3]'
+                : 'bg-[#EAE6D9] text-[#55544B] hover:bg-[#DDD8CB]'
             }`}
           >
             P. 1 — NEWS
@@ -67,8 +67,8 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
             onClick={() => setActiveEdition('science')}
             className={`px-2.5 py-0.5 uppercase tracking-wider text-[8px] font-bold transition-colors ${
               activeEdition === 'science'
-                ? 'bg-[#EAE6DC] text-[#141512]'
-                : 'text-[#888] hover:text-[#EDE8DB]'
+                ? 'bg-[#141512] text-[#FAF8F3]'
+                : 'bg-[#EAE6D9] text-[#55544B] hover:bg-[#DDD8CB]'
             }`}
           >
             P. 2 — SCIENCE
@@ -77,8 +77,8 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
             onClick={() => setActiveEdition('spread')}
             className={`px-3 py-0.5 uppercase tracking-wider text-[8px] font-bold transition-colors flex items-center space-x-1.5 ${
               activeEdition === 'spread'
-                ? 'bg-[#EAE6DC] text-[#141512]'
-                : 'text-[#888] hover:text-[#EDE8DB]'
+                ? 'bg-[#141512] text-[#FAF8F3]'
+                : 'bg-[#EAE6D9] text-[#55544B] hover:bg-[#DDD8CB]'
             }`}
           >
             <Columns className="w-2.5 h-2.5" />
@@ -90,7 +90,7 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
         {onOpenNewRecord && (
           <button
             onClick={onOpenNewRecord}
-            className="px-2.5 py-0.5 bg-[#141512] hover:bg-[#2A2B27] active:bg-[#333] text-[#EDE8DB] border border-[#444] text-[8px] font-bold uppercase tracking-wider transition-colors flex items-center space-x-1 rounded-[0.5px]"
+            className="px-2.5 py-0.5 bg-[#EAE6D9] hover:bg-[#DDD8CB] active:bg-[#CCC7B8] text-[#141512] border border-[#AAA99B] text-[8px] font-bold uppercase tracking-wider transition-colors flex items-center space-x-1 rounded-[0.5px]"
           >
             <Plus className="w-2.5 h-2.5" />
             <span>NEW RECORD</span>
@@ -99,7 +99,7 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
       </div>
 
       {/* 2. Main Broadsheet Scrolling Body */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#161715] flex justify-center items-start">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#D7D2BF] flex justify-center items-start">
         <div className={`w-full transition-all duration-200 ${
           activeEdition === 'spread' 
             ? 'max-w-[1460px] grid grid-cols-1 xl:grid-cols-2 gap-6' 
@@ -110,19 +110,10 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
           {/* PAGE 1: "NEWS" BROADSHEET                                                 */}
           {/* ========================================================================= */}
           {(activeEdition === 'news' || activeEdition === 'spread') && (
-            <div className="relative flex">
-              {/* Left Outer Edge Section Tab */}
-              <div className="w-5 flex-shrink-0 bg-[#2A2B27] border-y border-l border-[#3E4038] flex flex-col items-center justify-center py-4 select-none">
-                <span className="font-mono text-[7px] font-bold tracking-[0.25em] text-[#8C8B7E] uppercase -rotate-90 whitespace-nowrap">
-                  SCIENCE
-                </span>
-              </div>
-
-              {/* Page Sheet */}
-              <article className="flex-1 bg-[#F5F2EA] border border-[#222] shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
-                <div>
-                  {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
-                  <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#222]">
+            <article className="bg-[#FAF8F3] border border-[#141512] shadow-[0_4px_25px_rgba(0,0,0,0.12)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
+              <div>
+                {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
+                <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#222]">
                     <div className="flex items-center space-x-2">
                       <div className="w-3.5 h-2.5 flex flex-col justify-between cursor-pointer opacity-70 hover:opacity-100">
                         <span className="w-3 h-[1.5px] bg-[#222]"></span>
@@ -470,28 +461,15 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
 
                 </div>
               </article>
-            </div>
           )}
 
           {/* ========================================================================= */}
           {/* PAGE 2: "SCIENCE" BROADSHEET                                              */}
           {/* ========================================================================= */}
           {(activeEdition === 'science' || activeEdition === 'spread') && (
-            <div className="relative flex">
-              {/* Inner Margin Tabs: BELIEF & IMAGE */}
-              <div className="w-5 flex-shrink-0 bg-[#2A2B27] border-y border-l border-[#3E4038] flex flex-col items-center justify-between py-6 select-none">
-                <span className="font-mono text-[6.5px] font-bold tracking-[0.2em] text-[#8C8B7E] uppercase -rotate-90 whitespace-nowrap">
-                  IMAGE
-                </span>
-                <span className="font-mono text-[6.5px] font-bold tracking-[0.2em] text-[#C4C0B0] uppercase -rotate-90 whitespace-nowrap">
-                  BELIEF
-                </span>
-              </div>
-
-              {/* Page Sheet */}
-              <article className="flex-1 bg-[#F5F2EA] border border-[#222] shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
-                <div>
-                  {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
+            <article className="bg-[#FAF8F3] border border-[#141512] shadow-[0_4px_25px_rgba(0,0,0,0.12)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
+              <div>
+                {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
                   <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#222]">
                     <div className="flex items-center space-x-2">
                       <div className="w-3.5 h-2.5 flex flex-col justify-between cursor-pointer opacity-70 hover:opacity-100">
@@ -926,14 +904,6 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
 
                 </div>
               </article>
-
-              {/* Right Outer Edge Section Tab */}
-              <div className="w-5 flex-shrink-0 bg-[#2A2B27] border-y border-r border-[#3E4038] flex flex-col items-center justify-center py-4 select-none">
-                <span className="font-mono text-[7px] font-bold tracking-[0.25em] text-[#8C8B7E] uppercase rotate-90 whitespace-nowrap">
-                  NEWS
-                </span>
-              </div>
-            </div>
           )}
 
         </div>
