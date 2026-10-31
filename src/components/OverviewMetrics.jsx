@@ -336,7 +336,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 3: WORKS & MECHANICAL GEAR / TRANSMISSION SCHEMATIC   */}
+        {/* COLUMN 3: WORKS & NATURAL HISTORY ANATOMICAL SPECIMEN        */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
@@ -361,12 +361,12 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Mechanical Transmission / Gear Assembly Illustration */}
+          {/* Bottom: Engraved Winged Specimen / Entomological Armature */}
           <div className="h-[86px] flex flex-col justify-center">
             <div className="relative w-full h-[76px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
               {/* Subtle background technical grid */}
               <div 
-                className="absolute inset-0 opacity-15 pointer-events-none"
+                className="absolute inset-0 opacity-12 pointer-events-none"
                 style={{
                   backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
                   backgroundSize: '10px 10px'
@@ -374,58 +374,73 @@ export function OverviewMetrics({ onNavigate }) {
               />
 
               <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
-                {/* Primary Drive Gear (radius 24 at x=38, y=35) */}
-                <circle cx="38" cy="35" r="26" fill="none" stroke="#A8A495" strokeWidth="0.6" strokeDasharray="2 2" />
-                <circle cx="38" cy="35" r="22" fill="#EAE7D9" stroke="#171714" strokeWidth="1" />
-                <circle cx="38" cy="35" r="16" fill="none" stroke="#74866A" strokeWidth="0.75" />
-                
-                {/* Gear cogs for primary gear */}
-                {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(deg => {
-                  const rad = (deg * Math.PI) / 180;
-                  const x1 = 38 + Math.cos(rad) * 22;
-                  const y1 = 35 + Math.sin(rad) * 22;
-                  const x2 = 38 + Math.cos(rad) * 25.5;
-                  const y2 = 35 + Math.sin(rad) * 25.5;
-                  return <line key={`cog-${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#3A4B35" strokeWidth="1.8" strokeLinecap="square" />;
-                })}
+                {/* Proportion Guide Circle */}
+                <circle cx="44" cy="35" r="26" fill="none" stroke="#C4BFA0" strokeWidth="0.5" strokeDasharray="1.5 2" />
 
-                {/* Primary gear axle and cross spokes */}
-                <line x1="22" y1="35" x2="54" y2="35" stroke="#55544B" strokeWidth="0.75" />
-                <line x1="38" y1="19" x2="38" y2="51" stroke="#55544B" strokeWidth="0.75" />
-                <circle cx="38" cy="35" r="5" fill="#171714" />
-                <circle cx="38" cy="35" r="1.5" fill="#FAF8F3" />
+                {/* Symmetrical Entomological Winged Specimen (center x=44, y=35) */}
+                <g stroke="#26231B" strokeWidth="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  {/* Left Membranous Wing */}
+                  <path 
+                    d="M 44,27 C 28,12 10,18 8,30 C 8,42 26,44 44,38" 
+                    fill="#74866A" 
+                    fillOpacity="0.18" 
+                    stroke="#383327" 
+                    strokeWidth="0.8" 
+                  />
+                  {/* Left Wing Venation */}
+                  <path d="M 44,27 C 26,24 16,30 10,34" stroke="#524C3A" strokeWidth="0.5" />
+                  <path d="M 28,25 C 22,34 16,38 12,40" stroke="#665F49" strokeWidth="0.4" />
+                  <path d="M 36,26 C 30,36 24,42 18,42" stroke="#665F49" strokeWidth="0.4" />
 
-                {/* Secondary Interlocking Pinion Gear (radius 15 at x=78, y=35) */}
-                <circle cx="78" cy="35" r="17" fill="none" stroke="#A8A495" strokeWidth="0.5" strokeDasharray="1 2" />
-                <circle cx="78" cy="35" r="14" fill="#EAE7D9" stroke="#171714" strokeWidth="0.8" />
-                {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => {
-                  const rad = (deg * Math.PI) / 180;
-                  const x1 = 78 + Math.cos(rad) * 14;
-                  const y1 = 35 + Math.sin(rad) * 14;
-                  const x2 = 78 + Math.cos(rad) * 16.5;
-                  const y2 = 35 + Math.sin(rad) * 16.5;
-                  return <line key={`pcog-${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#74866A" strokeWidth="1.4" strokeLinecap="square" />;
-                })}
-                <circle cx="78" cy="35" r="3.5" fill="#3A4B35" />
-                <circle cx="78" cy="35" r="1" fill="#FAF8F3" />
+                  {/* Right Membranous Wing */}
+                  <path 
+                    d="M 44,27 C 60,12 78,18 80,30 C 80,42 62,44 44,38" 
+                    fill="#74866A" 
+                    fillOpacity="0.18" 
+                    stroke="#383327" 
+                    strokeWidth="0.8" 
+                  />
+                  {/* Right Wing Venation */}
+                  <path d="M 44,27 C 62,24 72,30 78,34" stroke="#524C3A" strokeWidth="0.5" />
+                  <path d="M 60,25 C 66,34 72,38 76,40" stroke="#665F49" strokeWidth="0.4" />
+                  <path d="M 52,26 C 58,36 64,42 70,42" stroke="#665F49" strokeWidth="0.4" />
 
-                {/* Drive Transmission Coupling Arm */}
-                <line x1="38" y1="14" x2="78" y2="21" stroke="#74866A" strokeWidth="0.9" strokeDasharray="3 2" />
-                <line x1="38" y1="56" x2="78" y2="49" stroke="#74866A" strokeWidth="0.9" strokeDasharray="3 2" />
+                  {/* Head & Antennae */}
+                  <ellipse cx="44" cy="19" rx="3" ry="3.5" fill="#C2B9A5" />
+                  <path d="M 42,16 Q 36,9 31,11" strokeWidth="0.6" />
+                  <path d="M 46,16 Q 52,9 57,11" strokeWidth="0.6" />
 
-                {/* Technical Annotation Metadata on Right */}
-                <text x="102" y="19" fill="#171714" fontSize="5.5" fontFamily="monospace" fontWeight="bold">MECHANICAL_TRANSMISSION</text>
-                <text x="102" y="29" fill="#55544B" fontSize="5" fontFamily="monospace">RATIO: 3.75:1 • DUAL AXIS</text>
-                <text x="102" y="39" fill="#55544B" fontSize="5" fontFamily="monospace">PROJECTS: {projectWorksCount} • RESEARCH: {researchWorksCount}</text>
-                <text x="102" y="49" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">ACTIVE WORKS: {activeWorksCount} UNITS</text>
-                <text x="102" y="59" fill="#77766B" fontSize="4.5" fontFamily="monospace">POWER_BUS: 0x88 // ENGAGED</text>
+                  {/* Thorax */}
+                  <path d="M 40,23 C 38,28 39,32 44,34 C 49,32 50,28 48,23 Z" fill="#B3A892" />
+                  <line x1="41" y1="28" x2="47" y2="28" strokeWidth="0.5" />
+
+                  {/* Segmented Abdomen */}
+                  <ellipse cx="44" cy="45" rx="4.5" ry="11" fill="#A89C86" />
+                  <line x1="40" y1="38" x2="48" y2="38" strokeWidth="0.5" />
+                  <line x1="39.5" y1="43" x2="48.5" y2="43" strokeWidth="0.5" />
+                  <line x1="40" y1="48" x2="48" y2="48" strokeWidth="0.5" />
+                  <line x1="41.5" y1="53" x2="46.5" y2="53" strokeWidth="0.5" />
+
+                  {/* Articulated Fore & Hind Legs */}
+                  <path d="M 40,24 Q 28,21 24,16" strokeWidth="0.6" />
+                  <path d="M 48,24 Q 60,21 64,16" strokeWidth="0.6" />
+                  <path d="M 40,32 Q 28,38 25,50" strokeWidth="0.6" />
+                  <path d="M 48,32 Q 60,38 63,50" strokeWidth="0.6" />
+                </g>
+
+                {/* Engraved Plate Typography on Right */}
+                <text x="96" y="20" fill="#171714" fontSize="5.8" fontFamily="serif" fontStyle="italic" fontWeight="bold">Tab. IV — SPECIMEN ALATUM</text>
+                <text x="96" y="30" fill="#55544B" fontSize="4.8" fontFamily="monospace">Ordo: Coleoptera • Structura</text>
+                <text x="96" y="40" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">ACTIVE: {activeWorksCount} WORKS // 4 SECTORS</text>
+                <text x="96" y="50" fill="#55544B" fontSize="4.8" fontFamily="monospace">Projects: {projectWorksCount} • Research: {researchWorksCount}</text>
+                <text x="96" y="60" fill="#77766B" fontSize="4.2" fontFamily="monospace">CODEX BIOLOGICA • FABRICA</text>
               </svg>
             </div>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 4: ENTRIES & ARCHIVAL LEDGER MATRIX GRID              */}
+        {/* COLUMN 4: ENTRIES & BOTANICAL HERBARIUM TAXONOMY             */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
@@ -450,12 +465,12 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Archival Ledger Matrix / Filing Index Grid Illustration */}
+          {/* Bottom: Engraved Botanical Leaf Taxonomy Plate */}
           <div className="h-[86px] flex flex-col justify-center">
             <div className="relative w-full h-[76px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
               {/* Subtle background technical grid */}
               <div 
-                className="absolute inset-0 opacity-15 pointer-events-none"
+                className="absolute inset-0 opacity-12 pointer-events-none"
                 style={{
                   backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
                   backgroundSize: '10px 10px'
@@ -463,67 +478,64 @@ export function OverviewMetrics({ onNavigate }) {
               />
 
               <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
-                {/* Ledger Index Matrix Frame (Left: x=6 to x=86, y=6 to y=64) */}
-                <rect x="6" y="8" width="80" height="54" fill="#EAE7D9" stroke="#B8B4A5" strokeWidth="0.75" />
-                
-                {/* Horizontal registry rows */}
-                {[20, 32, 44, 56].map(y => (
-                  <line key={`r-${y}`} x1="6" y1={y} x2="86" y2={y} stroke="#D0CCBD" strokeWidth="0.5" />
-                ))}
+                {/* Botanical Leaf Specimen (center x=40, y=35) */}
+                <g stroke="#26231B" strokeWidth="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  {/* Leaf Lamina Blade with soft olive tint */}
+                  <path 
+                    d="M 40,10 C 22,18 20,44 40,58 C 60,44 58,18 40,10 Z" 
+                    fill="#74866A" 
+                    fillOpacity="0.2" 
+                    stroke="#383327" 
+                    strokeWidth="0.9" 
+                  />
 
-                {/* Vertical day columns: M T W T F S S */}
-                {[17.4, 28.8, 40.2, 51.6, 63.0, 74.4].map(x => (
-                  <line key={`c-${x}`} x1={x} y1="8" x2={x} y2="62" stroke="#D0CCBD" strokeWidth="0.5" strokeDasharray="1 2" />
-                ))}
+                  {/* Central Costa Midrib */}
+                  <path d="M 40,10 L 40,64" stroke="#26231B" strokeWidth="1" />
 
-                {/* Weekday column headers */}
-                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
-                  <text key={`hd-${i}`} x={11.7 + i * 11.4} y="16" textAnchor="middle" fill="#55544B" fontSize="4.5" fontFamily="monospace" fontWeight="bold">
-                    {d}
-                  </text>
-                ))}
+                  {/* Primary & Secondary Lateral Veins */}
+                  <path d="M 40,18 Q 30,22 25,24" stroke="#4F4837" strokeWidth="0.6" />
+                  <path d="M 40,18 Q 50,22 55,24" stroke="#4F4837" strokeWidth="0.6" />
 
-                {/* Filled ledger punch markers representing active daily entries */}
+                  <path d="M 40,26 Q 28,30 22,34" stroke="#4F4837" strokeWidth="0.6" />
+                  <path d="M 40,26 Q 52,30 58,34" stroke="#4F4837" strokeWidth="0.6" />
+
+                  <path d="M 40,34 Q 28,38 23,43" stroke="#4F4837" strokeWidth="0.6" />
+                  <path d="M 40,34 Q 52,38 57,43" stroke="#4F4837" strokeWidth="0.6" />
+
+                  <path d="M 40,43 Q 32,47 28,51" stroke="#4F4837" strokeWidth="0.5" />
+                  <path d="M 40,43 Q 48,47 52,51" stroke="#4F4837" strokeWidth="0.5" />
+
+                  {/* Tertiary Reticulate Veinlets */}
+                  <line x1="33" y1="21" x2="31" y2="28" stroke="#69614B" strokeWidth="0.4" strokeDasharray="1 1" />
+                  <line x1="47" y1="21" x2="49" y2="28" stroke="#69614B" strokeWidth="0.4" strokeDasharray="1 1" />
+                  <line x1="30" y1="29" x2="28" y2="36" stroke="#69614B" strokeWidth="0.4" strokeDasharray="1 1" />
+                  <line x1="50" y1="29" x2="52" y2="36" stroke="#69614B" strokeWidth="0.4" strokeDasharray="1 1" />
+                </g>
+
+                {/* Cellular Inset Detail Circle (x=73, y=42) */}
+                <circle cx="72" cy="40" r="11" fill="#EAE7D9" stroke="#524C3A" strokeWidth="0.75" />
+                <circle cx="72" cy="40" r="9.5" fill="none" stroke="#74866A" strokeWidth="0.4" strokeDasharray="1 1.5" />
+                {/* Microscopic honeycomb plant tissue cells */}
                 {[
-                  [0, 2], [0, 3],
-                  [1, 1], [1, 2], [1, 3],
-                  [2, 0], [2, 1], [2, 2], [2, 3],
-                  [3, 0], [3, 1], [3, 2], [3, 3], // Thursday peak
-                  [4, 1], [4, 2], [4, 3],
-                  [5, 2], [5, 3],
-                  [6, 3]
-                ].map(([col, row], idx) => {
-                  const cx = 11.7 + col * 11.4;
-                  const cy = 26 + row * 12;
-                  const isPeak = col === 3;
-                  return (
-                    <rect 
-                      key={`entry-${idx}`} 
-                      x={cx - 3.2} 
-                      y={cy - 3.2} 
-                      width="6.4" 
-                      height="6.4" 
-                      rx="0.5"
-                      fill={isPeak ? '#30432B' : '#74866A'} 
-                      stroke="#171714" 
-                      strokeWidth="0.4"
-                    />
-                  );
-                })}
+                  [72, 36], [68, 38], [76, 38], [68, 42], [76, 42], [72, 44]
+                ].map(([cx, cy], idx) => (
+                  <circle key={`cell-${idx}`} cx={cx} cy={cy} r="1.8" fill="#B5AC98" stroke="#3A3528" strokeWidth="0.4" />
+                ))}
+                <text x="72" y="55" fill="#69614B" fontSize="4" fontFamily="monospace" textAnchor="middle">CELLULA</text>
 
-                {/* Technical Ledger Metadata on Right */}
-                <text x="96" y="19" fill="#171714" fontSize="5.5" fontFamily="monospace" fontWeight="bold">ARCHIVAL_LEDGER_INDEX</text>
-                <text x="96" y="29" fill="#55544B" fontSize="5" fontFamily="monospace">REGISTRY: SEC-09 // WK-18</text>
-                <text x="96" y="39" fill="#55544B" fontSize="5" fontFamily="monospace">TOTAL_ENTRIES: {entriesCount} LOGS</text>
-                <text x="96" y="49" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">DATABASE_INTEGRITY: 100%</text>
-                <text x="96" y="59" fill="#77766B" fontSize="4.5" fontFamily="monospace">INDEXED_DB • LOCAL_SYNC</text>
+                {/* Engraved Botanical Typography on Right */}
+                <text x="96" y="20" fill="#171714" fontSize="5.8" fontFamily="serif" fontStyle="italic" fontWeight="bold">Tab. VII — HERBARIUM TAXONOMIA</text>
+                <text x="96" y="30" fill="#55544B" fontSize="4.8" fontFamily="monospace">Nervatio reticulata • Folium</text>
+                <text x="96" y="40" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">ENTRIES: {entriesCount} SPECIMENS // WK-18</text>
+                <text x="96" y="50" fill="#55544B" fontSize="4.8" fontFamily="monospace">Status: Indexatum • Archival DB</text>
+                <text x="96" y="60" fill="#77766B" fontSize="4.2" fontFamily="monospace">COLLECTIO BOTANICA • MAY 2025</text>
               </svg>
             </div>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 5: FOCUS & OPTICAL COLLIMATOR RETICLE SCHEMATIC       */}
+        {/* COLUMN 5: FOCUS & CELESTIAL ASTROLABE / ARMILLARY SPHERE     */}
         {/* ============================================================ */}
         <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[178px]">
           {/* Top: Header, Number, Subtitle below */}
@@ -544,12 +556,12 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Archival Optical Focus Illustration */}
+          {/* Bottom: Engraved Celestial Astrolabe / Armillary Sphere */}
           <div className="h-[86px] flex flex-col justify-center">
             <div className="relative w-full h-[76px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
               {/* Subtle background technical grid */}
               <div 
-                className="absolute inset-0 opacity-15 pointer-events-none"
+                className="absolute inset-0 opacity-12 pointer-events-none"
                 style={{
                   backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
                   backgroundSize: '10px 10px'
@@ -557,52 +569,54 @@ export function OverviewMetrics({ onNavigate }) {
               />
 
               <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
-                {/* Outer concentric optical calibration rings */}
-                <circle cx="38" cy="35" r="28" fill="none" stroke="#A8A495" strokeWidth="0.6" strokeDasharray="2 2" />
-                <circle cx="38" cy="35" r="21" fill="none" stroke="#74866A" strokeWidth="0.8" />
-                <circle cx="38" cy="35" r="14" fill="#EAE7D9" stroke="#171714" strokeWidth="1" />
-                <circle cx="38" cy="35" r="4" fill="#171714" />
-                <circle cx="38" cy="35" r="1.2" fill="#FAF8F3" />
+                {/* Celestial Armillary Sphere / Astrolabe (center x=44, y=35) */}
+                <g stroke="#26231B" strokeWidth="0.8" fill="none">
+                  {/* Outer Meridian Ring */}
+                  <circle cx="44" cy="35" r="26" stroke="#26231B" strokeWidth="1" />
+                  <circle cx="44" cy="35" r="24" stroke="#74866A" strokeWidth="0.5" strokeDasharray="1 1.5" />
 
-                {/* Reticle Crosshairs with micro millimeter ticks */}
-                <line x1="6" y1="35" x2="70" y2="35" stroke="#171714" strokeWidth="0.6" />
-                <line x1="38" y1="3" x2="38" y2="67" stroke="#171714" strokeWidth="0.6" />
-                {[18, 26, 50, 58].map(x => (
-                  <line key={`xt-${x}`} x1={x} y1="33" x2={x} y2="37" stroke="#55544B" strokeWidth="0.5" />
-                ))}
-                {[15, 23, 47, 55].map(y => (
-                  <line key={`yt-${y}`} x1="36" y1={y} x2="40" y2={y} stroke="#55544B" strokeWidth="0.5" />
-                ))}
+                  {/* Meridian degree tick marks */}
+                  {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(deg => {
+                    const rad = (deg * Math.PI) / 180;
+                    const x1 = 44 + Math.cos(rad) * 24;
+                    const y1 = 35 + Math.sin(rad) * 24;
+                    const x2 = 44 + Math.cos(rad) * 26;
+                    const y2 = 35 + Math.sin(rad) * 26;
+                    return <line key={`adeg-${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#383327" strokeWidth="0.75" />;
+                  })}
 
-                {/* 45-degree diagonal ray ticks */}
-                <line x1="20" y1="17" x2="26" y2="23" stroke="#74866A" strokeWidth="0.75" />
-                <line x1="56" y1="53" x2="50" y2="47" stroke="#74866A" strokeWidth="0.75" />
-                <line x1="56" y1="17" x2="50" y2="23" stroke="#74866A" strokeWidth="0.75" />
-                <line x1="20" y1="53" x2="26" y2="47" stroke="#74866A" strokeWidth="0.75" />
+                  {/* Inclined Ecliptic Zodiac Band (23.5 degrees) */}
+                  <ellipse cx="44" cy="35" rx="23" ry="11" transform="rotate(-24 44 35)" stroke="#3E5139" strokeWidth="0.9" fill="#74866A" fillOpacity="0.12" />
+                  
+                  {/* Horizontal Celestial Equator */}
+                  <ellipse cx="44" cy="35" rx="24" ry="7" stroke="#524C3A" strokeWidth="0.7" />
 
-                {/* Optical Beam / Wave Interference Curve on right */}
-                <path 
-                  d="M 80,35 C 93,18 106,52 120,35 C 134,18 148,52 166,35" 
-                  fill="none" 
-                  stroke="#3E5139" 
-                  strokeWidth="1.2" 
-                  strokeLinecap="round"
-                />
-                <circle cx="120" cy="35" r="2" fill="#3E5139" />
-                <circle cx="166" cy="35" r="2" fill="#3E5139" />
+                  {/* Polar Axis Pin */}
+                  <line x1="44" y1="6" x2="44" y2="64" stroke="#171714" strokeWidth="1" />
+                  <circle cx="44" cy="6" r="1.5" fill="#171714" />
+                  <circle cx="44" cy="64" r="1.5" fill="#171714" />
 
-                {/* Vertical Optical Aperture Scale */}
-                <line x1="84" y1="14" x2="84" y2="56" stroke="#9A9687" strokeWidth="0.6" />
-                {[14, 21, 28, 35, 42, 49, 56].map(y => (
-                  <line key={`s-${y}`} x1="82" y1={y} x2="86" y2={y} stroke="#74866A" strokeWidth="0.6" />
-                ))}
+                  {/* Central Earth / Focal Pivot Sphere */}
+                  <circle cx="44" cy="35" r="5" fill="#C2B9A5" stroke="#26231B" strokeWidth="0.8" />
+                  <circle cx="44" cy="35" r="1.5" fill="#171714" />
 
-                {/* Technical Annotation Metadata */}
-                <text x="94" y="20" fill="#171714" fontSize="5.5" fontFamily="monospace" fontWeight="bold">OPTICAL_COLLIMATOR // MK.IV</text>
-                <text x="94" y="30" fill="#55544B" fontSize="5" fontFamily="monospace">AXIS: α-84.2° NNE</text>
-                <text x="94" y="40" fill="#55544B" fontSize="5" fontFamily="monospace">APERTURE: f/2.8</text>
-                <text x="94" y="50" fill="#30432B" fontSize="5.2" fontFamily="monospace" fontWeight="bold">FOCUS: {focusPct}% // COHERENT</text>
-                <text x="94" y="60" fill="#77766B" fontSize="4.5" fontFamily="monospace">SYS_CALIB • CALIBRATED</text>
+                  {/* Constellation Stars / Reticle points */}
+                  {[
+                    [32, 22], [54, 20], [30, 42], [58, 44], [44, 22]
+                  ].map(([sx, sy], idx) => (
+                    <circle key={`star-${idx}`} cx={sx} cy={sy} r="0.9" fill="#171714" />
+                  ))}
+
+                  {/* Sight Alidade Rule */}
+                  <line x1="24" y1="46" x2="64" y2="24" stroke="#26231B" strokeWidth="0.8" strokeDasharray="4 1" />
+                </g>
+
+                {/* Engraved Astronomical Typography on Right */}
+                <text x="96" y="20" fill="#171714" fontSize="5.8" fontFamily="serif" fontStyle="italic" fontWeight="bold">Tab. XII — ASTROLABIUM PLANUM</text>
+                <text x="96" y="30" fill="#55544B" fontSize="4.8" fontFamily="monospace">Sphaera armillaris • Gradus</text>
+                <text x="96" y="40" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">FOCUS: {focusPct}% // COHERENTIA</text>
+                <text x="96" y="50" fill="#55544B" fontSize="4.8" fontFamily="monospace">Altitudo: 44.8° • Azimuth OK</text>
+                <text x="96" y="60" fill="#77766B" fontSize="4.2" fontFamily="monospace">OBSERVATORIUM • ATHENÆUM</text>
               </svg>
             </div>
           </div>
