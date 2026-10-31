@@ -84,7 +84,7 @@ export function CalendarView({ actions = [], entries = [] }) {
         {/* Month Grid */}
         <div className="flex-1 p-4 border-r border-[#AAA99B] overflow-y-auto">
           {/* Weekday headers */}
-          <div className="grid grid-cols-7 border-b border-[#AAA99B] pb-1 text-center text-[9px] font-bold text-[#666]">
+          <div className="grid grid-cols-7 border-b border-[#AAA99B] pb-1.5 text-center text-[9.5px] font-bold text-[#141512] font-mono tracking-wider">
             <span>MON</span>
             <span>TUE</span>
             <span>WED</span>
@@ -95,7 +95,7 @@ export function CalendarView({ actions = [], entries = [] }) {
           </div>
 
           {/* Days Grid */}
-          <div className="grid grid-cols-7 gap-1 pt-2">
+          <div className="grid grid-cols-7 gap-1.5 pt-2">
             {calendarDays.slice(0, 35).map((d, idx) => {
               if (!d) {
                 return <div key={idx} className="h-16 border border-transparent bg-transparent opacity-20" />;
@@ -109,30 +109,32 @@ export function CalendarView({ actions = [], entries = [] }) {
                   onClick={() => setSelectedDay(d)}
                   className={`h-16 border p-1.5 flex flex-col justify-between transition-colors cursor-pointer ${
                     isSelected
-                      ? 'border-[#25251F] bg-[#DFDBD0] shadow-[inset_0_0_0_1px_#25251F]'
+                      ? 'border-[#141512] bg-[#DDD8CB] shadow-[inset_0_0_0_1.5px_#141512]'
                       : 'border-[#AAA99B] bg-[#FAF8F3] hover:bg-[#ECE7DB]'
                   }`}
                 >
                   <div className="flex justify-between items-center">
                     <span className={`text-[10px] font-mono ${
                       isToday 
-                        ? 'bg-[#25251F] text-[#E9E5D8] px-1 font-bold' 
-                        : 'font-semibold text-[#25251F]'
+                        ? 'bg-[#141512] text-[#FAF8F3] px-1 font-bold rounded-[0.5px]' 
+                        : isSelected 
+                          ? 'font-bold text-[#141512]' 
+                          : 'font-bold text-[#25251F]'
                     }`}>
                       {d}
                     </span>
                     {hasEvents && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#738A62]"></span>
+                      <span className="w-2 h-2 rounded-full bg-[#738A62]"></span>
                     )}
                   </div>
 
                   {hasEvents && (
                     <div className="space-y-0.5">
-                      <div className="text-[6.5px] truncate font-mono text-[#555] bg-[#E9E5D8] px-0.5 border border-[#AAA99B]/50">
+                      <div className="text-[7px] truncate font-mono font-medium text-[#141512] bg-[#E9E5D8] px-1 py-0.5 border border-[#AAA99B]">
                         {daySchedule[d][0].title}
                       </div>
                       {daySchedule[d].length > 1 && (
-                        <div className="text-[6px] text-[#77766B]">
+                        <div className="text-[6.5px] font-mono font-bold text-[#55544B]">
                           +{daySchedule[d].length - 1} more
                         </div>
                       )}

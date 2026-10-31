@@ -1,12 +1,12 @@
 import React from 'react';
 
 export function OverviewMetrics({ onNavigate }) {
-  // Canonical reference values from Screenshot 2:
-  // Column 1: TODAY 09 (FRIDAY MAY 2025)
+  // Canonical reference values from Reference Screenshot:
+  // Column 1: TODAY 09 (FRIDAY MAY 2025) + Mini Calendar Month Grid
   // Column 2: ACTIONS 12 DUE TODAY (5 To do, 4 In progress, 1 Waiting, 2 Completed)
-  // Column 3: WORKS 07 ACTIVE (3 Projects, 2 Research, 1 Creative, 1 Maintenance)
+  // Column 3: WORKS 07 ACTIVE (3 Projects, 2 Research, 1 Creative, 1 Maintenance) + Donut Ring
   // Column 4: ENTRIES 18 THIS WEEK (7-bar activity histogram)
-  // Column 5: FOCUS 65% WEEKLY PROGRESS (Sparkline chart with ≈ 12% vs last week)
+  // Column 5: FOCUS 65% WEEKLY PROGRESS (Sparkline chart with ▲ 12% vs last week)
 
   // May 2025 Calendar: May 1st was a Thursday
   // Mon Tue Wed Thu Fri Sat Sun
@@ -16,19 +16,20 @@ export function OverviewMetrics({ onNavigate }) {
   const calRow4 = ['19', '20', '21', '22', '23', '24', '25'];
   const calRow5 = ['26', '27', '28', '29', '30', '31', '·'];
 
-  // 7-day activity bar chart distribution matching Screenshot 2
+  // 7-day activity bar chart distribution matching Reference Image
   const bars = [
-    { day: 'M', h: 11 },
-    { day: 'T', h: 15 },
-    { day: 'W', h: 22 },
-    { day: 'T', h: 26 },
-    { day: 'F', h: 34 },
-    { day: 'S', h: 14 },
-    { day: 'S', h: 5 }
+    { day: 'M', count: 2, h: 16 },
+    { day: 'T', count: 3, h: 22 },
+    { day: 'W', count: 4, h: 28 },
+    { day: 'T', count: 5, h: 36 },
+    { day: 'F', count: 6, h: 48 },
+    { day: 'S', count: 2, h: 18 },
+    { day: 'S', count: 1, h: 10 }
   ];
 
   const numeralStyle = {
     fontFamily: '"Cormorant Garamond", "Newsreader", Georgia, serif',
+    fontWeight: 700,
     fontVariantNumeric: 'lining-nums tabular-nums',
     fontFeatureSettings: '"lnum" 1, "tnum" 1'
   };
@@ -36,73 +37,103 @@ export function OverviewMetrics({ onNavigate }) {
   return (
     <div className="space-y-1.5 select-none font-mono">
       {/* Section Header */}
-      <div className="text-[9.5px] uppercase tracking-widest font-mono font-medium text-[#77766B]">
-        OVERVIEW
+      <div className="flex items-center justify-between text-[10px] uppercase tracking-widest font-mono font-bold text-[#25251F]">
+        <div className="flex items-center space-x-1.5">
+          <span className="w-1.5 h-1.5 bg-[#25251F] inline-block"></span>
+          <span>OVERVIEW</span>
+        </div>
+        <span className="text-[8px] font-medium text-[#77766B] tracking-wider">
+          SYSTEM_METRICS // MAY 2025
+        </span>
       </div>
 
-      {/* Unified Archival Overview Panel — Single Continuous Box with 5 Equal Columns */}
+      {/* Unified Archival Overview Panel — Elongated Continuous Box with 5 Equal Columns */}
       <div className="border border-[#AAA99B] bg-[#E9E5D8] grid grid-cols-5 divide-x divide-[#AAA99B] shadow-sm">
         
         {/* ============================================================ */}
-        {/* COLUMN 1: TODAY                                              */}
+        {/* COLUMN 1: TODAY & ARCHIVAL CALENDAR                          */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('calendar')}
-          className="flex flex-col justify-between p-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[134px]"
+          className="flex flex-col justify-between p-3 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[174px] group"
           title="Click to open Archival Calendar"
         >
           {/* Top: Header & Number */}
           <div>
-            <div className="text-[7.5px] uppercase tracking-wider text-[#77766B] font-medium leading-none">
-              TODAY
+            <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none flex items-center justify-between">
+              <span>TODAY</span>
+              <span className="text-[7px] text-[#77766B] group-hover:text-[#25251F] font-mono transition-colors">↗</span>
             </div>
-            <div className="flex items-baseline space-x-2 mt-1">
+            <div className="flex items-baseline space-x-2.5 mt-1.5">
               <span 
-                className="text-[38px] font-normal text-[#25251F] leading-none tracking-tight"
+                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 09
               </span>
-              <div className="flex flex-col text-[7.5px] font-mono uppercase leading-tight">
-                <span className="font-semibold text-[#25251F]">FRIDAY</span>
-                <span className="text-[#77766B]">MAY 2025</span>
+              <div className="flex flex-col text-[8.5px] font-mono uppercase leading-tight">
+                <span className="font-bold text-[#141512] tracking-wide">FRIDAY</span>
+                <span className="text-[7.5px] font-semibold text-[#55544B] tracking-wider mt-0.5">MAY 2025</span>
               </div>
             </div>
           </div>
 
-          {/* Bottom: Mini 5-week Calendar */}
-          <div className="pt-2 border-t border-[#D5D1C4]">
+          {/* Bottom: Mini 5-week Calendar Month Grid */}
+          <div className="pt-2 border-t border-[#AAA99B]">
             {/* Weekday headers: M T W T F S S */}
-            <div className="grid grid-cols-7 text-[6.5px] text-[#8C8B7E] text-center mb-0.5">
+            <div className="grid grid-cols-7 text-[7px] font-mono font-bold text-[#55544B] text-center mb-1">
               <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
             </div>
 
             {/* Calendar Days Rows */}
-            <div className="grid grid-cols-7 text-[7px] text-[#55544B] text-center gap-y-[1px] leading-tight">
-              {calRow1.map((d, i) => (
-                <span key={i} className={d !== '·' ? 'text-[#3E3D35]' : 'text-[#8C8B7E]/50'}>{d}</span>
-              ))}
-              {calRow2.map((d, i) => (
-                <span 
-                  key={i} 
-                  className={`flex items-center justify-center h-2.5 w-2.5 mx-auto ${
-                    d === '9' 
-                      ? 'bg-[#25251F] text-[#E9E5D8] font-bold rounded-[0.5px]' 
-                      : 'text-[#3E3D35]'
-                  }`}
-                >
-                  {d}
-                </span>
-              ))}
-              {calRow3.map((d, i) => (
-                <span key={i} className="text-[#3E3D35]">{d}</span>
-              ))}
-              {calRow4.map((d, i) => (
-                <span key={i} className="text-[#3E3D35]">{d}</span>
-              ))}
-              {calRow5.map((d, i) => (
-                <span key={i} className={d !== '·' ? 'text-[#3E3D35]' : 'text-[#8C8B7E]/50'}>{d}</span>
-              ))}
+            <div className="space-y-[2px]">
+              {/* Row 1 */}
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
+                {calRow1.map((d, i) => (
+                  <span key={i} className={`h-3.5 w-3.5 flex items-center justify-center mx-auto ${d !== '·' ? 'text-[#3E3D35] font-medium' : 'text-[#AAA99B]/50'}`}>
+                    {d}
+                  </span>
+                ))}
+              </div>
+              {/* Row 2 (contains Today: 9) */}
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
+                {calRow2.map((d, i) => (
+                  <span 
+                    key={i} 
+                    className={`h-3.5 w-3.5 flex items-center justify-center mx-auto ${
+                      d === '9' 
+                        ? 'bg-[#1E1F1A] text-[#FAF8F3] font-bold rounded-[0.5px] shadow-sm' 
+                        : 'text-[#3E3D35] font-medium hover:bg-[#D5D1C4] rounded-[0.5px]'
+                    }`}
+                  >
+                    {d}
+                  </span>
+                ))}
+              </div>
+              {/* Row 3 */}
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
+                {calRow3.map((d, i) => (
+                  <span key={i} className="h-3.5 w-3.5 flex items-center justify-center mx-auto text-[#3E3D35] font-medium hover:bg-[#D5D1C4] rounded-[0.5px]">
+                    {d}
+                  </span>
+                ))}
+              </div>
+              {/* Row 4 */}
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
+                {calRow4.map((d, i) => (
+                  <span key={i} className="h-3.5 w-3.5 flex items-center justify-center mx-auto text-[#3E3D35] font-medium hover:bg-[#D5D1C4] rounded-[0.5px]">
+                    {d}
+                  </span>
+                ))}
+              </div>
+              {/* Row 5 */}
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
+                {calRow5.map((d, i) => (
+                  <span key={i} className={`h-3.5 w-3.5 flex items-center justify-center mx-auto ${d !== '·' ? 'text-[#3E3D35] font-medium hover:bg-[#D5D1C4] rounded-[0.5px]' : 'text-[#AAA99B]/50'}`}>
+                    {d}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -112,48 +143,49 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('actions')}
-          className="flex flex-col justify-between p-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[134px]"
+          className="flex flex-col justify-between p-3 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[174px] group"
           title="Click to view Action Registry"
         >
           {/* Top: Header & Number */}
           <div>
-            <div className="text-[7.5px] uppercase tracking-wider text-[#77766B] font-medium leading-none">
-              ACTIONS
+            <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none flex items-center justify-between">
+              <span>ACTIONS</span>
+              <span className="text-[7px] text-[#77766B] group-hover:text-[#25251F] font-mono transition-colors">↗</span>
             </div>
-            <div className="flex items-baseline space-x-1.5 mt-1">
+            <div className="flex items-baseline space-x-2 mt-1.5">
               <span 
-                className="text-[38px] font-normal text-[#25251F] leading-none tracking-tight"
+                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 12
               </span>
-              <span className="text-[7.5px] uppercase tracking-wider text-[#77766B]">
+              <span className="text-[8px] uppercase tracking-wider text-[#44433A] font-bold">
                 DUE TODAY
               </span>
             </div>
           </div>
 
-          {/* Bottom: Breakdown List matching Screenshot 2 */}
-          <div className="pt-2 border-t border-[#D5D1C4] space-y-0.5 text-[7.5px] text-[#44433A]">
-            <div className="flex items-center space-x-1.5">
-              <span className="text-[#77766B]">•</span>
-              <span className="font-semibold text-[#25251F]">5</span>
-              <span>To do</span>
+          {/* Bottom: Breakdown List matching Reference Image */}
+          <div className="pt-2.5 border-t border-[#AAA99B] space-y-1 text-[8px] font-mono text-[#33322B]">
+            <div className="flex items-center space-x-2">
+              <span className="text-[#66655A] font-bold">•</span>
+              <span className="font-bold text-[#141512] w-2.5">5</span>
+              <span className="text-[#33322B] font-medium">To do</span>
             </div>
-            <div className="flex items-center space-x-1.5">
-              <span className="text-[#77766B]">•</span>
-              <span className="font-semibold text-[#25251F]">4</span>
-              <span>In progress</span>
+            <div className="flex items-center space-x-2">
+              <span className="text-[#66655A] font-bold">•</span>
+              <span className="font-bold text-[#141512] w-2.5">4</span>
+              <span className="text-[#33322B] font-medium">In progress</span>
             </div>
-            <div className="flex items-center space-x-1.5">
-              <span className="text-[#77766B]">•</span>
-              <span className="font-semibold text-[#25251F]">1</span>
-              <span>Waiting</span>
+            <div className="flex items-center space-x-2">
+              <span className="text-[#66655A] font-bold">•</span>
+              <span className="font-bold text-[#141512] w-2.5">1</span>
+              <span className="text-[#33322B] font-medium">Waiting</span>
             </div>
-            <div className="flex items-center space-x-1.5">
-              <span className="text-[#77766B]">•</span>
-              <span className="font-semibold text-[#25251F]">2</span>
-              <span>Completed</span>
+            <div className="flex items-center space-x-2">
+              <span className="text-[#66655A] font-bold">•</span>
+              <span className="font-bold text-[#141512] w-2.5">2</span>
+              <span className="text-[#33322B] font-medium">Completed</span>
             </div>
           </div>
         </div>
@@ -163,47 +195,48 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
-          className="flex flex-col justify-between p-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[134px]"
+          className="flex flex-col justify-between p-3 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[174px] group"
           title="Click to view Works Catalog"
         >
           {/* Top: Header & Number */}
           <div>
-            <div className="text-[7.5px] uppercase tracking-wider text-[#77766B] font-medium leading-none">
-              WORKS
+            <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none flex items-center justify-between">
+              <span>WORKS</span>
+              <span className="text-[7px] text-[#77766B] group-hover:text-[#25251F] font-mono transition-colors">↗</span>
             </div>
-            <div className="flex items-baseline space-x-1.5 mt-1">
+            <div className="flex items-baseline space-x-2 mt-1.5">
               <span 
-                className="text-[38px] font-normal text-[#25251F] leading-none tracking-tight"
+                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 07
               </span>
-              <span className="text-[7.5px] uppercase tracking-wider text-[#77766B]">
+              <span className="text-[8px] uppercase tracking-wider text-[#44433A] font-bold">
                 ACTIVE
               </span>
             </div>
           </div>
 
           {/* Bottom: Works Categories & Minimalist Donut Ring */}
-          <div className="pt-2 border-t border-[#D5D1C4] flex items-center justify-between">
-            <div className="space-y-0.5 text-[7.5px] text-[#44433A]">
-              <div><span className="font-semibold text-[#25251F]">3</span> Projects</div>
-              <div><span className="font-semibold text-[#25251F]">2</span> Research</div>
-              <div><span className="font-semibold text-[#25251F]">1</span> Creative</div>
-              <div><span className="font-semibold text-[#25251F]">1</span> Maintenance</div>
+          <div className="pt-2.5 border-t border-[#AAA99B] flex items-center justify-between">
+            <div className="space-y-1 text-[8px] font-mono text-[#33322B]">
+              <div><span className="font-bold text-[#141512]">3</span> Projects</div>
+              <div><span className="font-bold text-[#141512]">2</span> Research</div>
+              <div><span className="font-bold text-[#141512]">1</span> Creative</div>
+              <div><span className="font-bold text-[#141512]">1</span> Maintenance</div>
             </div>
 
-            {/* Clean Circular Donut Gauge matching Screenshot 2 */}
-            <div className="relative w-10 h-10 flex items-center justify-center flex-shrink-0 pr-0.5">
-              <svg viewBox="0 0 36 36" className="w-9 h-9 -rotate-90">
-                <circle cx="18" cy="18" r="14" fill="none" stroke="#D3CFC2" strokeWidth="2.8" />
+            {/* Clean Circular Donut Gauge matching Reference Image */}
+            <div className="relative w-12 h-12 flex items-center justify-center flex-shrink-0 pr-1">
+              <svg viewBox="0 0 36 36" className="w-11 h-11 -rotate-90">
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#D3CFC2" strokeWidth="3" />
                 <circle
                   cx="18"
                   cy="18"
                   r="14"
                   fill="none"
-                  stroke="#25251F"
-                  strokeWidth="2.8"
+                  stroke="#1E1F1A"
+                  strokeWidth="3"
                   strokeDasharray="88"
                   strokeDashoffset="31"
                   strokeLinecap="butt"
@@ -214,41 +247,48 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 4: ENTRIES                                            */}
+        {/* COLUMN 4: ENTRIES & WEEKLY HISTOGRAM                         */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
-          className="flex flex-col justify-between p-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[134px]"
+          className="flex flex-col justify-between p-3 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[174px] group"
           title="Click to view Entries Archive"
         >
           {/* Top: Header & Number */}
           <div>
-            <div className="text-[7.5px] uppercase tracking-wider text-[#77766B] font-medium leading-none">
-              ENTRIES
+            <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none flex items-center justify-between">
+              <span>ENTRIES</span>
+              <span className="text-[7px] text-[#77766B] group-hover:text-[#25251F] font-mono transition-colors">↗</span>
             </div>
-            <div className="flex items-baseline space-x-1.5 mt-1">
+            <div className="flex items-baseline space-x-2 mt-1.5">
               <span 
-                className="text-[38px] font-normal text-[#25251F] leading-none tracking-tight"
+                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 18
               </span>
-              <span className="text-[7.5px] uppercase tracking-wider text-[#77766B]">
+              <span className="text-[8px] uppercase tracking-wider text-[#44433A] font-bold">
                 THIS WEEK
               </span>
             </div>
           </div>
 
           {/* Bottom: 7-bar Activity Histogram */}
-          <div className="pt-2 border-t border-[#D5D1C4]">
-            <div className="flex items-end justify-between h-9 px-1">
+          <div className="pt-2.5 border-t border-[#AAA99B]">
+            <div className="flex items-end justify-between h-14 px-1.5 pb-0.5 border-b border-[#AAA99B]/50">
               {bars.map((b, i) => (
-                <div key={i} className="flex flex-col items-center space-y-1 w-2.5">
+                <div 
+                  key={i} 
+                  className="flex flex-col items-center space-y-1.5 w-3 group/bar cursor-pointer"
+                  title={`${b.day}: ${b.count} entries`}
+                >
                   <div
-                    className="w-[3.5px] bg-[#77796C] hover:bg-[#25251F] transition-colors"
+                    className="w-[4.5px] bg-[#3E4035] group-hover/bar:bg-[#141512] transition-colors rounded-[0.5px]"
                     style={{ height: `${b.h}px` }}
                   />
-                  <span className="text-[6.5px] text-[#77766B]">{b.day}</span>
+                  <span className="text-[7.5px] font-mono font-bold text-[#44433A] group-hover/bar:text-[#141512]">
+                    {b.day}
+                  </span>
                 </div>
               ))}
             </div>
@@ -256,45 +296,54 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 5: FOCUS                                              */}
+        {/* COLUMN 5: FOCUS & PROGRESS SPARKLINE                         */}
         {/* ============================================================ */}
-        <div className="flex flex-col justify-between p-2.5 h-[134px]">
+        <div className="flex flex-col justify-between p-3 h-[174px]">
           {/* Top: Header & Number */}
           <div>
-            <div className="text-[7.5px] uppercase tracking-wider text-[#77766B] font-medium leading-none">
+            <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none">
               FOCUS
             </div>
-            <div className="flex items-baseline space-x-1.5 mt-1">
+            <div className="flex items-baseline space-x-2 mt-1.5">
               <span 
-                className="text-[38px] font-normal text-[#25251F] leading-none tracking-tight"
+                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 65%
               </span>
-              <span className="text-[7.5px] uppercase tracking-wider text-[#77766B]">
+              <span className="text-[8px] uppercase tracking-wider text-[#44433A] font-bold">
                 WEEKLY PROGRESS
               </span>
             </div>
           </div>
 
           {/* Bottom: Sparkline & Comparison Text */}
-          <div className="pt-2 border-t border-[#D5D1C4] flex flex-col justify-between h-10">
-            <svg viewBox="0 0 100 26" className="w-full h-5 overflow-visible">
-              <polyline
-                fill="none"
-                stroke="#616356"
-                strokeWidth="1.2"
-                points="5,20 22,16 40,22 60,11 78,15 95,5"
-              />
-              <circle cx="5" cy="20" r="1.6" fill="#25251F" />
-              <circle cx="22" cy="16" r="1.6" fill="#25251F" />
-              <circle cx="40" cy="22" r="1.6" fill="#25251F" />
-              <circle cx="60" cy="11" r="1.6" fill="#25251F" />
-              <circle cx="78" cy="15" r="1.6" fill="#25251F" />
-              <circle cx="95" cy="5" r="1.8" fill="#25251F" />
-            </svg>
-            <div className="text-[7px] text-[#66655A] flex items-center justify-between">
-              <span>≈ 12% vs last week</span>
+          <div className="pt-2.5 border-t border-[#AAA99B] flex flex-col justify-between h-14">
+            <div className="pt-1">
+              <svg viewBox="0 0 120 28" className="w-full h-7 overflow-visible">
+                {/* Hairline baseline */}
+                <line x1="0" y1="26" x2="120" y2="26" stroke="#D3CFC2" strokeWidth="0.8" strokeDasharray="2 2" />
+                {/* Trend Polyline */}
+                <polyline
+                  fill="none"
+                  stroke="#3E4035"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  points="6,22 26,16 48,23 72,11 94,15 114,5"
+                />
+                {/* Vertex Dots */}
+                <circle cx="6" cy="22" r="2.2" fill="#1E1F1A" />
+                <circle cx="26" cy="16" r="2.2" fill="#1E1F1A" />
+                <circle cx="48" cy="23" r="2.2" fill="#1E1F1A" />
+                <circle cx="72" cy="11" r="2.2" fill="#1E1F1A" />
+                <circle cx="94" cy="15" r="2.2" fill="#1E1F1A" />
+                <circle cx="114" cy="5" r="2.4" fill="#1E1F1A" />
+              </svg>
+            </div>
+            <div className="text-[8px] font-mono font-bold text-[#2E4A28] flex items-center space-x-1 mt-1">
+              <span>▲</span>
+              <span>12% vs last week</span>
             </div>
           </div>
         </div>

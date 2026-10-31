@@ -54,8 +54,11 @@ export function UpcomingActions({
       {/* Header */}
       <div>
         <div className="p-2.5 pb-2 border-b border-[#AAA99B]">
-          <div className="text-[10px] uppercase tracking-wider font-mono font-semibold text-[#66655A]">
-            UPCOMING ACTIONS
+          <div className="flex items-center space-x-1.5">
+            <span className="w-1.5 h-1.5 bg-[#25251F] inline-block"></span>
+            <span className="text-[10px] uppercase tracking-wider font-mono font-bold text-[#25251F]">
+              UPCOMING ACTIONS
+            </span>
           </div>
         </div>
 
@@ -84,7 +87,7 @@ export function UpcomingActions({
                   </td>
 
                   {/* Action Title */}
-                  <td className="py-2 px-2.5 text-[#25251F] font-medium whitespace-nowrap group-hover:underline">
+                  <td className="py-2 px-2.5 text-[#141512] font-bold text-[9px] whitespace-nowrap group-hover:underline">
                     <span className={item.status === 'Completed' ? 'line-through text-[#88877A]' : ''}>
                       {item.action}
                     </span>
