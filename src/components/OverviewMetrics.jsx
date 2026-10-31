@@ -6,7 +6,7 @@ export function OverviewMetrics({ onNavigate }) {
   // Column 2: ACTIONS 12 DUE TODAY (5 To do, 4 In progress, 1 Waiting, 2 Completed)
   // Column 3: WORKS 07 ACTIVE (3 Projects, 2 Research, 1 Creative, 1 Maintenance) + Donut Ring
   // Column 4: ENTRIES 18 THIS WEEK (7-bar activity histogram)
-  // Column 5: FOCUS 65% WEEKLY PROGRESS (Refined sparkline chart with ▲ 12% vs last week)
+  // Column 5: FOCUS 65% WEEKLY PROGRESS (Refined sparkline chart with +12% vs last week)
 
   // May 2025 Calendar: May 1st was a Thursday
   // Mon Tue Wed Thu Fri Sat Sun
@@ -39,7 +39,7 @@ export function OverviewMetrics({ onNavigate }) {
       {/* Section Header */}
       <div className="flex items-center justify-between text-[10px] uppercase tracking-widest font-mono font-bold text-[#25251F]">
         <div className="flex items-center space-x-1.5">
-          <span className="w-1.5 h-1.5 bg-[#25251F] inline-block"></span>
+          <span className="w-1.5 h-1.5 bg-[#25251F] inline-block" />
           <span>OVERVIEW</span>
         </div>
         <span className="text-[8px] font-medium text-[#77766B] tracking-wider">
@@ -347,7 +347,7 @@ export function OverviewMetrics({ onNavigate }) {
               </svg>
             </div>
             <div className="text-[7.5px] font-mono font-medium text-[#55544B] flex items-center space-x-1 mt-1">
-              <span>≈ 12% vs last week</span>
+              <span>{"+ 12% vs last week"}</span>
             </div>
           </div>
         </div>
