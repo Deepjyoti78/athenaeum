@@ -61,8 +61,8 @@ export function OverviewMetrics({ onNavigate }) {
   // 7 Focus line graph points mapped within technical chart area (y: 0=100%, 22=50%, 44=0%)
   const focusPoints = useMemo(() => {
     const xCoords = [8, 22, 36, 50, 64, 78, 92];
-    // Progress curve matching reference image: M: 27%, T: 41%, W: 55%, T: 55%, F: 70%, S: 70%, S: 86%
-    const basePts = [32, 26, 20, 20, 13, 13, 6];
+    // Dynamic steep upward progression matching reference: M: 23%, T: 39%, W: 52%, T: 64%, F: 75%, S: 84%, S: 93%
+    const basePts = [34, 27, 21, 16, 11, 7, 3];
     return xCoords.map((x, idx) => [x, basePts[idx]]);
   }, []);
 
@@ -437,15 +437,15 @@ export function OverviewMetrics({ onNavigate }) {
           <div className="h-[86px] flex flex-col justify-end">
             <div className="flex items-start">
               {/* Y-Axis: 100, 50, 0 aligned with top border, middle dashed line, and baseline */}
-              <div className="flex flex-col justify-between h-[52px] text-[7px] font-mono text-[#66655B] select-none text-right pr-1.5 w-[18px] flex-shrink-0 leading-none py-[1px]">
+              <div className="flex flex-col justify-between h-[56px] text-[7px] font-mono text-[#66655B] select-none text-right pr-1.5 w-[18px] flex-shrink-0 leading-none py-[2px]">
                 <span>100</span>
                 <span>50</span>
                 <span>0</span>
               </div>
 
-              {/* Framed Chart Plotting Area (open top & right) */}
-              <div className="flex-1 flex flex-col pr-1">
-                <div className="w-full relative h-[52px]">
+              {/* Framed Chart Plotting Area (proportional 2.6:1 aspect ratio, open top & right) */}
+              <div className="flex-1 flex flex-col max-w-[148px]">
+                <div className="w-full relative h-[56px]">
                   <svg 
                     viewBox="0 0 100 48" 
                     preserveAspectRatio="none" 
