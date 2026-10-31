@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MoreHorizontal, Edit2, Trash2, Eye } from 'lucide-react';
 import { ArchivalArtwork } from './ArchivalArtwork';
 
-export function RecentWorks({ works, selectedWorkId, onSelectWork, onViewAll, onEditWork, onDeleteWork }) {
+export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAll, onEditWork, onDeleteWork }) {
   const [activeMenuId, setActiveMenuId] = useState(null);
 
   const toggleMenu = (e, id) => {
@@ -10,7 +10,11 @@ export function RecentWorks({ works, selectedWorkId, onSelectWork, onViewAll, on
     setActiveMenuId(activeMenuId === id ? null : id);
   };
 
-  // Strictly maintain the 4 works order from reference Screenshot 2
+  // Strictly maintain the 4 works order from reference Screenshot:
+  // 1. Athenaeum App Project
+  // 2. East London Heritage Archive
+  // 3. Creature Concept Explorations
+  // 4. Photography Portfolio
   const preferredOrder = ['WRK-2025-0003', 'WRK-2025-0002', 'WRK-2025-0001', 'WRK-2025-0004'];
   const displayWorks = [...works].sort((a, b) => {
     const idxA = preferredOrder.indexOf(a.id);
@@ -22,22 +26,22 @@ export function RecentWorks({ works, selectedWorkId, onSelectWork, onViewAll, on
   }).slice(0, 4);
 
   return (
-    <div className="space-y-1.5 select-none font-mono">
+    <div className="space-y-1 select-none font-mono">
       {/* Header */}
-      <div className="flex items-center justify-between text-[9.5px] font-mono">
-        <span className="uppercase tracking-widest font-medium text-[#77766B]">
+      <div className="flex items-center justify-between text-[10px] font-mono">
+        <span className="uppercase tracking-widest font-bold text-[#171714]">
           RECENT WORKS
         </span>
         <button
           onClick={onViewAll}
-          className="text-[#77766B] hover:text-[#25251F] uppercase tracking-wider text-[8px] underline decoration-dotted transition-colors"
+          className="text-[#171714] hover:text-black uppercase tracking-wider text-[8.5px] underline transition-colors"
         >
           VIEW ALL
         </button>
       </div>
 
-      {/* 4 Cards Row matching Screenshot 2 */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* 4 Cards Grid matching media_1793434566460_76b91e75.jpg */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {displayWorks.map((work) => {
           const isSelected = selectedWorkId === work.id;
           const isMenuOpen = activeMenuId === work.id;
@@ -47,49 +51,38 @@ export function RecentWorks({ works, selectedWorkId, onSelectWork, onViewAll, on
               key={work.id}
               onClick={() => {
                 setActiveMenuId(null);
-                onSelectWork(work);
+                onSelectWork && onSelectWork(work);
               }}
-              className={`border transition-all cursor-pointer p-2 flex flex-col justify-between group relative shadow-sm ${
-                isSelected
-                  ? 'border-[#25251F] bg-[#DFDBD0] shadow-[inset_0_0_0_1px_#25251F]'
-                  : 'border-[#AAA99B] bg-[#E9E5D8] hover:bg-[#E3DFD3] hover:border-[#77766B]'
-              }`}
+              className="border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#E2DFD0] transition-colors cursor-pointer p-2 flex flex-col justify-between group relative shadow-sm"
             >
-              {/* Thumbnail Container */}
-              <div className="w-full h-[96px] border border-[#AAA99B] overflow-hidden mb-2 bg-[#D5D0C2] relative">
+              {/* Artwork Container */}
+              <div className="w-full h-[104px] border border-[#B5B3A4] overflow-hidden mb-2 bg-[#D5D0C2] relative">
                 <ArchivalArtwork 
                   type={work.artwork} 
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]" 
                 />
 
-                {/* ACTIVE Badge on top-left of Card 1 */}
-                {isSelected && (
-                  <div className="absolute top-1.5 left-1.5 bg-[#25251F] text-[#E9E5D8] text-[7px] font-mono px-1.5 py-0.5 tracking-wider font-semibold z-10">
-                    ACTIVE
-                  </div>
-                )}
-                
-                {/* Context dots on top-right */}
+                {/* Contextual three-dot menu button in top right matching reference image */}
                 <button
                   onClick={(e) => toggleMenu(e, work.id)}
-                  title="Record options"
-                  className="absolute top-1.5 right-1.5 bg-[#E9E5D8]/90 hover:bg-[#E9E5D8] p-0.5 border border-[#AAA99B]/70 text-[#333] transition-colors z-10"
+                  title="Options"
+                  className="absolute top-1.5 right-1.5 bg-[#EAE7D9]/90 hover:bg-[#FAF8F3] px-1 py-0.5 border border-[#B5B3A4] text-[#171714] transition-colors z-10"
                 >
-                  <MoreHorizontal className="w-2.5 h-2.5 text-[#444]" />
+                  <MoreHorizontal className="w-3 h-3 text-[#171714]" />
                 </button>
 
                 {/* Popover Menu */}
                 {isMenuOpen && (
                   <div 
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute top-7 right-1.5 z-30 bg-[#E9E5D8] border border-[#25251F] shadow-xl py-1 text-[8px] font-mono min-w-[90px] animate-fadeIn"
+                    className="absolute top-7 right-1.5 z-30 bg-[#FAF8F3] border border-[#171714] shadow-xl py-1 text-[8px] font-mono min-w-[90px] animate-fadeIn"
                   >
                     <button
                       onClick={() => {
                         setActiveMenuId(null);
-                        onSelectWork(work);
+                        onSelectWork && onSelectWork(work);
                       }}
-                      className="w-full text-left px-2 py-1 hover:bg-[#DFDBD0] flex items-center space-x-1.5 text-[#25251F]"
+                      className="w-full text-left px-2 py-1 hover:bg-[#EAE7D9] flex items-center space-x-1.5 text-[#171714]"
                     >
                       <Eye className="w-2.5 h-2.5" />
                       <span>INSPECT</span>
@@ -100,7 +93,7 @@ export function RecentWorks({ works, selectedWorkId, onSelectWork, onViewAll, on
                           setActiveMenuId(null);
                           onEditWork(work);
                         }}
-                        className="w-full text-left px-2 py-1 hover:bg-[#DFDBD0] flex items-center space-x-1.5 text-[#25251F]"
+                        className="w-full text-left px-2 py-1 hover:bg-[#EAE7D9] flex items-center space-x-1.5 text-[#171714]"
                       >
                         <Edit2 className="w-2.5 h-2.5" />
                         <span>EDIT</span>
@@ -122,30 +115,29 @@ export function RecentWorks({ works, selectedWorkId, onSelectWork, onViewAll, on
                 )}
               </div>
 
-              {/* Title & Metadata */}
+              {/* Title & Metadata matching reference image */}
               <div className="space-y-1">
-                <h4 className="text-[9.5px] font-mono font-semibold text-[#25251F] tracking-tight leading-snug line-clamp-1 group-hover:text-black">
-                  {work.title}
-                </h4>
+                <h3 className="font-mono font-bold text-[9.5px] uppercase text-[#171714] tracking-tight truncate">
+                  {work.title || work.shortTitle}
+                </h3>
 
-                <div className="space-y-0.5 text-[7.5px] font-mono text-[#57564C] pt-1.5 border-t border-[#D5D1C4]">
-                  <div className="grid grid-cols-12">
-                    <span className="col-span-5 text-[#77766B]">Type:</span>
-                    <span className="col-span-7 text-[#25251F] font-normal truncate">{work.type}</span>
+                <div className="space-y-0.5 text-[8px] font-mono text-[#55544B] pt-0.5 border-t border-[#D5D1C4]">
+                  <div className="flex justify-between">
+                    <span className="text-[#66655A]">Type:</span>
+                    <span className="font-semibold text-[#171714]">{work.type || 'Project'}</span>
                   </div>
-                  <div className="grid grid-cols-12">
-                    <span className="col-span-5 text-[#77766B]">Status:</span>
-                    <span className="col-span-7 text-[#25251F] flex items-center space-x-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#66655A]">Status:</span>
+                    <div className="flex items-center space-x-1.5">
                       <span className={`w-1.5 h-1.5 rounded-full inline-block ${
-                        work.status === 'In progress' ? 'bg-[#738A62]' :
-                        work.status === 'Planned' ? 'bg-[#777A5A]' : 'bg-[#738A62]'
-                      }`}></span>
-                      <span className="truncate">{work.status}</span>
-                    </span>
+                        work.status === 'In progress' ? 'bg-[#74866A]' : 'bg-[#88877A]'
+                      }`} />
+                      <span className="font-semibold text-[#171714]">{work.status || 'In progress'}</span>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-12">
-                    <span className="col-span-5 text-[#77766B]">Updated:</span>
-                    <span className="col-span-7 text-[#44433A] truncate">{work.updated}</span>
+                  <div className="flex justify-between">
+                    <span className="text-[#66655A]">Updated:</span>
+                    <span className="text-[#55544B]">{work.updated || 'Today 09:18'}</span>
                   </div>
                 </div>
               </div>

@@ -185,39 +185,18 @@ function AthenaeumApp() {
                   onViewAll={() => setActiveNav('works')}
                 />
 
-                {/* Section C & D: Upcoming Actions (65%) & Daily Log (35%) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-                  <div className="lg:col-span-8">
+                {/* Section C & D: Upcoming Actions (~60%) & Daily Log (~40%) matching reference image */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 pb-3">
+                  <div className="lg:col-span-7">
                     <UpcomingActions
                       actions={actions}
                       onToggleActionStatus={toggleActionStatus}
                       onChangePriority={cycleActionPriority}
                     />
                   </div>
-                  <div className="lg:col-span-4">
+                  <div className="lg:col-span-5">
                     <DailyLog
                       onViewLog={() => setActiveNav('daily-log')}
-                    />
-                  </div>
-                </div>
-
-                {/* Section E & F: Recent Entries (65%) & Collection Highlight (35%) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 pb-3">
-                  <div className="lg:col-span-7">
-                    <RecentEntries
-                      entries={entries}
-                      onViewAll={() => setActiveNav('entries')}
-                      onSelectEntry={(entry) => {
-                        inspectRecord('entry', entry);
-                        setActiveNav('entries');
-                      }}
-                    />
-                  </div>
-                  <div className="lg:col-span-5">
-                    <CollectionHighlight
-                      collection={collections[0]}
-                      onViewCollection={() => setActiveNav('collections')}
-                      onThumbnailClick={() => setActiveNav('collections')}
                     />
                   </div>
                 </div>
