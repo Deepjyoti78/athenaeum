@@ -110,7 +110,7 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
           {/* PAGE 1: "NEWS" BROADSHEET                                                 */}
           {/* ========================================================================= */}
           {(activeEdition === 'news' || activeEdition === 'spread') && (
-            <article className="bg-[#FAF8F3] border border-[#141512] shadow-[0_4px_25px_rgba(0,0,0,0.12)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
+            <article className="bg-[#ECE6DA] border border-[#141512] shadow-[0_4px_25px_rgba(0,0,0,0.12)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
               <div>
                 {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
                 <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#222]">
@@ -206,7 +206,7 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
                           />
                           {/* Inset Circular Prohibition Symbol Placard */}
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div className="bg-[#FAF8F3]/95 border-2 border-[#141512] p-1.5 shadow-md flex items-center justify-center">
+                            <div className="bg-[#ECE6DA]/95 border-2 border-[#141512] p-1.5 shadow-md flex items-center justify-center">
                               <svg viewBox="0 0 60 60" className="w-10 h-10">
                                 <circle cx="30" cy="30" r="26" fill="none" stroke="#141512" strokeWidth="6" />
                                 <line x1="12" y1="12" x2="48" y2="48" stroke="#141512" strokeWidth="6" />
@@ -467,7 +467,7 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
           {/* PAGE 2: "SCIENCE" BROADSHEET                                              */}
           {/* ========================================================================= */}
           {(activeEdition === 'science' || activeEdition === 'spread') && (
-            <article className="bg-[#FAF8F3] border border-[#141512] shadow-[0_4px_25px_rgba(0,0,0,0.12)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
+            <article className="bg-[#ECE6DA] border border-[#141512] shadow-[0_4px_25px_rgba(0,0,0,0.12)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
               <div>
                 {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
                   <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#222]">
@@ -659,7 +659,7 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
                         <div className="w-36 h-36 bg-[#EBE7DC] border-2 border-[#141512] flex items-center justify-center p-2.5 my-1 shadow-sm">
                           <svg viewBox="0 0 200 200" className="w-full h-full">
                             {/* Cube Outer Shell */}
-                            <polygon points="100,10 185,58 185,152 100,195 15,152 15,58" fill="#F5F2EA" stroke="#141512" strokeWidth="4.5" strokeLinejoin="round" />
+                            <polygon points="100,10 185,58 185,152 100,195 15,152 15,58" fill="#ECE6DA" stroke="#141512" strokeWidth="4.5" strokeLinejoin="round" />
                             {/* Center Edges */}
                             <line x1="100" y1="100" x2="100" y2="195" stroke="#141512" strokeWidth="4.5" />
                             <line x1="100" y1="100" x2="185" y2="58" stroke="#141512" strokeWidth="4.5" />
@@ -917,7 +917,7 @@ export function NewsView({ onInspectArticle, onOpenNewRecord }) {
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#F5F2EA] border-2 border-[#141512] shadow-2xl max-w-xl w-full p-6 text-[#141512] font-serif space-y-4 animate-scaleUp"
+            className="bg-[#ECE6DA] border-2 border-[#141512] shadow-2xl max-w-xl w-full p-6 text-[#141512] font-serif space-y-4 animate-scaleUp"
           >
             <div className="flex justify-between items-center border-b border-[#AAA99B] pb-2 font-mono text-[8px] text-[#666]">
               <span className="uppercase tracking-widest font-bold text-[#141512]">
