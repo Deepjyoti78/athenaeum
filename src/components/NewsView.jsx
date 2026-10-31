@@ -10,11 +10,12 @@ import {
   X,
   Share2,
   Bookmark,
-  Menu
+  Menu,
+  Plus
 } from 'lucide-react';
 import { useArchive } from '../context/ArchiveContext';
 
-export function NewsView({ onInspectArticle }) {
+export function NewsView({ onInspectArticle, onOpenNewRecord }) {
   const { inspectRecord } = useArchive();
   // Default to 'spread' matching editorial two-page broadsheet layout
   const [activeEdition, setActiveEdition] = useState('spread'); // 'news' | 'science' | 'spread'
@@ -84,6 +85,17 @@ export function NewsView({ onInspectArticle }) {
             <span>FULL SPREAD</span>
           </button>
         </div>
+
+        {/* New Record button */}
+        {onOpenNewRecord && (
+          <button
+            onClick={onOpenNewRecord}
+            className="px-2.5 py-0.5 bg-[#141512] hover:bg-[#2A2B27] active:bg-[#333] text-[#EDE8DB] border border-[#444] text-[8px] font-bold uppercase tracking-wider transition-colors flex items-center space-x-1 rounded-[0.5px]"
+          >
+            <Plus className="w-2.5 h-2.5" />
+            <span>NEW RECORD</span>
+          </button>
+        )}
       </div>
 
       {/* 2. Main Broadsheet Scrolling Body */}

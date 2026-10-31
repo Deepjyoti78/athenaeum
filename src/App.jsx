@@ -306,7 +306,7 @@ function AthenaeumApp() {
             )}
 
             {activeNav === 'news' && (
-              <NewsView />
+              <NewsView onOpenNewRecord={() => setIsNewRecordOpen(true)} />
             )}
 
             {/* 3. Right Sidebar — Universal Record Inspector */}
