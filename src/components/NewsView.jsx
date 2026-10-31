@@ -16,7 +16,7 @@ import { useArchive } from '../context/ArchiveContext';
 
 export function NewsView({ onInspectArticle }) {
   const { inspectRecord } = useArchive();
-  // Default to 'spread' matching media_1793433150498_d39dfbc0.jpg
+  // Default to 'spread' matching editorial two-page broadsheet layout
   const [activeEdition, setActiveEdition] = useState('spread'); // 'news' | 'science' | 'spread'
   const [isPlayingAudio1, setIsPlayingAudio1] = useState(false);
   const [isPlayingAudio2, setIsPlayingAudio2] = useState(false);
@@ -109,29 +109,32 @@ export function NewsView({ onInspectArticle }) {
               {/* Page Sheet */}
               <article className="flex-1 bg-[#F5F2EA] border border-[#222] shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
                 <div>
-                  {/* Top Bar: Hamburger Menu & Tablet Logo */}
-                  <div className="flex justify-between items-center pb-1">
-                    <div className="w-4 h-3 flex flex-col justify-between cursor-pointer opacity-70 hover:opacity-100">
-                      <span className="w-3.5 h-[1.5px] bg-[#222]"></span>
-                      <span className="w-3.5 h-[1.5px] bg-[#222]"></span>
-                      <span className="w-3.5 h-[1.5px] bg-[#222]"></span>
+                  {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
+                  <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#222]">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3.5 h-2.5 flex flex-col justify-between cursor-pointer opacity-70 hover:opacity-100">
+                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
+                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
+                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
+                      </div>
+                      <span>TRUTH • CONTEXT • LONGER THINKING</span>
                     </div>
-                    <div className="font-serif italic text-[11px] tracking-wide text-[#333]">
+                    <div className="font-serif italic font-normal text-[11px] tracking-wide text-[#333] normal-case">
                       Tablet
                     </div>
-                    <div className="w-4"></div>
+                    <span>VOL. XLII • No. 104 • 09 MAY 2025</span>
                   </div>
 
                   {/* Big Masthead: NEWS */}
-                  <div className="border-b border-[#222] pb-1.5 mb-2.5 text-center">
+                  <div className="border-b border-[#222] py-2 mb-2.5 text-center">
                     <h1 className="font-sans font-black text-[46px] md:text-[54px] uppercase tracking-[-0.03em] leading-none text-[#111]">
                       NEWS
                     </h1>
                   </div>
 
-                  {/* 1. TOP HERO SECTION: Full-Width Bernie Sanders Photo + Full-Width Headline */}
+                  {/* 1. TOP HERO SECTION: Proportionally Balanced Lead Photograph + Main Headline */}
                   <div className="border-b border-[#222] pb-3 mb-3">
-                    {/* Bernie Sanders High-Contrast Black & White Wire Photo */}
+                    {/* Authentic Editorial Monochrome Photograph of Bernie Sanders */}
                     <div 
                       onClick={() => handleArticleClick({
                         title: "Can Bernie Sanders Fix America's Broken Anti-Semitism Conversation?",
@@ -139,67 +142,24 @@ export function NewsView({ onInspectArticle }) {
                         author: "YAIR ROSENBERG",
                         category: "Lead Analysis"
                       })}
-                      className="cursor-pointer group relative overflow-hidden bg-[#0A0A0A] border border-[#222] aspect-[16/9] w-full"
+                      className="cursor-pointer group relative overflow-hidden bg-[#0A0A0A] border border-[#222] aspect-[16/9] w-full max-h-[260px]"
                     >
-                      <svg viewBox="0 0 600 338" className="w-full h-full object-cover">
-                        <defs>
-                          <radialGradient id="bernieSpot" cx="50%" cy="40%" r="65%">
-                            <stop offset="0%" stopColor="#7A786E" stopOpacity="0.45" />
-                            <stop offset="60%" stopColor="#1E1E1B" stopOpacity="0.9" />
-                            <stop offset="100%" stopColor="#080808" stopOpacity="1" />
-                          </radialGradient>
-                          <linearGradient id="bernieSuit" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#1A1B16" />
-                            <stop offset="100%" stopColor="#0B0B09" />
-                          </linearGradient>
-                        </defs>
-                        <rect width="600" height="338" fill="#080808" />
-                        
-                        {/* Dramatic Rim Spotlight */}
-                        <circle cx="310" cy="180" r="180" fill="url(#bernieSpot)" />
-
-                        {/* Dark Suit & Shoulders */}
-                        <path d="M 120 338 C 160 250 230 235 310 235 C 390 235 460 250 500 338 Z" fill="url(#bernieSuit)" />
-                        
-                        {/* White Shirt Collar & Dark Necktie */}
-                        <polygon points="310,235 285,290 310,338 335,290" fill="#E8E4DA" />
-                        <polygon points="302,245 310,338 318,245" fill="#141412" />
-
-                        {/* Head & Neck */}
-                        <path d="M 235 175 C 230 85 390 85 385 175 C 380 235 240 235 235 175 Z" fill="#D9D4C7" />
-                        
-                        {/* Iconic Disheveled White Hair wisps around crown */}
-                        <path d="M 225 160 C 215 90 250 55 310 52 C 370 55 405 90 395 160 C 385 85 235 85 225 160 Z" fill="#F4F2EC" opacity="0.9" />
-                        <path d="M 218 135 C 210 110 235 95 245 115 Z" fill="#FAF9F5" opacity="0.8" />
-                        <path d="M 402 135 C 410 110 385 95 375 115 Z" fill="#FAF9F5" opacity="0.8" />
-
-                        {/* Wire Eyeglasses */}
-                        <rect x="255" y="140" width="46" height="30" rx="6" fill="none" stroke="#111" strokeWidth="4" />
-                        <rect x="319" y="140" width="46" height="30" rx="6" fill="none" stroke="#111" strokeWidth="4" />
-                        <line x1="301" y1="152" x2="319" y2="152" stroke="#111" strokeWidth="3.5" />
-                        {/* Lens Reflections */}
-                        <line x1="262" y1="146" x2="285" y2="164" stroke="#FFF" strokeWidth="1.5" opacity="0.5" />
-                        <line x1="326" y1="146" x2="349" y2="164" stroke="#FFF" strokeWidth="1.5" opacity="0.5" />
-
-                        {/* Eyes, Furrowed Brow & Nose */}
-                        <ellipse cx="278" cy="154" rx="3.5" ry="3" fill="#111" />
-                        <ellipse cx="342" cy="154" rx="3.5" ry="3" fill="#111" />
-                        <path d="M 258 135 Q 278 130 296 137" fill="none" stroke="#333" strokeWidth="2.5" />
-                        <path d="M 324 137 Q 342 130 362 135" fill="none" stroke="#333" strokeWidth="2.5" />
-                        <path d="M 308 152 L 314 184 L 302 188" fill="none" stroke="#222" strokeWidth="2.5" />
-
-                        {/* Expressive Mouth and Jaw */}
-                        <path d="M 285 208 Q 310 212 335 208" fill="none" stroke="#222" strokeWidth="3" />
-                        <path d="M 292 216 Q 310 220 328 216" fill="none" stroke="#555" strokeWidth="1.5" />
-
-                        {/* Authentic Broadsheet Halftone Grid Texture */}
-                        {[...Array(24)].map((_, i) => (
-                          <line key={i} x1="0" y1={i * 15} x2="600" y2={i * 15} stroke="#000" strokeWidth="0.5" opacity="0.15" />
-                        ))}
-                      </svg>
+                      <img 
+                        src="/images/gazette/bernie_sanders.jpg" 
+                        alt="Bernie Sanders at political podium" 
+                        className="w-full h-full object-cover object-top grayscale contrast-125 brightness-95 group-hover:scale-[1.01] transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                      {/* Subtle Newsprint Caption Bar */}
+                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-1.5 flex justify-between items-end text-[6.5px] font-mono text-[#DDD] opacity-90">
+                        <span>CAPITOL HILL // NATIONAL POLICY FORUM</span>
+                        <span>PHOTO: ARCHIVAL WIRE SERVICE</span>
+                      </div>
                     </div>
 
-                    {/* Full-Width Headline + Deck */}
+                    {/* Full-Width Headline + Deck Beneath Image */}
                     <div 
                       onClick={() => handleArticleClick({
                         title: "Can Bernie Sanders Fix America's Broken Anti-Semitism Conversation?",
@@ -209,7 +169,7 @@ export function NewsView({ onInspectArticle }) {
                       })}
                       className="cursor-pointer group pt-2.5 text-center"
                     >
-                      <h2 className="font-serif font-bold text-[21px] md:text-[23px] leading-[1.18] tracking-tight text-[#111] group-hover:underline max-w-[620px] mx-auto">
+                      <h2 className="font-serif font-bold text-[20px] md:text-[22px] leading-[1.18] tracking-tight text-[#111] group-hover:underline max-w-[620px] mx-auto">
                         Can Bernie Sanders Fix America's Broken Anti-Semitism Conversation?
                       </h2>
                       <p className="font-serif italic text-[9.5px] md:text-[10px] text-[#444] mt-1 max-w-[550px] mx-auto leading-relaxed">
@@ -221,12 +181,12 @@ export function NewsView({ onInspectArticle }) {
                     </div>
                   </div>
 
-                  {/* 2. MIDDLE SECTION: Left Main Column (Cancel Culture + 2 Sub-Columns) & Right Column (Featured Columnist + Election Dates + Dark Audio Widget) */}
+                  {/* 2. MIDDLE SECTION: Structured Multi-Column Editorial Grid */}
                   <div className="grid grid-cols-12 gap-3.5 pb-3 border-b border-[#222]">
-                    {/* Left 7 Columns (~58%) */}
+                    {/* Left 7 Columns (~58%): Protest Photo + Cancel Culture + 2 Sub-Columns */}
                     <div className="col-span-7 border-r border-[#AAA99B] pr-3 flex flex-col justify-between">
                       <div>
-                        {/* Protest Photo with Circle-Slash Graphic */}
+                        {/* Real Editorial Protest Photo with Inset Circle-Slash Placard */}
                         <div 
                           onClick={() => handleArticleClick({
                             title: "The Real Problem With Cancel Culture",
@@ -234,25 +194,22 @@ export function NewsView({ onInspectArticle }) {
                             author: "KAT ROSENFIELD",
                             category: "Culture"
                           })}
-                          className="w-full aspect-[16/9] bg-[#1A1A18] border border-[#222] relative overflow-hidden mb-2 cursor-pointer group flex items-center justify-center"
+                          className="w-full aspect-[16/9] max-h-[140px] bg-[#1A1A18] border border-[#222] relative overflow-hidden mb-2 cursor-pointer group"
                         >
-                          <svg viewBox="0 0 320 180" className="w-full h-full object-cover">
-                            <rect width="320" height="180" fill="#121210" />
-                            {/* Crowd of protesters silhouette */}
-                            <path d="M 0 180 C 30 110 50 130 90 180 Z" fill="#2E2E28" />
-                            <path d="M 60 180 C 100 95 130 115 170 180 Z" fill="#3D3E35" />
-                            <path d="M 140 180 C 180 100 210 110 250 180 Z" fill="#282822" />
-                            <path d="M 220 180 C 260 105 280 120 320 180 Z" fill="#35362E" />
-                            {/* Prominent Protest Placard Sign: Circle with diagonal slash 🚫 */}
-                            <g transform="translate(160, 85)">
-                              <circle cx="0" cy="0" r="48" fill="#F4F1EA" stroke="#111" strokeWidth="6" />
-                              <circle cx="0" cy="0" r="38" fill="none" stroke="#111" strokeWidth="8" />
-                              <line x1="-27" y1="-27" x2="27" y2="27" stroke="#111" strokeWidth="8" />
-                            </g>
-                            {/* Hands holding placard */}
-                            <line x1="145" y1="135" x2="145" y2="180" stroke="#DDD" strokeWidth="5" />
-                            <line x1="175" y1="135" x2="175" y2="180" stroke="#DDD" strokeWidth="5" />
-                          </svg>
+                          <img 
+                            src="/images/gazette/protest.jpg" 
+                            alt="Protest crowd demonstration" 
+                            className="w-full h-full object-cover grayscale contrast-125 brightness-90 group-hover:scale-[1.01] transition-transform duration-300"
+                          />
+                          {/* Inset Circular Prohibition Symbol Placard */}
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="bg-[#FAF8F3]/95 border-2 border-[#141512] p-1.5 shadow-md flex items-center justify-center">
+                              <svg viewBox="0 0 60 60" className="w-10 h-10">
+                                <circle cx="30" cy="30" r="26" fill="none" stroke="#141512" strokeWidth="6" />
+                                <line x1="12" y1="12" x2="48" y2="48" stroke="#141512" strokeWidth="6" />
+                              </svg>
+                            </div>
+                          </div>
                         </div>
 
                         {/* Article Headline & Deck */}
@@ -265,11 +222,14 @@ export function NewsView({ onInspectArticle }) {
                           })}
                           className="cursor-pointer group pb-2 border-b border-[#222]"
                         >
-                          <h3 className="font-serif font-bold text-[14.5px] leading-tight text-[#111] group-hover:underline">
+                          <div className="text-[6.5px] font-mono font-bold uppercase tracking-widest text-[#B0452E] mb-0.5">
+                            CULTURE
+                          </div>
+                          <h3 className="font-serif font-bold text-[14px] leading-tight text-[#111] group-hover:underline">
                             The Real Problem With Cancel Culture
                           </h3>
                           <p className="font-serif text-[8.5px] text-[#444] leading-relaxed mt-1">
-                            It's not about celebrities. It's about losing trust in each other.
+                            It's not about celebrities. It's about losing trust in each other. A deeper look at how outrage, moralism and online mobs are reshaping public discourse.
                           </p>
                           <div className="font-mono text-[6.5px] font-bold text-[#777] uppercase tracking-wider mt-1">
                             BY KAT ROSENFIELD
@@ -278,7 +238,7 @@ export function NewsView({ onInspectArticle }) {
 
                         {/* 2 Sub-Columns under Cancel Culture */}
                         <div className="grid grid-cols-2 gap-2.5 pt-2">
-                          {/* Sub-col 1: Doran + Election */}
+                          {/* Sub-col 1: Doran on Wall Street + 2020 Election */}
                           <div className="border-r border-[#CCC7B8] pr-2 flex flex-col justify-between">
                             <div 
                               onClick={() => handleArticleClick({
@@ -289,7 +249,10 @@ export function NewsView({ onInspectArticle }) {
                               })}
                               className="cursor-pointer group pb-2 border-b border-[#D5D0C2]"
                             >
-                              <h4 className="font-serif font-bold text-[10px] leading-tight text-[#111] group-hover:underline">
+                              <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#666] mb-0.5">
+                                FINANCE
+                              </div>
+                              <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#111] group-hover:underline">
                                 If Michael Doran Were on Wall Street, He'd Be a Billionaire
                               </h4>
                               <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5">
@@ -309,7 +272,10 @@ export function NewsView({ onInspectArticle }) {
                               })}
                               className="cursor-pointer group pt-1.5"
                             >
-                              <h4 className="font-serif font-bold text-[10px] leading-tight text-[#111] group-hover:underline">
+                              <div className="text-[6px] font-mono font-bold uppercase tracking-wider text-[#666] mb-0.5">
+                                POLITICS
+                              </div>
+                              <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#111] group-hover:underline">
                                 Jews Could Swing the 2020 Election
                               </h4>
                               <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5">
@@ -321,19 +287,15 @@ export function NewsView({ onInspectArticle }) {
                             </div>
                           </div>
 
-                          {/* Sub-col 2: Photo + The Revolt Against Iran */}
+                          {/* Sub-col 2: Press Briefing Photo + The Revolt Against Iran */}
                           <div>
-                            {/* Photo: Press Conference / Rally */}
+                            {/* Real Photo: Press Briefing / Diplomatic Conference */}
                             <div className="w-full h-14 bg-[#181816] border border-[#222] mb-1.5 overflow-hidden">
-                              <svg viewBox="0 0 140 70" className="w-full h-full opacity-80">
-                                <rect width="140" height="70" fill="#121210" />
-                                <rect x="30" y="20" width="80" height="40" fill="#2E2E2A" />
-                                <circle cx="50" cy="25" r="7" fill="#C8C4B8" />
-                                <circle cx="70" cy="22" r="8" fill="#D5D0C4" />
-                                <circle cx="90" cy="26" r="7" fill="#B8B4A8" />
-                                <rect x="40" y="38" width="60" height="32" fill="#1C1D18" />
-                                <line x1="20" y1="15" x2="35" y2="40" stroke="#777" strokeWidth="1" />
-                              </svg>
+                              <img 
+                                src="/images/gazette/press_conference.jpg" 
+                                alt="Diplomatic press briefing room" 
+                                className="w-full h-full object-cover grayscale contrast-125 brightness-95"
+                              />
                             </div>
 
                             <div 
@@ -345,11 +307,11 @@ export function NewsView({ onInspectArticle }) {
                               })}
                               className="cursor-pointer group"
                             >
-                              <h4 className="font-serif font-bold text-[10px] leading-tight text-[#111] group-hover:underline">
+                              <h4 className="font-serif font-bold text-[9.5px] leading-tight text-[#111] group-hover:underline">
                                 The Revolt Against Iran
                               </h4>
                               <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5 line-clamp-3">
-                                Iran's plans for regional hegemony depend on being seen as the protector of loyal Shia Muslims—but those are exactly the people leading mass protests against Iranian domination in Iraq and Lebanon.
+                                Iran's plans for regional hegemony depend on being seen as the protector of loyal Shia Muslims—but those are exactly the people leading mass protests.
                               </p>
                               <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-1">
                                 BY HANIN GHADDAR
@@ -360,35 +322,31 @@ export function NewsView({ onInspectArticle }) {
                       </div>
                     </div>
 
-                    {/* Right 5 Columns (~42%): Featured Columnist, Election Dates, Audio Player */}
+                    {/* Right 5 Columns (~42%): Featured Columnist, Election Dates, Dark Audio Widget */}
                     <div className="col-span-5 flex flex-col justify-between space-y-2.5">
-                      {/* Box 1: FEATURED COLUMNIST */}
-                      <div className="bg-[#F7EBE6] border border-[#E0C4B8] p-2.5 text-center flex flex-col items-center">
+                      {/* Box 1: FEATURED COLUMNIST with Authentic Photographic Portrait */}
+                      <div className="bg-[#F8ECE7] border border-[#DEB9AD] p-2.5 text-center flex flex-col items-center">
                         <div className="font-mono text-[6.5px] font-bold uppercase tracking-widest text-[#B0452E] mb-1.5">
                           FEATURED COLUMNIST
                         </div>
-                        {/* Reddish/Duotone Circle Avatar */}
-                        <div className="w-13 h-13 rounded-full overflow-hidden border-2 border-[#B0452E]/60 bg-[#D48F7B]/30 flex items-center justify-center mb-1.5">
-                          <svg viewBox="0 0 100 100" className="w-full h-full">
-                            <rect width="100" height="100" fill="#E6A896" />
-                            {/* Head & Beard */}
-                            <circle cx="50" cy="42" r="22" fill="#B0452E" />
-                            <path d="M 20 90 C 25 65 75 65 80 90 Z" fill="#8C3320" />
-                            <path d="M 38 46 Q 50 64 62 46 Z" fill="#581F14" />
-                            <circle cx="43" cy="40" r="2.5" fill="#FFF" />
-                            <circle cx="57" cy="40" r="2.5" fill="#FFF" />
-                          </svg>
+                        {/* Real Photographic Portrait with Sepia Duotone Newsprint Tint */}
+                        <div className="w-13 h-13 rounded-full overflow-hidden border-2 border-[#B0452E] bg-[#D48F7B]/30 mb-1.5 shadow-sm">
+                          <img 
+                            src="/images/gazette/columnist.jpg" 
+                            alt="Columnist Liel Leibovitz" 
+                            className="w-full h-full object-cover grayscale contrast-125"
+                          />
                         </div>
                         <h4 className="font-serif font-bold text-[11px] text-[#141512]">
                           LIEL LEIBOVITZ
                         </h4>
-                        <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5">
+                        <p className="font-serif text-[7.5px] text-[#555] leading-snug mt-0.5 max-w-[190px]">
                           Liel Leibovitz is a senior writer for Tablet Magazine and co-host of the Unorthodox podcast.
                         </p>
                       </div>
 
                       {/* Box 2: UPCOMING ELECTION DATES */}
-                      <div className="bg-[#F7EBE6] border border-[#E0C4B8] p-2 text-[7.5px] font-mono">
+                      <div className="bg-[#F8ECE7] border border-[#DEB9AD] p-2 text-[7.5px] font-mono">
                         <div className="font-bold text-[6.5px] text-[#B0452E] uppercase tracking-wider mb-1">
                           UPCOMING ELECTION DATES
                         </div>
@@ -401,7 +359,7 @@ export function NewsView({ onInspectArticle }) {
                       </div>
 
                       {/* Box 3: Dark Audio Player Widget */}
-                      <div className="bg-[#181917] text-[#EDEAE2] p-2 flex flex-col justify-between">
+                      <div className="bg-[#181917] text-[#EDEAE2] p-2 flex flex-col justify-between shadow-inner">
                         <div>
                           <div className="flex items-center space-x-1.5 text-[6.5px] font-mono font-bold tracking-wider uppercase text-[#C4C0B0]">
                             <Headphones className="w-2.5 h-2.5" />
@@ -418,7 +376,7 @@ export function NewsView({ onInspectArticle }) {
                         <div className="pt-1.5 flex items-center space-x-1.5">
                           <button 
                             onClick={() => setIsPlayingAudio1(!isPlayingAudio1)}
-                            className="w-4 h-4 rounded-full bg-[#EAE6DC] text-[#141512] flex items-center justify-center flex-shrink-0 hover:bg-white"
+                            className="w-4 h-4 rounded-full bg-[#EAE6DC] text-[#141512] flex items-center justify-center flex-shrink-0 hover:bg-white transition-colors"
                           >
                             {isPlayingAudio1 ? <Pause className="w-2 h-2" /> : <Play className="w-2 h-2 ml-0.5" />}
                           </button>
@@ -431,9 +389,9 @@ export function NewsView({ onInspectArticle }) {
                     </div>
                   </div>
 
-                  {/* 3. BOTTOM TIER: 4 Columns (Action, Synagogue, Malley, Huge 21 Stat) */}
+                  {/* 3. BOTTOM TIER: 4 Compact Editorial Columns */}
                   <div className="grid grid-cols-12 gap-2.5 pt-2.5">
-                    {/* Col 1 */}
+                    {/* Col 1: Action */}
                     <div 
                       onClick={() => handleArticleClick({
                         title: "A Year After Pittsburgh, Time for Action",
@@ -451,7 +409,7 @@ export function NewsView({ onInspectArticle }) {
                       </div>
                     </div>
 
-                    {/* Col 2 */}
+                    {/* Col 2: Synagogue Security */}
                     <div 
                       onClick={() => handleArticleClick({
                         title: "It's Time to Lock Your Synagogue's Doors",
@@ -469,7 +427,7 @@ export function NewsView({ onInspectArticle }) {
                       </div>
                     </div>
 
-                    {/* Col 3 */}
+                    {/* Col 3: Foreign Affairs */}
                     <div 
                       onClick={() => handleArticleClick({
                         title: "Malley in Wonderland",
@@ -487,7 +445,7 @@ export function NewsView({ onInspectArticle }) {
                       </div>
                     </div>
 
-                    {/* Col 4: Huge Bold Serif "21" */}
+                    {/* Col 4: Archival Stat Numeral 21 */}
                     <div className="col-span-3 pl-1 text-center flex flex-col justify-center">
                       <div className="font-serif font-black text-[28px] leading-none text-[#141512]">
                         21
@@ -521,21 +479,24 @@ export function NewsView({ onInspectArticle }) {
               {/* Page Sheet */}
               <article className="flex-1 bg-[#F5F2EA] border border-[#222] shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-5 md:p-6 text-[#141512] flex flex-col justify-between">
                 <div>
-                  {/* Top Bar: Hamburger Menu & Tablet Logo */}
-                  <div className="flex justify-between items-center pb-1">
-                    <div className="w-4 h-3 flex flex-col justify-between cursor-pointer opacity-70 hover:opacity-100">
-                      <span className="w-3.5 h-[1.5px] bg-[#222]"></span>
-                      <span className="w-3.5 h-[1.5px] bg-[#222]"></span>
-                      <span className="w-3.5 h-[1.5px] bg-[#222]"></span>
+                  {/* Top Bar: Hamburger Menu, Running Folio, & Tablet Logo */}
+                  <div className="flex justify-between items-center text-[7.5px] font-mono tracking-widest text-[#555] uppercase pb-1.5 border-b border-[#222]">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3.5 h-2.5 flex flex-col justify-between cursor-pointer opacity-70 hover:opacity-100">
+                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
+                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
+                        <span className="w-3 h-[1.5px] bg-[#222]"></span>
+                      </div>
+                      <span>IDEAS • DISCOVERY • A MORE CURIOUS WORLD</span>
                     </div>
-                    <div className="font-serif italic text-[11px] tracking-wide text-[#333]">
+                    <div className="font-serif italic font-normal text-[11px] tracking-wide text-[#333] normal-case">
                       Tablet
                     </div>
-                    <div className="w-4"></div>
+                    <span>VOL. XLII • No. 104 • 09 MAY 2025</span>
                   </div>
 
                   {/* Big Masthead: SCIENCE */}
-                  <div className="border-b border-[#222] pb-1.5 mb-2.5 text-center">
+                  <div className="border-b border-[#222] py-2 mb-2.5 text-center">
                     <h1 className="font-sans font-black text-[46px] md:text-[54px] uppercase tracking-[-0.03em] leading-none text-[#111]">
                       SCIENCE
                     </h1>
@@ -544,7 +505,7 @@ export function NewsView({ onInspectArticle }) {
                   {/* 1. TOP TIER: Jewish Inventions, Chef Solomonov Photo + Beard Story, Yiddleaks & Venezuela */}
                   <div className="grid grid-cols-12 gap-3 pb-2.5 border-b border-[#222]">
                     {/* Left: JEWISH DISCOVERIES & INVENTIONS (~24%) */}
-                    <div className="col-span-3 bg-[#F7EBE6] border border-[#E0C4B8] p-2 flex flex-col justify-between text-[7px] font-mono">
+                    <div className="col-span-3 bg-[#F8ECE7] border border-[#DEB9AD] p-2 flex flex-col justify-between text-[7px] font-mono">
                       <div>
                         <div className="font-bold text-[6.5px] text-[#B0452E] uppercase tracking-wider mb-1 leading-tight">
                           JEWISH DISCOVERIES &amp; INVENTIONS
@@ -553,9 +514,9 @@ export function NewsView({ onInspectArticle }) {
                           <span className="font-bold text-[#111]">Daniel Nathans</span> was awarded the Nobel Prize in Physiology or Medicine in 1978 for the discovery of restriction enzymes.
                         </p>
                         {/* Reddish/coral circular biological cell diagram */}
-                        <div className="w-full h-8 bg-[#EAC9BE]/40 border border-[#E0C4B8] my-1 flex items-center justify-center">
+                        <div className="w-full h-8 bg-[#EAC9BE]/40 border border-[#DEB9AD] my-1 flex items-center justify-center">
                           <svg viewBox="0 0 100 40" className="w-full h-full">
-                            <circle cx="50" cy="20" r="14" fill="#B0452E" opacity="0.4" />
+                            <circle cx="50" cy="20" r="14" fill="#B0452E" opacity="0.3" />
                             <circle cx="50" cy="20" r="7" fill="#8C3320" />
                             <path d="M 30 20 L 70 20" stroke="#FAF8F3" strokeWidth="1" strokeDasharray="2 2" />
                             <circle cx="36" cy="20" r="3" fill="#B0452E" />
@@ -571,7 +532,7 @@ export function NewsView({ onInspectArticle }) {
                       </div>
                     </div>
 
-                    {/* Center: Chef Michael Solomonov Photo & James Beard Story (~48%) */}
+                    {/* Center: Chef Michael Solomonov Real Photograph & James Beard Story (~48%) */}
                     <div className="col-span-5 px-1 flex flex-col justify-between">
                       <div 
                         onClick={() => handleArticleClick({
@@ -582,30 +543,13 @@ export function NewsView({ onInspectArticle }) {
                         })}
                         className="cursor-pointer group"
                       >
-                        {/* Chef Portrait */}
-                        <div className="w-full aspect-[16/10] bg-[#12130F] border border-[#222] relative overflow-hidden mb-1.5">
-                          <svg viewBox="0 0 300 190" className="w-full h-full object-cover">
-                            <defs>
-                              <linearGradient id="chefLight" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stopColor="#2A2B24" />
-                                <stop offset="100%" stopColor="#0B0C0A" />
-                              </linearGradient>
-                            </defs>
-                            <rect width="300" height="190" fill="url(#chefLight)" />
-                            {/* Chef dark jacket & silhouette */}
-                            <path d="M 70 190 C 90 120 210 120 230 190 Z" fill="#141412" />
-                            {/* Head & Face */}
-                            <ellipse cx="150" cy="85" rx="36" ry="44" fill="#DDD8CB" />
-                            {/* Close-cropped salt-and-pepper hair */}
-                            <path d="M 116 80 C 114 42 186 42 184 80 Z" fill="#7A786E" />
-                            <path d="M 120 65 C 130 50 170 50 180 65 Z" fill="#A8A69C" opacity="0.7" />
-                            {/* Thoughtful expression, stubble */}
-                            <ellipse cx="138" cy="82" rx="3" ry="2" fill="#111" />
-                            <ellipse cx="162" cy="82" rx="3" ry="2" fill="#111" />
-                            <path d="M 148 84 L 152 102 L 144 105" fill="none" stroke="#333" strokeWidth="2" />
-                            <path d="M 136 118 Q 150 120 164 118" fill="none" stroke="#222" strokeWidth="2.5" />
-                            <rect x="130" y="105" width="40" height="22" rx="4" fill="#444" opacity="0.15" />
-                          </svg>
+                        {/* Real Editorial Photograph of Chef Michael Solomonov by Bill Cramer */}
+                        <div className="w-full aspect-[16/10] max-h-[140px] bg-[#12130F] border border-[#222] relative overflow-hidden mb-1.5">
+                          <img 
+                            src="/images/gazette/michael_solomonov.jpg" 
+                            alt="Chef Michael Solomonov" 
+                            className="w-full h-full object-cover grayscale contrast-125 brightness-95 group-hover:scale-[1.01] transition-transform duration-300"
+                          />
                         </div>
 
                         <h3 className="font-serif font-bold text-[13.5px] leading-tight text-[#111] group-hover:underline">
@@ -635,7 +579,7 @@ export function NewsView({ onInspectArticle }) {
                           Yiddleaks: The Jeremy Corbyn Email Archive
                         </h4>
                         <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5">
-                          A trove of communications from Britain's Labour Party leader to his minions reveals the difference between a hipster and Hezbollah.
+                          A trove of communications from Britain's Labour Party leader reveals the difference between a hipster and Hezbollah.
                         </p>
                         <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-0.5">
                           BY TABITHA GOLDRICK
@@ -655,7 +599,7 @@ export function NewsView({ onInspectArticle }) {
                           The Rabbi Who Helped Me Sneak Into Venezuela
                         </h4>
                         <p className="font-serif text-[7px] text-[#555] leading-tight mt-0.5">
-                          Weeks after security forces kicked me out of Venezuela, I was at the Colombian border with a rabbi preparing for the journey.
+                          Weeks after security forces kicked me out of Venezuela, I was at the border with a rabbi preparing for the journey.
                         </p>
                         <div className="font-mono text-[6px] text-[#888] uppercase tracking-wider mt-0.5">
                           BY ARIELA BERNSTEIN-ROTHSTEIN
@@ -708,21 +652,21 @@ export function NewsView({ onInspectArticle }) {
                     </div>
                   </div>
 
-                  {/* 2. MIDDLE CENTERPIECE: Isometric Maze Cube ("Can Islam Be More Jewish?") + Lost Wisdom & Audio */}
+                  {/* 2. MIDDLE CENTERPIECE: Isometric Labyrinth Cube Artwork + Lost Wisdom & Audio */}
                   <div className="grid grid-cols-12 gap-3.5 py-3 border-b border-[#222]">
-                    {/* Left Centerpiece Artwork & Headline (~65%) */}
+                    {/* Left Centerpiece Feature: Can Islam Be More Jewish? (~65%) */}
                     <div className="col-span-8 pr-2 border-r border-[#AAA99B] text-center flex flex-col items-center justify-between">
                       <div 
                         onClick={() => handleArticleClick({
                           title: "Can Islam Be More Jewish?",
-                          deck: "Two faiths, the Jewish owner of South Philadelphia's Essen Bakery, has also been nominated for Outstanding Baker.",
+                          deck: "Two faiths, two histories, and a shared search for meaning in a complicated world. A look at how closer intellectual and cultural ties might reshape the future.",
                           author: "ELI COHEN",
                           category: "Theology & Ideas"
                         })}
                         className="cursor-pointer group w-full flex flex-col items-center"
                       >
-                        {/* Prominent High-Contrast Isometric Labyrinth Cube */}
-                        <div className="w-36 h-36 bg-[#EBE7DC] border-2 border-[#141512] flex items-center justify-center p-2.5 my-1 shadow-md">
+                        {/* Prominent Architectural Isometric Labyrinth Cube */}
+                        <div className="w-36 h-36 bg-[#EBE7DC] border-2 border-[#141512] flex items-center justify-center p-2.5 my-1 shadow-sm">
                           <svg viewBox="0 0 200 200" className="w-full h-full">
                             {/* Cube Outer Shell */}
                             <polygon points="100,10 185,58 185,152 100,195 15,152 15,58" fill="#F5F2EA" stroke="#141512" strokeWidth="4.5" strokeLinejoin="round" />
@@ -753,7 +697,7 @@ export function NewsView({ onInspectArticle }) {
                           Can Islam Be More Jewish?
                         </h3>
                         <p className="font-serif italic text-[8.5px] text-[#444] leading-relaxed max-w-[420px] mt-0.5">
-                          Two faiths, the Jewish owner of South Philadelphia's Essen Bakery, has also been nominated for Outstanding Baker.
+                          Two faiths, two histories, and a shared search for meaning in a complicated world. A look at how closer intellectual and cultural ties might reshape the future.
                         </p>
                         <div className="font-mono text-[6.5px] text-[#777] uppercase tracking-wider mt-1">
                           BY ELI COHEN
@@ -764,7 +708,7 @@ export function NewsView({ onInspectArticle }) {
                     {/* Right: Lost Wisdom + Audio Widget (~35%) */}
                     <div className="col-span-4 flex flex-col justify-between space-y-2">
                       {/* Box 1: LOST WISDOM */}
-                      <div className="bg-[#F7EBE6] border border-[#E0C4B8] p-2.5 text-center">
+                      <div className="bg-[#F8ECE7] border border-[#DEB9AD] p-2.5 text-center">
                         <div className="font-mono text-[6.5px] font-bold uppercase tracking-widest text-[#B0452E] mb-1">
                           LOST WISDOM
                         </div>
@@ -778,7 +722,7 @@ export function NewsView({ onInspectArticle }) {
                           The Brain: A User's Catalog
                         </div>
 
-                        <div className="border-t border-[#E0C4B8] pt-1.5 mt-1.5">
+                        <div className="border-t border-[#DEB9AD] pt-1.5 mt-1.5">
                           <div className="font-serif font-bold text-[22px] text-[#141512] leading-none">
                             20,800
                           </div>
@@ -788,25 +732,25 @@ export function NewsView({ onInspectArticle }) {
                         </div>
                       </div>
 
-                      {/* Box 2: Dark Audio Player */}
-                      <div className="bg-[#181917] text-[#EDEAE2] p-2 flex flex-col justify-between">
+                      {/* Box 2: Dark Audio Player Widget */}
+                      <div className="bg-[#181917] text-[#EDEAE2] p-2 flex flex-col justify-between shadow-inner">
                         <div>
                           <div className="flex items-center space-x-1.5 text-[6.5px] font-mono font-bold tracking-wider uppercase text-[#C4C0B0]">
                             <Headphones className="w-2.5 h-2.5" />
                             <span>LISTEN TO TABLET</span>
                           </div>
                           <div className="font-serif font-bold text-[8.5px] leading-tight text-[#FAF8F3] mt-1">
-                            The One With the Instagram Rabbi
+                            What Can Faiths Learn From Each Other?
                           </div>
                           <div className="text-[6.5px] font-mono text-[#AAA99B] leading-tight mt-0.5">
-                            Episode 195: Theater legend Joel Grey on directing "Fiddler"
+                            Episode 195: 15-minute conversation on history, religion and coexistence.
                           </div>
                         </div>
 
                         <div className="pt-1.5 flex items-center space-x-1.5">
                           <button 
                             onClick={() => setIsPlayingAudio2(!isPlayingAudio2)}
-                            className="w-4 h-4 rounded-full bg-[#EAE6DC] text-[#141512] flex items-center justify-center flex-shrink-0 hover:bg-white"
+                            className="w-4 h-4 rounded-full bg-[#EAE6DC] text-[#141512] flex items-center justify-center flex-shrink-0 hover:bg-white transition-colors"
                           >
                             {isPlayingAudio2 ? <Pause className="w-2 h-2" /> : <Play className="w-2 h-2 ml-0.5" />}
                           </button>
@@ -819,23 +763,21 @@ export function NewsView({ onInspectArticle }) {
                     </div>
                   </div>
 
-                  {/* 3. BOTTOM TIER: Jewish Nobel Laureate, Censorship Game/Paltrow, Papers Please (4 Screens) */}
+                  {/* 3. BOTTOM TIER: Real Photo of Tobias Asser, Hitler's Mustache Censorship, Papers Please 4-Screen Grid */}
                   <div className="grid grid-cols-12 gap-3 pt-2.5">
-                    {/* Col 1: JEWISH NOBEL LAUREATE (~22%) */}
-                    <div className="col-span-3 bg-[#F7EBE6] border border-[#E0C4B8] p-2 flex flex-col items-center text-center justify-between">
+                    {/* Col 1: JEWISH NOBEL LAUREATE with Real Archival Portrait (~22%) */}
+                    <div className="col-span-3 bg-[#F8ECE7] border border-[#DEB9AD] p-2 flex flex-col items-center text-center justify-between">
                       <div>
                         <div className="font-mono text-[6px] font-bold uppercase tracking-widest text-[#B0452E] mb-1">
                           JEWISH NOBEL LAUREATE
                         </div>
-                        {/* Circular Engraving Avatar of Tobias Asser */}
-                        <div className="w-10 h-10 rounded-full overflow-hidden border border-[#B0452E]/50 bg-[#E8C5BA] mx-auto mb-1 flex items-center justify-center">
-                          <svg viewBox="0 0 80 80" className="w-full h-full">
-                            <circle cx="40" cy="40" r="40" fill="#E2B1A2" />
-                            <circle cx="40" cy="32" r="16" fill="#8C3320" />
-                            <path d="M 15 75 C 20 50 60 50 65 75 Z" fill="#581F14" />
-                            {/* White sideburns / mustache */}
-                            <path d="M 32 38 Q 40 44 48 38 Z" fill="#F5F2EA" />
-                          </svg>
+                        {/* Real Archival Photo of Tobias Asser */}
+                        <div className="w-11 h-11 rounded-full overflow-hidden border border-[#B0452E] bg-[#E8C5BA] mx-auto mb-1 flex items-center justify-center shadow-sm">
+                          <img 
+                            src="/images/gazette/tobias_asser.jpg" 
+                            alt="Nobel Laureate Tobias Asser" 
+                            className="w-full h-full object-cover grayscale contrast-125"
+                          />
                         </div>
                         <h5 className="font-serif font-bold text-[8.5px] text-[#141512]">
                           TOBIAS ASSER
@@ -846,17 +788,16 @@ export function NewsView({ onInspectArticle }) {
                       </div>
                     </div>
 
-                    {/* Col 2: Wolfenstache & Gwyneth Paltrow (~38%) */}
+                    {/* Col 2: Hitler's Mustache Video Game & Gwyneth Paltrow (~38%) */}
                     <div className="col-span-4 border-r border-[#CCC7B8] pr-2 flex flex-col justify-between">
                       <div className="flex space-x-2 pb-1.5 border-b border-[#D5D0C2]">
-                        {/* Small Photo: Man with Mustache */}
+                        {/* Real Photo: Vintage Censored Portrait */}
                         <div className="w-12 h-12 flex-shrink-0 bg-[#161713] border border-[#222] overflow-hidden">
-                          <svg viewBox="0 0 60 60" className="w-full h-full">
-                            <rect width="60" height="60" fill="#1B1C17" />
-                            <circle cx="30" cy="25" r="14" fill="#C8C4B8" />
-                            <rect x="25" y="27" width="10" height="4" fill="#111" />
-                            <path d="M 15 55 C 20 40 40 40 45 55 Z" fill="#2E3028" />
-                          </svg>
+                          <img 
+                            src="/images/gazette/vintage_portrait.jpg" 
+                            alt="Historical censorship archive photo" 
+                            className="w-full h-full object-cover grayscale contrast-125 brightness-90"
+                          />
                         </div>
                         <div 
                           onClick={() => handleArticleClick({
@@ -900,15 +841,14 @@ export function NewsView({ onInspectArticle }) {
                       </div>
                     </div>
 
-                    {/* Col 3: PAPERS, PLEASE with 4-Monitor Vintage CRT Grid (~40%) */}
+                    {/* Col 3: PAPERS, PLEASE with 4-Monitor CRT Grid (~40%) */}
                     <div className="col-span-5 flex flex-col justify-between">
-                      {/* 2x2 Grid of 4 CRT Game Screenshots */}
+                      {/* 2x2 Grid of 4 CRT Game Screens */}
                       <div className="grid grid-cols-2 gap-1 mb-1.5">
                         {/* Monitor 1: Checkpoint Guard Post */}
                         <div className="aspect-[4/3] bg-[#0E100D] border border-[#222] p-0.5 relative overflow-hidden">
                           <svg viewBox="0 0 100 75" className="w-full h-full">
                             <rect width="100" height="75" fill="#141812" />
-                            {/* Wire fence & guard tower */}
                             <line x1="0" y1="50" x2="100" y2="50" stroke="#3E4536" strokeWidth="1.5" />
                             <line x1="20" y1="20" x2="20" y2="60" stroke="#5E6556" strokeWidth="2" />
                             <rect x="15" y="15" width="10" height="10" fill="#2E3328" />
@@ -924,12 +864,11 @@ export function NewsView({ onInspectArticle }) {
                             <circle cx="28" cy="38" r="6" fill="#444" />
                             <line x1="38" y1="35" x2="52" y2="35" stroke="#333" strokeWidth="1" />
                             <line x1="38" y1="42" x2="52" y2="42" stroke="#333" strokeWidth="1" />
-                            {/* Entry Denied Stamp */}
                             <rect x="25" y="48" width="22" height="7" fill="#B0452E" />
                           </svg>
                         </div>
 
-                        {/* Monitor 3: Ministry Rulebook & Clock */}
+                        {/* Monitor 3: Ministry Rulebook */}
                         <div className="aspect-[4/3] bg-[#0E100D] border border-[#222] p-0.5 relative overflow-hidden">
                           <svg viewBox="0 0 100 75" className="w-full h-full">
                             <rect width="100" height="75" fill="#12140F" />
