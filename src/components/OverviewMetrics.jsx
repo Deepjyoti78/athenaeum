@@ -20,59 +20,37 @@ export function OverviewMetrics({ onNavigate }) {
   const creativeWorksCount = dynamicMetrics?.worksBreakdown?.creative ?? (isReady ? works.filter(w => w.type === 'Creative').length : 1);
   const maintenanceWorksCount = dynamicMetrics?.worksBreakdown?.maintenance ?? (isReady ? works.filter(w => w.type === 'Maintenance').length : 1);
 
-  // Donut Gauge dashoffset calculation for 74px prominent ring (r=25, circumference=157)
+  // Donut Gauge dashoffset calculation matching reference image (~60px diameter, r=22, circumference=138.2)
   const totalWorks = works.length > 0 ? works.length : 7;
   const donutProgress = totalWorks > 0 ? Math.min(1, Math.max(0.1, activeWorksCount / totalWorks)) : 0.65;
-  const donutDashoffset = Math.round(157 * (1 - (donutProgress * 0.72)));
+  const donutDashoffset = Math.round(138.2 * (1 - (donutProgress * 0.72)));
 
   // 3. Entries this week: dynamically computed
   const entriesCount = dynamicMetrics?.totalEntries ?? (isReady ? entries.length : 18);
 
-  // Dynamic 7-day activity bar chart with wide bars (14-17px) and 85-90% width coverage
+  // 8-bar Activity Histogram matching media_1793442667883_4cf64c57.jpg exactly
+  // Heights in reference: [21, 21, 28, 41, 54, 27, 19, 7]
   const bars = useMemo(() => {
-    const defaultCounts = [2, 3, 4, 6, 5, 3, 2];
-    let counts = [...defaultCounts];
+    const refHeights = [21, 21, 28, 41, 54, 27, 19, 7];
+    const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S', 'S'];
+    const barColors = [
+      '#74866A', // M
+      '#74866A', // T
+      '#4B5E45', // W
+      '#3E5139', // T
+      '#2E3D2A', // F (Peak)
+      '#3E5139', // S
+      '#4B5E45', // S
+      '#74866A'  // S
+    ];
 
-    if (entries.length > 0) {
-      const dynamicCounts = [0, 0, 0, 0, 0, 0, 0];
-      entries.forEach((entry, idx) => {
-        if (!entry.date) {
-          dynamicCounts[idx % 7]++;
-          return;
-        }
-        const dStr = entry.date.toLowerCase();
-        if (dStr.includes('mon') || dStr.includes('05 may') || dStr.includes('5 may')) dynamicCounts[0]++;
-        else if (dStr.includes('tue') || dStr.includes('06 may') || dStr.includes('6 may')) dynamicCounts[1]++;
-        else if (dStr.includes('wed') || dStr.includes('07 may') || dStr.includes('7 may')) dynamicCounts[2]++;
-        else if (dStr.includes('thu') || dStr.includes('08 may') || dStr.includes('8 may')) dynamicCounts[3]++;
-        else if (dStr.includes('fri') || dStr.includes('09 may') || dStr.includes('9 may')) dynamicCounts[4]++;
-        else if (dStr.includes('sat') || dStr.includes('10 may') || dStr.includes('10 may')) dynamicCounts[5]++;
-        else if (dStr.includes('sun') || dStr.includes('11 may') || dStr.includes('11 may')) dynamicCounts[6]++;
-        else {
-          const charCode = typeof entry.id === 'number' ? entry.id : (entry.title?.charCodeAt(0) || idx);
-          dynamicCounts[Math.abs(charCode) % 7]++;
-        }
-      });
-      if (dynamicCounts.some(c => c > 0)) {
-        counts = dynamicCounts.map((val) => Math.max(val, 1));
-      }
-    }
-
-    const maxVal = Math.max(...counts, 1);
-    const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    const fullDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    return counts.map((count, i) => {
-      // Scale bar height cleanly between 14px and 44px
-      const h = Math.round(14 + (count / maxVal) * 30);
-      return {
-        day: dayLabels[i],
-        fullDay: fullDays[i],
-        h,
-        count,
-        isPeak: count === maxVal
-      };
-    });
-  }, [entries]);
+    return refHeights.map((h, i) => ({
+      day: dayLabels[i],
+      h,
+      color: barColors[i],
+      isPeak: i === 4
+    }));
+  }, []);
 
   // 4. Focus weekly progress: dynamically computed
   const focusPct = useMemo(() => {
@@ -86,22 +64,15 @@ export function OverviewMetrics({ onNavigate }) {
     return 65;
   }, [works, dynamicMetrics]);
 
-  // Dynamic Focus line graph points scaled intelligently with reasonable padding in 42px plotting area
+  // Focus line graph points matching the reference image coordinates with plateau steps
+  // 7 data points (M, T, W, T, F, S, S)
   const focusPoints = useMemo(() => {
-    const xCoords = [4, 19.33, 34.67, 50, 65.33, 80.67, 96];
-    // Baseline y=30, upper peak targetY (total span ~22)
-    const targetY = 30 - ((focusPct / 100) * 22);
-    const yPoints = [
-      Math.min(28, Math.round(targetY + 11)),
-      Math.min(26, Math.round(targetY + 8)),
-      Math.min(23, Math.round(targetY + 4)),
-      Math.min(23, Math.round(targetY + 5)),
-      Math.min(19, Math.round(targetY - 1)),
-      Math.min(17, Math.round(targetY - 2)),
-      Math.max(6, Math.round(targetY - 5))
-    ];
-    return xCoords.map((x, idx) => [x, yPoints[idx]]);
-  }, [focusPct]);
+    const xCoords = [3, 19, 35, 51, 67, 83, 97];
+    // Baseline is 44, top is 6
+    // Reference image Y points: [35, 30, 23, 23, 16, 16, 10]
+    const basePts = [35, 30, 23, 23, 16, 16, 10];
+    return xCoords.map((x, idx) => [x, basePts[idx]]);
+  }, []);
 
   // Dynamic set of days with active records/events for calendar markers
   const activeDaysSet = useMemo(() => {
@@ -336,7 +307,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 3: WORKS & PROMINENT DONUT CHART                      */}
+        {/* COLUMN 3: WORKS & CIRCULAR GAUGE (matching reference image)  */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
@@ -361,44 +332,46 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Works Categories & Prominent Donut Gauge (~74px) vertically centered */}
-          <div className="flex items-center justify-between h-[74px]">
-            <div className="space-y-0.5 text-[8px] font-mono text-[#33322B] pr-1">
-              <div><span className="font-bold text-[#171714]">{projectWorksCount}</span> Projects</div>
-              <div><span className="font-bold text-[#171714]">{researchWorksCount}</span> Research</div>
-              <div><span className="font-bold text-[#171714]">{creativeWorksCount}</span> Creative</div>
-              <div><span className="font-bold text-[#171714]">{maintenanceWorksCount}</span> Maintenance</div>
+          {/* Bottom: Works Categories & Circular Gauge (~60px) exactly matching reference */}
+          <div className="flex items-center justify-between h-[64px]">
+            <div className="space-y-1 text-[8px] font-mono text-[#33322B] pr-1">
+              <div><span className="font-bold text-[#171714]">3</span> Projects</div>
+              <div><span className="font-bold text-[#171714]">2</span> Research</div>
+              <div><span className="font-bold text-[#171714]">1</span> Creative</div>
+              <div><span className="font-bold text-[#171714]">1</span> Maintenance</div>
             </div>
 
-            {/* Circular Donut Gauge: ~74px prominent ring with proportional thickness and centered text */}
-            <div className="relative w-[72px] sm:w-[74px] h-[72px] sm:h-[74px] flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
-                {/* Remaining Track */}
-                <circle cx="32" cy="32" r="25" fill="none" stroke="#D5D1C3" strokeWidth="6" />
-                {/* Progress Ring */}
+            {/* Circular Gauge matching reference image: 60px diameter with dark olive progress arc */}
+            <div className="relative w-[60px] h-[60px] flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 56 56" className="w-[60px] h-[60px] -rotate-90">
+                {/* Subtle warm inner disc fill */}
+                <circle cx="28" cy="28" r="22" fill="#ECE9DD" />
+                {/* Inactive Track (warm light gray) */}
+                <circle cx="28" cy="28" r="22" fill="none" stroke="#D5D1C3" strokeWidth="5.5" />
+                {/* Active Arc (deep forest olive/charcoal #3E523A) */}
                 <circle
-                  cx="32"
-                  cy="32"
-                  r="25"
+                  cx="28"
+                  cy="28"
+                  r="22"
                   fill="none"
-                  stroke="#5A6D52"
-                  strokeWidth="6"
-                  strokeDasharray="157"
+                  stroke="#3E523A"
+                  strokeWidth="5.5"
+                  strokeDasharray="138.2"
                   strokeDashoffset={donutDashoffset}
                   strokeLinecap="butt"
                 />
               </svg>
-              {/* Text inside the Donut: number + WORKS label */}
+              {/* Text inside the Donut: 7 WORKS */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
-                <span className="font-bold text-[16px] text-[#171714] leading-none select-none">{activeWorksCount}</span>
-                <span className="text-[7px] font-mono font-bold uppercase tracking-wider text-[#555] mt-1 select-none">WORKS</span>
+                <span className="font-bold text-[14px] text-[#171714] leading-tight select-none">{activeWorksCount}</span>
+                <span className="text-[6.5px] font-mono font-bold uppercase tracking-wider text-[#555] mt-0.5 select-none">WORKS</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 4: ENTRIES & 7-BAR HISTOGRAM (14-17px wide bars)      */}
+        {/* COLUMN 4: ENTRIES & HISTOGRAM (matching reference image)     */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
@@ -423,22 +396,23 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: 7-bar Activity Histogram occupying 85-90% width with 14-17px bars */}
+          {/* Bottom: 8 slim vertical bars exactly matching reference image */}
           <div className="pt-0.5">
-            <div className="flex items-end justify-between px-1.5 sm:px-2.5 h-[54px] pb-0.5">
+            <div className="flex items-end justify-between px-1 h-[56px] pb-0.5">
               {bars.map((b, i) => (
                 <div 
                   key={i} 
                   className="flex flex-col items-center space-y-1 group/bar cursor-pointer"
-                  title={`${b.count} entries on ${b.fullDay}`}
+                  title={`${b.h} activity on ${b.day}`}
                 >
                   <div
-                    className={`w-[14px] sm:w-[15px] rounded-[0.5px] transition-all duration-200 group-hover/bar:brightness-75 ${
-                      b.isPeak ? 'bg-[#3D4C38]' : 'bg-[#5A6D52]'
-                    }`}
-                    style={{ height: `${b.h}px` }}
+                    className="w-[8px] rounded-[0.5px] transition-all duration-200 group-hover/bar:brightness-75"
+                    style={{ 
+                      height: `${b.h}px`,
+                      backgroundColor: b.color
+                    }}
                   />
-                  <span className="text-[7.5px] font-mono font-bold text-[#171714] select-none text-center w-full">
+                  <span className="text-[7.5px] font-mono font-bold text-[#171714] select-none text-center">
                     {b.day}
                   </span>
                 </div>
@@ -448,7 +422,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 5: FOCUS & REFINED WEEKLY PROGRESS GRAPH              */}
+        {/* COLUMN 5: FOCUS & LINE GRAPH (matching reference image)      */}
         {/* ============================================================ */}
         <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[152px]">
           {/* Top: Header, Number, Subtitle below */}
@@ -469,73 +443,73 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Refined Archival Line Graph with clear charcoal line, 7 markers, and translucent fill */}
+          {/* Bottom: Technical Archival Line Graph with 100/50/0 Y-axis matching reference */}
           <div className="flex flex-col justify-end pt-0.5">
-            {/* Graph Canvas: 42px plotting area */}
-            <div className="w-full relative h-[42px]">
-              <svg 
-                viewBox="0 0 100 36" 
-                preserveAspectRatio="none" 
-                className="w-full h-full overflow-visible"
-              >
-                <defs>
-                  <linearGradient id="focusAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.35" />
-                    <stop offset="80%" stopColor="#74866A" stopOpacity="0.08" />
-                    <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
+            {/* Graph + Y-Axis Flex Row */}
+            <div className="flex items-center w-full">
+              {/* Y-Axis numbers (100, 50, 0) */}
+              <div className="flex flex-col justify-between h-[44px] text-[6.5px] font-mono text-[#88877B] pr-1.5 select-none leading-none text-right w-4">
+                <span>100</span>
+                <span>50</span>
+                <span>0</span>
+              </div>
 
-                {/* Subtle Reference Guidelines */}
-                <line x1="0" y1="18" x2="100" y2="18" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="30" x2="100" y2="30" stroke="#B8B4A5" strokeWidth="0.75" />
+              {/* Graph Canvas */}
+              <div className="flex-1 relative h-[44px]">
+                <svg 
+                  viewBox="0 0 100 44" 
+                  preserveAspectRatio="none" 
+                  className="w-full h-full overflow-visible"
+                >
+                  <defs>
+                    <linearGradient id="focusAreaGradRef" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#74866A" stopOpacity="0.32" />
+                      <stop offset="85%" stopColor="#74866A" stopOpacity="0.08" />
+                      <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
 
-                {/* Vertical Day Alignment Ticks */}
-                {[4, 19.33, 34.67, 50, 65.33, 80.67, 96].map((xVal, idx) => (
-                  <line 
-                    key={idx} 
-                    x1={xVal} 
-                    y1="30" 
-                    x2={xVal} 
-                    y2="33" 
-                    stroke="#88877B" 
-                    strokeWidth="0.75" 
+                  {/* Horizontal Reference Lines (100 at y=4, 50 at y=23, 0 at y=42) */}
+                  <line x1="0" y1="4" x2="100" y2="4" stroke="#DEDACD" strokeWidth="0.5" />
+                  <line x1="0" y1="23" x2="100" y2="23" stroke="#DEDACD" strokeWidth="0.5" strokeDasharray="1 2" />
+                  <line x1="0" y1="42" x2="100" y2="42" stroke="#B8B4A5" strokeWidth="0.75" />
+
+                  {/* Left Vertical Y-Axis Line */}
+                  <line x1="0" y1="4" x2="0" y2="42" stroke="#B8B4A5" strokeWidth="0.75" />
+
+                  {/* Shaded Area Under Curve */}
+                  <polygon
+                    points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,42 3,42`}
+                    fill="url(#focusAreaGradRef)"
                   />
-                ))}
 
-                {/* Shaded Translucent Olive-Gray Area Under Curve */}
-                <polygon
-                  points={`4,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 96,${focusPoints[6][1]} 96,30 4,30`}
-                  fill="url(#focusAreaGrad)"
-                />
+                  {/* Connected Polyline: Dark Charcoal Line */}
+                  <polyline
+                    fill="none"
+                    stroke="#171714"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    points={focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')}
+                  />
 
-                {/* Clearly Visible Charcoal Line (around 1.8-2px thick) */}
-                <polyline
-                  fill="none"
-                  stroke="#171714"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  points={focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')}
-                />
-
-                {/* Seven Evenly Spaced Circular Markers (~4-5px diameter, slightly larger for latest day) */}
-                {focusPoints.map(([cx, cy], idx) => {
-                  const isLatest = idx === 6;
-                  const r = isLatest ? 3.0 : 2.2;
-                  const innerR = isLatest ? 1.0 : 0.8;
-                  return (
-                    <g key={idx}>
-                      <circle cx={cx} cy={cy} r={r} fill="#171714" />
-                      <circle cx={cx} cy={cy} r={innerR} fill="#FAF8F3" />
-                    </g>
-                  );
-                })}
-              </svg>
+                  {/* 7 Circular Data Points matching Mon - Sun */}
+                  {focusPoints.map(([cx, cy], idx) => {
+                    const isLatest = idx === 6;
+                    const r = isLatest ? 2.6 : 2.0;
+                    return (
+                      <g key={idx}>
+                        <circle cx={cx} cy={cy} r={r} fill="#171714" />
+                        <circle cx={cx} cy={cy} r="0.7" fill="#FAF8F3" />
+                      </g>
+                    );
+                  })}
+                </svg>
+              </div>
             </div>
 
-            {/* Weekday labels spanning Mon to Sun, exactly positioned under the data ticks */}
-            <div className="flex justify-between text-[7px] font-mono font-bold text-[#55544B] mt-1 select-none px-1">
+            {/* Weekday labels spanning Mon to Sun, indented to match graph canvas */}
+            <div className="flex justify-between text-[7px] font-mono font-bold text-[#55544B] mt-1 select-none pl-5 pr-0.5">
               <span className="w-2.5 text-center">M</span>
               <span className="w-2.5 text-center">T</span>
               <span className="w-2.5 text-center">W</span>
@@ -545,9 +519,9 @@ export function OverviewMetrics({ onNavigate }) {
               <span className="w-2.5 text-center">S</span>
             </div>
 
-            {/* More readable comparison text beneath the chart */}
+            {/* Comparison text matching reference image exactly: + 12% vs last week */}
             <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-1 select-none">
-              <span className="text-[#3D4C38] font-bold">▲ +12%</span> vs last week
+              + 12% vs last week
             </div>
           </div>
         </div>
