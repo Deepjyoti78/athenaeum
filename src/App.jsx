@@ -185,16 +185,16 @@ function AthenaeumApp() {
                   onViewAll={() => setActiveNav('works')}
                 />
 
-                {/* Section C & D: Upcoming Actions (~66%) & Daily Log (~33%) matching reference image */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 pb-3">
-                  <div className="lg:col-span-8">
+                {/* Section C & D: Upcoming Actions (60%) & Daily Log (40%) precisely aligning with 3:2 ratio */}
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 pb-3">
+                  <div className="lg:col-span-3">
                     <UpcomingActions
                       actions={actions}
                       onToggleActionStatus={toggleActionStatus}
                       onChangePriority={cycleActionPriority}
                     />
                   </div>
-                  <div className="lg:col-span-4">
+                  <div className="lg:col-span-2">
                     <DailyLog
                       onViewLog={() => setActiveNav('daily-log')}
                     />

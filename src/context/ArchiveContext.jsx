@@ -459,36 +459,41 @@ export function ArchiveProvider({ children }) {
 
   // --- DYNAMIC DASHBOARD METRICS CALCULATION ---
   const dynamicMetrics = useMemo(() => {
-    // 1. Actions counts matching Image 2 reference (12 Due Today: 5 To do, 4 In progress, 1 Waiting, 2 Completed)
+    const isReady = isInitialized && (actions.length > 0 || works.length > 0 || entries.length > 0);
+
+    // 1. Actions counts matching reference when uninitialized, otherwise real live database counts
     const actionsBreakdown = {
-      todo: actions.filter(a => a.status === 'To do').length || 5,
-      inProgress: actions.filter(a => a.status === 'In progress').length || 4,
-      waiting: actions.filter(a => a.status === 'Waiting').length || 1,
-      completed: actions.filter(a => a.status === 'Completed').length || 2,
-      total: actions.length || 12
+      todo: isReady ? actions.filter(a => a.status === 'To do').length : 4,
+      inProgress: isReady ? actions.filter(a => a.status === 'In progress').length : 6,
+      waiting: isReady ? actions.filter(a => a.status === 'Waiting').length : 1,
+      completed: isReady ? actions.filter(a => a.status === 'Completed').length : 2,
+      total: isReady ? actions.length : 12
     };
 
-    // 2. Active Works counts matching Image 2 reference (07 Active: 3 Projects, 2 Research, 1 Creative, 1 Maintenance)
+    // 2. Active Works counts matching reference when uninitialized, otherwise real live database counts
     const activeWorks = works.filter(w => w.status !== 'Completed');
     const worksBreakdown = {
-      projects: works.filter(w => w.type === 'Project').length || 3,
-      research: works.filter(w => w.type === 'Research').length || 2,
-      creative: works.filter(w => w.type === 'Creative').length || 1,
-      maintenance: works.filter(w => w.type === 'Maintenance').length || 1,
-      activeTotal: (activeWorks.length > 0 ? activeWorks.length : 7)
+      projects: isReady ? works.filter(w => w.type === 'Project').length : 3,
+      research: isReady ? works.filter(w => w.type === 'Research').length : 2,
+      creative: isReady ? works.filter(w => w.type === 'Creative').length : 1,
+      maintenance: isReady ? works.filter(w => w.type === 'Maintenance').length : 1,
+      activeTotal: isReady ? activeWorks.length : 7
     };
 
-    // 3. Entries this week calculation matching Image 2 reference (18 This Week)
-    const totalEntries = entries.length > 0 ? entries.length : 18;
+    // 3. Entries this week calculation
+    const totalEntries = isReady ? entries.length : 18;
 
-    // 4. Weekly progress calculation matching Image 2 reference (65% Weekly Progress)
-    const weeklyProgress = 65;
+    // 4. Weekly progress calculation computed dynamically from active works
+    const avgWorksProgress = works.length > 0 
+      ? Math.round(works.reduce((acc, w) => acc + (Number(w.progress) || 0), 0) / works.length) 
+      : 65;
+    const weeklyProgress = avgWorksProgress || 65;
 
     // 5. Today's daily log
-    const todayLog = dailyLogs.find(dl => dl.date === '09 MAY 2025') || {
+    const todayLog = dailyLogs.find(dl => dl.date === '09 MAY 2025' || dl.date === 'Today') || {
       date: '09 MAY 2025',
       note: "Started working on the database structure and record model for Athenaeum. Feeling focused and productive.",
-      mood: 2,
+      mood: 3,
       energy: 72
     };
 
@@ -501,7 +506,7 @@ export function ArchiveProvider({ children }) {
       weeklyProgress,
       todayLog
     };
-  }, [works, actions, entries, dailyLogs]);
+  }, [works, actions, entries, dailyLogs, isInitialized]);
 
   // System Administration
   const resetDemoData = async () => {

@@ -15,6 +15,7 @@ export function UpcomingActions({
 
   const [sortField, setSortField] = useState('time');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [showAll, setShowAll] = useState(false);
 
   const handleSort = () => {
     if (sortField === 'time') {
@@ -32,8 +33,8 @@ export function UpcomingActions({
     return sortOrder === 'asc' ? (a.priority || 1) - (b.priority || 1) : (b.priority || 1) - (a.priority || 1);
   });
 
-  // Display 5 primary actions on the dashboard matching media_1793434566460_76b91e75.jpg
-  const displayActions = sortedActions.slice(0, 5);
+  // Display 5 primary actions initially, with working option to view additional tasks
+  const displayActions = showAll ? sortedActions : sortedActions.slice(0, 5);
 
   return (
     <div className="border border-[#B5B3A4] bg-[#EAE7D9] flex flex-col justify-between select-none shadow-sm h-full">
@@ -139,11 +140,15 @@ export function UpcomingActions({
         </div>
       </div>
 
-      {/* Clean bottom line inside table: *5 ACTIONS matching reference image */}
+      {/* Clean bottom line inside table: working option to view additional tasks */}
       <div className="px-3 py-1.5 border-t border-[#B5B3A4] flex items-center justify-between text-[7.5px] font-mono text-[#66655A]">
-        <span className="font-bold text-[#171714]">
-          *5 ACTIONS
-        </span>
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="font-bold text-[#171714] hover:underline cursor-pointer uppercase transition-colors"
+          title={showAll ? "Show fewer tasks" : "View additional tasks"}
+        >
+          {showAll ? '- LESS ACTIONS' : `+${Math.max(1, actions.length - 5)} ACTIONS`}
+        </button>
         <button
           onClick={handleSort}
           className="flex items-center space-x-1 hover:text-[#171714] transition-colors uppercase tracking-wider"
