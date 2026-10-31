@@ -9,15 +9,15 @@ export function RecentEntries({ entries: propEntries, onViewAll, onSelectEntry }
   const getCategoryTagStyle = (cat) => {
     switch (cat) {
       case 'Project Note':
-        return 'border-[#949182] text-[#25251F] bg-[#DDD8CB] font-bold';
+        return 'border-[#74866A] text-[#171714] bg-[#DDD8CB] font-bold';
       case 'Idea':
-        return 'border-[#777A5A] text-[#333820] bg-[#E2E4D5] font-bold';
+        return 'border-[#74866A] text-[#171714] bg-[#E2E4D5] font-bold';
       case 'Meeting':
-        return 'border-[#8F8B7D] text-[#2A271E] bg-[#DFDBD0] font-bold';
+        return 'border-[#8F8B7D] text-[#171714] bg-[#DFDBD0] font-bold';
       case 'Research':
-        return 'border-[#687F68] text-[#243324] bg-[#D7DFD7] font-bold';
+        return 'border-[#4B5E45] text-[#171714] bg-[#D7DFD7] font-bold';
       default:
-        return 'border-[#AAA99B] text-[#3E3D35] bg-[#DFDBD0] font-bold';
+        return 'border-[#B5B3A4] text-[#33322B] bg-[#DFDBD0] font-bold';
     }
   };
 
@@ -27,19 +27,19 @@ export function RecentEntries({ entries: propEntries, onViewAll, onSelectEntry }
   };
 
   return (
-    <div className="border border-[#AAA99B] bg-[#E9E5D8] flex flex-col justify-between select-none shadow-sm h-full">
+    <div className="border border-[#B5B3A4] bg-[#EAE7D9] flex flex-col justify-between select-none shadow-sm h-full font-mono">
       {/* Header */}
       <div>
-        <div className="p-2.5 pb-2 border-b border-[#AAA99B] flex items-center justify-between">
+        <div className="p-2.5 pb-2 border-b border-[#B5B3A4] flex items-center justify-between">
           <div className="flex items-center space-x-1.5">
-            <span className="w-1.5 h-1.5 bg-[#25251F] inline-block"></span>
-            <span className="text-[10px] uppercase tracking-wider font-mono font-bold text-[#25251F]">
+            <span className="w-1.5 h-1.5 bg-[#171714] inline-block" />
+            <span className="text-[10px] uppercase tracking-wider font-mono font-bold text-[#171714]">
               RECENT ENTRIES
             </span>
           </div>
           <button
             onClick={onViewAll}
-            className="text-[#55544B] hover:text-[#141512] font-bold uppercase tracking-wider text-[8px] underline decoration-dotted transition-colors"
+            className="text-[#66655B] hover:text-[#171714] font-bold uppercase tracking-wider text-[8px] underline decoration-dotted transition-colors"
           >
             VIEW ALL
           </button>
@@ -47,22 +47,29 @@ export function RecentEntries({ entries: propEntries, onViewAll, onSelectEntry }
 
         {/* Table / List */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-[9px] font-mono">
-            <tbody className="divide-y divide-[#DDD9CD]">
+          <table className="w-full text-left border-collapse text-[8.5px] font-mono table-fixed">
+            <thead>
+              <tr className="border-b border-[#D5D1C4] text-[#66655A] uppercase text-[7.5px] font-mono tracking-wider">
+                <th className="py-1.5 px-2.5 font-normal w-[24%]">DATE / TIME</th>
+                <th className="py-1.5 px-2 font-normal w-[52%]">ENTRY TITLE</th>
+                <th className="py-1.5 px-2.5 font-normal text-right w-[24%]">CATEGORY</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E0DCD0]">
               {entries.slice(0, 4).map((entry) => (
                 <tr 
                   key={entry.id}
                   onClick={() => handleClick(entry)}
                   className="hover:bg-[#E2DDD0] transition-colors cursor-pointer group"
                 >
-                  <td className="py-2.5 px-2.5 text-[#55544B] font-mono whitespace-nowrap text-[8px]">
-                    {entry.date} <span className="text-[#141512] font-bold">{entry.time}</span>
+                  <td className="py-2 px-2.5 text-[#55544B] whitespace-nowrap text-[8px]">
+                    {entry.date} <span className="text-[#171714] font-bold ml-1">{entry.time}</span>
                   </td>
-                  <td className="py-2.5 px-2.5 text-[#141512] font-bold text-[9.5px] group-hover:underline">
+                  <td className="py-2 px-2 text-[#171714] font-bold text-[9px] group-hover:underline truncate">
                     {entry.title}
                   </td>
-                  <td className="py-2.5 px-2.5 text-right whitespace-nowrap">
-                    <span className={`inline-block px-1.5 py-0.5 text-[7.5px] border font-mono tracking-wider ${getCategoryTagStyle(entry.category)}`}>
+                  <td className="py-2 px-2.5 text-right whitespace-nowrap">
+                    <span className={`inline-block px-1.5 py-0.5 text-[7px] border font-mono tracking-wider ${getCategoryTagStyle(entry.category)}`}>
                       {entry.category}
                     </span>
                   </td>
@@ -74,10 +81,12 @@ export function RecentEntries({ entries: propEntries, onViewAll, onSelectEntry }
       </div>
 
       {/* Sub-bar */}
-      <div className="px-2.5 py-1.5 bg-[#E2DDCF] border-t border-[#AAA99B] flex justify-between text-[7.5px] font-mono font-bold text-[#55544B]">
+      <div className="px-2.5 py-1.5 bg-[#E4DFC2]/40 border-t border-[#B5B3A4] flex justify-between text-[7.5px] font-mono text-[#55544B]">
         <span>INDEX ARCHIVE: ENTRIES_DB</span>
-        <span>4 OF {entries.length || 18} RECENT</span>
+        <span className="font-bold text-[#171714]">4 OF {entries.length || 18} RECENT</span>
       </div>
     </div>
   );
 }
+
+export default RecentEntries;

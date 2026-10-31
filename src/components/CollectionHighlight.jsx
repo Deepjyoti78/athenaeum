@@ -23,42 +23,45 @@ export function CollectionHighlight({
   };
 
   return (
-    <div className="border border-[#AAA99B] bg-[#E9E5D8] flex flex-col justify-between p-2.5 select-none shadow-sm h-full">
+    <div className="border border-[#B5B3A4] bg-[#EAE7D9] flex flex-col justify-between p-2.5 select-none shadow-sm h-full font-mono">
       {/* Header */}
       <div>
-        <div className="flex items-center justify-between pb-1.5 border-b border-[#D5D1C4]">
-          <span className="text-[10px] uppercase tracking-wider font-mono font-semibold text-[#66655A]">
-            COLLECTION HIGHLIGHT
-          </span>
+        <div className="flex items-center justify-between pb-1.5 border-b border-[#B5B3A4]">
+          <div className="flex items-center space-x-1.5">
+            <span className="w-1.5 h-1.5 bg-[#171714] inline-block" />
+            <span className="text-[10px] uppercase tracking-wider font-mono font-bold text-[#171714]">
+              COLLECTION HIGHLIGHT
+            </span>
+          </div>
           <button
             onClick={handleOpen}
-            className="text-[#68675C] hover:text-[#25251F] uppercase tracking-wider text-[8px] underline decoration-dotted transition-colors"
+            className="text-[#66655B] hover:text-[#171714] uppercase tracking-wider text-[8px] underline decoration-dotted transition-colors font-bold"
           >
-            VIEW
+            VIEW ALL
           </button>
         </div>
 
         {/* Title and metadata */}
         <div className="pt-2 flex items-center justify-between">
           <div onClick={handleOpen} className="cursor-pointer">
-            <div className="text-[10.5px] font-mono font-bold text-[#25251F] tracking-tight hover:underline">
+            <div className="text-[10px] font-mono font-bold text-[#171714] tracking-tight hover:underline">
               {collection.title}
             </div>
-            <div className="text-[8px] font-mono text-[#77766B]">
-              {collection.itemCount || 24} Items
+            <div className="text-[7.5px] font-mono text-[#66655B] mt-0.5">
+              {collection.itemCount || 24} Cataloged Items
             </div>
           </div>
           <button 
             onClick={handleOpen}
             title="Inspect collection"
-            className="text-[#68675C] hover:text-[#25251F] p-0.5"
+            className="text-[#66655B] hover:text-[#171714] p-0.5"
           >
             <MoreHorizontal className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {/* Thumbnails Row */}
-        <div className="grid grid-cols-4 gap-2 pt-2.5">
+        <div className="grid grid-cols-4 gap-2 pt-2">
           {(collection.items || ['highlight_specimen', 'highlight_blueprint', 'highlight_sketch', 'beetle']).slice(0, 4).map((artType, idx) => (
             <div
               key={idx}
@@ -66,7 +69,7 @@ export function CollectionHighlight({
                 if (onThumbnailClick) onThumbnailClick(artType);
                 else handleOpen();
               }}
-              className="h-16 border border-[#AAA99B] overflow-hidden bg-[#D5D0C2] cursor-pointer hover:border-[#25251F] transition-all transform hover:-translate-y-0.5"
+              className="h-[64px] border border-[#B5B3A4] overflow-hidden bg-[#D5D0C2] cursor-pointer hover:border-[#171714] transition-all transform hover:-translate-y-0.5"
               title={`Archival item ${idx + 1}`}
             >
               <ArchivalArtwork type={artType} className="w-full h-full object-cover" />
@@ -76,10 +79,12 @@ export function CollectionHighlight({
       </div>
 
       {/* Footer bar */}
-      <div className="pt-2 border-t border-[#D5D1C4] flex items-center justify-between text-[7.5px] font-mono text-[#77766B] mt-2">
+      <div className="pt-2 border-t border-[#B5B3A4] flex items-center justify-between text-[7.5px] font-mono text-[#66655B] mt-2">
         <span>CURATED ARCHIVE</span>
-        <span>VAULT://INSPIRATIONS</span>
+        <span className="font-bold text-[#171714]">VAULT://INSPIRATIONS</span>
       </div>
     </div>
   );
 }
+
+export default CollectionHighlight;

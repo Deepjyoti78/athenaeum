@@ -186,7 +186,7 @@ function AthenaeumApp() {
                 />
 
                 {/* Section C & D: Upcoming Actions (60%) & Daily Log (40%) precisely aligning with 3:2 ratio */}
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 pb-3">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
                   <div className="lg:col-span-3">
                     <UpcomingActions
                       actions={actions}
@@ -197,6 +197,27 @@ function AthenaeumApp() {
                   <div className="lg:col-span-2">
                     <DailyLog
                       onViewLog={() => setActiveNav('daily-log')}
+                    />
+                  </div>
+                </div>
+
+                {/* Section E & F: Recent Entries (60%) & Collection Highlight (40%) completing bottom dashboard */}
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 pb-3">
+                  <div className="lg:col-span-3">
+                    <RecentEntries
+                      entries={entries}
+                      onViewAll={() => setActiveNav('entries')}
+                      onSelectEntry={(entry) => {
+                        inspectRecord('entry', entry);
+                        if (!isInspectorOpen) setIsInspectorOpen(true);
+                      }}
+                    />
+                  </div>
+                  <div className="lg:col-span-2">
+                    <CollectionHighlight
+                      collection={collections[0]}
+                      onViewCollection={() => setActiveNav('collections')}
+                      onThumbnailClick={() => setActiveNav('collections')}
                     />
                   </div>
                 </div>
