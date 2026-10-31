@@ -336,7 +336,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 3: WORKS & HORIZONTAL CATEGORY PROGRESS BARS          */}
+        {/* COLUMN 3: WORKS & MECHANICAL GEAR / TRANSMISSION SCHEMATIC   */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
@@ -361,33 +361,71 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Four Horizontal Category Progress Rows matching reference image */}
-          <div className="h-[86px] flex flex-col justify-center space-y-2.5 pr-0.5">
-            {worksCategories.map((cat, idx) => (
-              <div key={idx} className="flex items-center justify-between text-[8px] font-mono leading-[14px]">
-                <span className="text-[#171714] font-medium w-[62px] sm:w-[68px] flex-shrink-0 select-none">
-                  {cat.label}
-                </span>
-                
-                {/* Thin horizontal progress track */}
-                <div className="flex-1 mx-2 h-[4px] bg-[#DBD7C8] rounded-[0.5px] overflow-hidden">
-                  <div 
-                    className="h-full bg-[#74866A] rounded-[0.5px] transition-all duration-500 ease-out"
-                    style={{ width: `${cat.fillPct}%` }}
-                  />
-                </div>
+          {/* Bottom: Mechanical Transmission / Gear Assembly Illustration */}
+          <div className="h-[86px] flex flex-col justify-center">
+            <div className="relative w-full h-[76px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
+              {/* Subtle background technical grid */}
+              <div 
+                className="absolute inset-0 opacity-15 pointer-events-none"
+                style={{
+                  backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
+                  backgroundSize: '10px 10px'
+                }}
+              />
 
-                {/* Actual count aligned to right */}
-                <span className="font-medium text-[#171714] w-3 text-right flex-shrink-0 select-none">
-                  {cat.count}
-                </span>
-              </div>
-            ))}
+              <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
+                {/* Primary Drive Gear (radius 24 at x=38, y=35) */}
+                <circle cx="38" cy="35" r="26" fill="none" stroke="#A8A495" strokeWidth="0.6" strokeDasharray="2 2" />
+                <circle cx="38" cy="35" r="22" fill="#EAE7D9" stroke="#171714" strokeWidth="1" />
+                <circle cx="38" cy="35" r="16" fill="none" stroke="#74866A" strokeWidth="0.75" />
+                
+                {/* Gear cogs for primary gear */}
+                {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(deg => {
+                  const rad = (deg * Math.PI) / 180;
+                  const x1 = 38 + Math.cos(rad) * 22;
+                  const y1 = 35 + Math.sin(rad) * 22;
+                  const x2 = 38 + Math.cos(rad) * 25.5;
+                  const y2 = 35 + Math.sin(rad) * 25.5;
+                  return <line key={`cog-${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#3A4B35" strokeWidth="1.8" strokeLinecap="square" />;
+                })}
+
+                {/* Primary gear axle and cross spokes */}
+                <line x1="22" y1="35" x2="54" y2="35" stroke="#55544B" strokeWidth="0.75" />
+                <line x1="38" y1="19" x2="38" y2="51" stroke="#55544B" strokeWidth="0.75" />
+                <circle cx="38" cy="35" r="5" fill="#171714" />
+                <circle cx="38" cy="35" r="1.5" fill="#FAF8F3" />
+
+                {/* Secondary Interlocking Pinion Gear (radius 15 at x=78, y=35) */}
+                <circle cx="78" cy="35" r="17" fill="none" stroke="#A8A495" strokeWidth="0.5" strokeDasharray="1 2" />
+                <circle cx="78" cy="35" r="14" fill="#EAE7D9" stroke="#171714" strokeWidth="0.8" />
+                {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => {
+                  const rad = (deg * Math.PI) / 180;
+                  const x1 = 78 + Math.cos(rad) * 14;
+                  const y1 = 35 + Math.sin(rad) * 14;
+                  const x2 = 78 + Math.cos(rad) * 16.5;
+                  const y2 = 35 + Math.sin(rad) * 16.5;
+                  return <line key={`pcog-${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#74866A" strokeWidth="1.4" strokeLinecap="square" />;
+                })}
+                <circle cx="78" cy="35" r="3.5" fill="#3A4B35" />
+                <circle cx="78" cy="35" r="1" fill="#FAF8F3" />
+
+                {/* Drive Transmission Coupling Arm */}
+                <line x1="38" y1="14" x2="78" y2="21" stroke="#74866A" strokeWidth="0.9" strokeDasharray="3 2" />
+                <line x1="38" y1="56" x2="78" y2="49" stroke="#74866A" strokeWidth="0.9" strokeDasharray="3 2" />
+
+                {/* Technical Annotation Metadata on Right */}
+                <text x="102" y="19" fill="#171714" fontSize="5.5" fontFamily="monospace" fontWeight="bold">MECHANICAL_TRANSMISSION</text>
+                <text x="102" y="29" fill="#55544B" fontSize="5" fontFamily="monospace">RATIO: 3.75:1 • DUAL AXIS</text>
+                <text x="102" y="39" fill="#55544B" fontSize="5" fontFamily="monospace">PROJECTS: {projectWorksCount} • RESEARCH: {researchWorksCount}</text>
+                <text x="102" y="49" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">ACTIVE WORKS: {activeWorksCount} UNITS</text>
+                <text x="102" y="59" fill="#77766B" fontSize="4.5" fontFamily="monospace">POWER_BUS: 0x88 // ENGAGED</text>
+              </svg>
+            </div>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 4: ENTRIES & SEVEN-DAY ACTIVITY TILES                 */}
+        {/* COLUMN 4: ENTRIES & ARCHIVAL LEDGER MATRIX GRID              */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
@@ -412,49 +450,80 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Seven Vertically Aligned Activity Tiles matching reference image */}
+          {/* Bottom: Archival Ledger Matrix / Filing Index Grid Illustration */}
           <div className="h-[86px] flex flex-col justify-center">
-            <div className="flex items-end justify-between gap-1 sm:gap-1.5 h-[68px]">
-              {activityTiles.map((tile, i) => (
-                <div 
-                  key={i} 
-                  className="flex-1 flex flex-col items-center group/tile cursor-pointer"
-                  title={`${tile.day}: ${tile.count} entries`}
-                >
-                  {/* Activity Tile Box */}
-                  <div 
-                    className={`w-full h-[54px] flex flex-col justify-between overflow-hidden rounded-[1px] transition-all duration-200 group-hover/tile:brightness-95 ${
-                      tile.isHighlighted 
-                        ? 'border border-[#44553D] bg-[#E1DDCB]/60 shadow-[0_0_0_0.5px_#44553D]' 
-                        : 'border border-[#C8C3B4] bg-[#E5E1D2]/40'
-                    }`}
-                  >
-                    {/* Daily entry count at top */}
-                    <div className="w-full text-center text-[7.5px] font-mono font-bold text-[#171714] pt-1 select-none leading-none">
-                      {tile.count}
-                    </div>
+            <div className="relative w-full h-[76px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
+              {/* Subtle background technical grid */}
+              <div 
+                className="absolute inset-0 opacity-15 pointer-events-none"
+                style={{
+                  backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
+                  backgroundSize: '10px 10px'
+                }}
+              />
 
-                    {/* Proportional vertical olive fill at bottom */}
-                    <div 
-                      className={`w-full rounded-b-[0.5px] transition-all duration-500 ease-out ${
-                        tile.isHighlighted ? 'bg-[#4D6146]' : 'bg-[#7E8F75]'
-                      }`}
-                      style={{ height: `${tile.fillPct}%` }}
+              <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
+                {/* Ledger Index Matrix Frame (Left: x=6 to x=86, y=6 to y=64) */}
+                <rect x="6" y="8" width="80" height="54" fill="#EAE7D9" stroke="#B8B4A5" strokeWidth="0.75" />
+                
+                {/* Horizontal registry rows */}
+                {[20, 32, 44, 56].map(y => (
+                  <line key={`r-${y}`} x1="6" y1={y} x2="86" y2={y} stroke="#D0CCBD" strokeWidth="0.5" />
+                ))}
+
+                {/* Vertical day columns: M T W T F S S */}
+                {[17.4, 28.8, 40.2, 51.6, 63.0, 74.4].map(x => (
+                  <line key={`c-${x}`} x1={x} y1="8" x2={x} y2="62" stroke="#D0CCBD" strokeWidth="0.5" strokeDasharray="1 2" />
+                ))}
+
+                {/* Weekday column headers */}
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
+                  <text key={`hd-${i}`} x={11.7 + i * 11.4} y="16" textAnchor="middle" fill="#55544B" fontSize="4.5" fontFamily="monospace" fontWeight="bold">
+                    {d}
+                  </text>
+                ))}
+
+                {/* Filled ledger punch markers representing active daily entries */}
+                {[
+                  [0, 2], [0, 3],
+                  [1, 1], [1, 2], [1, 3],
+                  [2, 0], [2, 1], [2, 2], [2, 3],
+                  [3, 0], [3, 1], [3, 2], [3, 3], // Thursday peak
+                  [4, 1], [4, 2], [4, 3],
+                  [5, 2], [5, 3],
+                  [6, 3]
+                ].map(([col, row], idx) => {
+                  const cx = 11.7 + col * 11.4;
+                  const cy = 26 + row * 12;
+                  const isPeak = col === 3;
+                  return (
+                    <rect 
+                      key={`entry-${idx}`} 
+                      x={cx - 3.2} 
+                      y={cy - 3.2} 
+                      width="6.4" 
+                      height="6.4" 
+                      rx="0.5"
+                      fill={isPeak ? '#30432B' : '#74866A'} 
+                      stroke="#171714" 
+                      strokeWidth="0.4"
                     />
-                  </div>
+                  );
+                })}
 
-                  {/* Weekday abbreviation below */}
-                  <span className="text-[7.5px] font-mono font-bold text-[#171714] select-none text-center mt-1">
-                    {tile.day}
-                  </span>
-                </div>
-              ))}
+                {/* Technical Ledger Metadata on Right */}
+                <text x="96" y="19" fill="#171714" fontSize="5.5" fontFamily="monospace" fontWeight="bold">ARCHIVAL_LEDGER_INDEX</text>
+                <text x="96" y="29" fill="#55544B" fontSize="5" fontFamily="monospace">REGISTRY: SEC-09 // WK-18</text>
+                <text x="96" y="39" fill="#55544B" fontSize="5" fontFamily="monospace">TOTAL_ENTRIES: {entriesCount} LOGS</text>
+                <text x="96" y="49" fill="#2E4029" fontSize="5.2" fontFamily="monospace" fontWeight="bold">DATABASE_INTEGRITY: 100%</text>
+                <text x="96" y="59" fill="#77766B" fontSize="4.5" fontFamily="monospace">INDEXED_DB • LOCAL_SYNC</text>
+              </svg>
             </div>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 5: FOCUS & ANNOTATED WEEKLY PROGRESS TIMELINE         */}
+        {/* COLUMN 5: FOCUS & OPTICAL COLLIMATOR RETICLE SCHEMATIC       */}
         {/* ============================================================ */}
         <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[178px]">
           {/* Top: Header, Number, Subtitle below */}
@@ -475,88 +544,66 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Annotated Weekly Progress Timeline matching reference image */}
-          <div className="h-[86px] flex flex-col justify-end">
-            {/* Timeline SVG Canvas */}
-            <div className="w-full relative h-[52px]">
-              <svg 
-                viewBox="0 0 100 44" 
-                preserveAspectRatio="none" 
-                className="w-full h-full overflow-visible"
-              >
-                <defs>
-                  <linearGradient id="timelineAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
+          {/* Bottom: Archival Optical Focus Illustration */}
+          <div className="h-[86px] flex flex-col justify-center">
+            <div className="relative w-full h-[76px] border border-[#B5B3A4] bg-[#E5E1D2]/45 rounded-[0.5px] p-1.5 flex items-center justify-between overflow-hidden shadow-inner">
+              {/* Subtle background technical grid */}
+              <div 
+                className="absolute inset-0 opacity-15 pointer-events-none"
+                style={{
+                  backgroundImage: `linear-gradient(#74866A 1px, transparent 1px), linear-gradient(90deg, #74866A 1px, transparent 1px)`,
+                  backgroundSize: '10px 10px'
+                }}
+              />
 
-                {/* Subtle horizontal reference baseline */}
-                <line x1="0" y1="41" x2="100" y2="41" stroke="#D0CCBD" strokeWidth="0.5" strokeDasharray="2 2" />
+              <svg viewBox="0 0 180 70" className="w-full h-full select-none relative z-10">
+                {/* Outer concentric optical calibration rings */}
+                <circle cx="38" cy="35" r="28" fill="none" stroke="#A8A495" strokeWidth="0.6" strokeDasharray="2 2" />
+                <circle cx="38" cy="35" r="21" fill="none" stroke="#74866A" strokeWidth="0.8" />
+                <circle cx="38" cy="35" r="14" fill="#EAE7D9" stroke="#171714" strokeWidth="1" />
+                <circle cx="38" cy="35" r="4" fill="#171714" />
+                <circle cx="38" cy="35" r="1.2" fill="#FAF8F3" />
 
-                {/* Shaded Area Under Timeline */}
-                <polygon
-                  points={`6,${focusTimeline[0].y} ${focusTimeline.map(p => `${p.x},${p.y}`).join(' ')} 94,${focusTimeline[6].y} 94,41 6,41`}
-                  fill="url(#timelineAreaGrad)"
-                />
-
-                {/* Connected Charcoal/Olive Line */}
-                <polyline
-                  fill="none"
-                  stroke="#34442F"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  points={focusTimeline.map(p => `${p.x},${p.y}`).join(' ')}
-                />
-
-                {/* Data Points, Markers & Percentage Labels */}
-                {focusTimeline.map((pt, idx) => (
-                  <g key={idx}>
-                    {/* Percentage Label directly above marker */}
-                    <text
-                      x={pt.x}
-                      y={pt.y - 4.5}
-                      textAnchor="middle"
-                      fill="#171714"
-                      fontSize="4.2"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                    >
-                      {pt.pct}%
-                    </text>
-
-                    {/* Circular Marker */}
-                    {pt.isLatest ? (
-                      <g>
-                        {/* Prominent halo ring for latest day */}
-                        <circle cx={pt.x} cy={pt.y} r="4.8" fill="#EAE7D9" stroke="#34442F" strokeWidth="1" />
-                        <circle cx={pt.x} cy={pt.y} r="2.2" fill="#283823" />
-                      </g>
-                    ) : (
-                      <circle cx={pt.x} cy={pt.y} r="2.2" fill="#34442F" />
-                    )}
-                  </g>
+                {/* Reticle Crosshairs with micro millimeter ticks */}
+                <line x1="6" y1="35" x2="70" y2="35" stroke="#171714" strokeWidth="0.6" />
+                <line x1="38" y1="3" x2="38" y2="67" stroke="#171714" strokeWidth="0.6" />
+                {[18, 26, 50, 58].map(x => (
+                  <line key={`xt-${x}`} x1={x} y1="33" x2={x} y2="37" stroke="#55544B" strokeWidth="0.5" />
                 ))}
+                {[15, 23, 47, 55].map(y => (
+                  <line key={`yt-${y}`} x1="36" y1={y} x2="40" y2={y} stroke="#55544B" strokeWidth="0.5" />
+                ))}
+
+                {/* 45-degree diagonal ray ticks */}
+                <line x1="20" y1="17" x2="26" y2="23" stroke="#74866A" strokeWidth="0.75" />
+                <line x1="56" y1="53" x2="50" y2="47" stroke="#74866A" strokeWidth="0.75" />
+                <line x1="56" y1="17" x2="50" y2="23" stroke="#74866A" strokeWidth="0.75" />
+                <line x1="20" y1="53" x2="26" y2="47" stroke="#74866A" strokeWidth="0.75" />
+
+                {/* Optical Beam / Wave Interference Curve on right */}
+                <path 
+                  d="M 80,35 C 93,18 106,52 120,35 C 134,18 148,52 166,35" 
+                  fill="none" 
+                  stroke="#3E5139" 
+                  strokeWidth="1.2" 
+                  strokeLinecap="round"
+                />
+                <circle cx="120" cy="35" r="2" fill="#3E5139" />
+                <circle cx="166" cy="35" r="2" fill="#3E5139" />
+
+                {/* Vertical Optical Aperture Scale */}
+                <line x1="84" y1="14" x2="84" y2="56" stroke="#9A9687" strokeWidth="0.6" />
+                {[14, 21, 28, 35, 42, 49, 56].map(y => (
+                  <line key={`s-${y}`} x1="82" y1={y} x2="86" y2={y} stroke="#74866A" strokeWidth="0.6" />
+                ))}
+
+                {/* Technical Annotation Metadata */}
+                <text x="94" y="20" fill="#171714" fontSize="5.5" fontFamily="monospace" fontWeight="bold">OPTICAL_COLLIMATOR // MK.IV</text>
+                <text x="94" y="30" fill="#55544B" fontSize="5" fontFamily="monospace">AXIS: α-84.2° NNE</text>
+                <text x="94" y="40" fill="#55544B" fontSize="5" fontFamily="monospace">APERTURE: f/2.8</text>
+                <text x="94" y="50" fill="#30432B" fontSize="5.2" fontFamily="monospace" fontWeight="bold">FOCUS: {focusPct}% // COHERENT</text>
+                <text x="94" y="60" fill="#77766B" fontSize="4.5" fontFamily="monospace">SYS_CALIB • CALIBRATED</text>
               </svg>
-            </div>
-
-            {/* Weekday labels spanning M to S aligned beneath markers */}
-            <div className="relative w-full h-3 mt-0.5">
-              {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
-                <span
-                  key={i}
-                  className="absolute -translate-x-1/2 text-[7.5px] font-mono font-bold text-[#171714] select-none text-center"
-                  style={{ left: `${focusTimeline[i].x}%` }}
-                >
-                  {day}
-                </span>
-              ))}
-            </div>
-
-            {/* Upward Indicator and Weekly Comparison */}
-            <div className="text-[7.5px] font-mono text-[#171714] select-none mt-1 flex items-center">
-              <span className="font-bold mr-1">↑</span> + 12% vs last week
             </div>
           </div>
         </div>
