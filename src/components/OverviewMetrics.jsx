@@ -172,28 +172,28 @@ export function OverviewMetrics({ onNavigate }) {
           </div>
 
           {/* Bottom: Mini 5-week Calendar Month Grid matching Image 2 */}
-          <div className="pt-0.5">
+          <div className="h-[86px] flex flex-col justify-end pb-0.5">
             {/* Weekday headers: M T W T F S S */}
-            <div className="grid grid-cols-7 text-[7px] font-mono font-bold text-[#55544B] text-center mb-1">
+            <div className="grid grid-cols-7 text-[7.5px] font-mono font-bold text-[#55544B] text-center mb-1">
               <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
             </div>
 
-            {/* Calendar Days Rows */}
-            <div className="space-y-[2px]">
+            {/* Calendar Days Rows with balanced spacing matching reference */}
+            <div className="space-y-[3px]">
               {/* Row 1 */}
-              <div className="grid grid-cols-7 text-[7px] font-mono text-center">
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
                 {calRow1.map((c, i) => (
-                  <span key={i} className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${c.isCurrent ? 'text-[#3E3D35]' : 'text-[#9E9D90]'}`}>
+                  <span key={i} className={`h-3 w-3 flex items-center justify-center mx-auto ${c.isCurrent ? 'text-[#3E3D35]' : 'text-[#9E9D90]'}`}>
                     {c.day}
                   </span>
                 ))}
               </div>
               {/* Row 2 (contains Today: 9) */}
-              <div className="grid grid-cols-7 text-[7px] font-mono text-center">
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
                 {calRow2.map((c, i) => (
                   <span 
                     key={i} 
-                    className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${
+                    className={`h-3 w-3 flex items-center justify-center mx-auto ${
                       c.isToday 
                         ? 'bg-[#171714] text-[#FAF8F3] font-bold rounded-[0.5px]' 
                         : c.hasIndicator
@@ -206,11 +206,11 @@ export function OverviewMetrics({ onNavigate }) {
                 ))}
               </div>
               {/* Row 3 */}
-              <div className="grid grid-cols-7 text-[7px] font-mono text-center">
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
                 {calRow3.map((c, i) => (
                   <span 
                     key={i} 
-                    className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${
+                    className={`h-3 w-3 flex items-center justify-center mx-auto ${
                       c.hasIndicator ? 'text-[#171714] font-bold underline decoration-1 underline-offset-1' : 'text-[#3E3D35]'
                     }`}
                   >
@@ -219,11 +219,11 @@ export function OverviewMetrics({ onNavigate }) {
                 ))}
               </div>
               {/* Row 4 */}
-              <div className="grid grid-cols-7 text-[7px] font-mono text-center">
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
                 {calRow4.map((c, i) => (
                   <span 
                     key={i} 
-                    className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${
+                    className={`h-3 w-3 flex items-center justify-center mx-auto ${
                       c.hasIndicator ? 'text-[#171714] font-bold underline decoration-1 underline-offset-1' : 'text-[#3E3D35]'
                     }`}
                   >
@@ -232,9 +232,9 @@ export function OverviewMetrics({ onNavigate }) {
                 ))}
               </div>
               {/* Row 5 */}
-              <div className="grid grid-cols-7 text-[7px] font-mono text-center">
+              <div className="grid grid-cols-7 text-[7.5px] font-mono text-center">
                 {calRow5.map((c, i) => (
-                  <span key={i} className={`h-2.5 w-2.5 flex items-center justify-center mx-auto ${c.isCurrent ? 'text-[#3E3D35]' : 'text-[#9E9D90]'}`}>
+                  <span key={i} className={`h-3 w-3 flex items-center justify-center mx-auto ${c.isCurrent ? 'text-[#3E3D35]' : 'text-[#9E9D90]'}`}>
                     {c.day}
                   </span>
                 ))}
@@ -269,27 +269,29 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Breakdown List matching Image 2 */}
-          <div className="pt-1 space-y-1.5 text-[8px] font-mono text-[#33322B]">
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-[#171714] w-2.5">{todoCount}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block" />
-              <span className="text-[#33322B] font-medium">To do</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-[#171714] w-2.5">{inProgressCount}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block" />
-              <span className="text-[#33322B] font-medium">In progress</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-[#171714] w-2.5">{waitingCount}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block" />
-              <span className="text-[#33322B] font-medium">Waiting</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-[#171714] w-2.5">{completedCount}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block" />
-              <span className="text-[#33322B] font-medium">Completed</span>
+          {/* Bottom: Breakdown List matching Image 2 & exactly aligned with Works rows */}
+          <div className="h-[86px] flex items-center">
+            <div className="space-y-1.5 text-[8px] leading-[14px] font-mono text-[#33322B]">
+              <div className="flex items-center space-x-2 h-[14px]">
+                <span className="font-bold text-[#171714] w-2.5 inline-block">{todoCount}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block flex-shrink-0" />
+                <span className="text-[#33322B] font-medium">To do</span>
+              </div>
+              <div className="flex items-center space-x-2 h-[14px]">
+                <span className="font-bold text-[#171714] w-2.5 inline-block">{inProgressCount}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block flex-shrink-0" />
+                <span className="text-[#33322B] font-medium">In progress</span>
+              </div>
+              <div className="flex items-center space-x-2 h-[14px]">
+                <span className="font-bold text-[#171714] w-2.5 inline-block">{waitingCount}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block flex-shrink-0" />
+                <span className="text-[#33322B] font-medium">Waiting</span>
+              </div>
+              <div className="flex items-center space-x-2 h-[14px]">
+                <span className="font-bold text-[#171714] w-2.5 inline-block">{completedCount}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block flex-shrink-0" />
+                <span className="text-[#33322B] font-medium">Completed</span>
+              </div>
             </div>
           </div>
         </div>
@@ -322,11 +324,11 @@ export function OverviewMetrics({ onNavigate }) {
 
           {/* Bottom: Works Categories & Bigger Donut Gauge (~76px) vertically centered */}
           <div className="flex items-center justify-between h-[86px]">
-            <div className="space-y-1.5 text-[8px] font-mono text-[#33322B] pr-1">
-              <div><span className="font-bold text-[#171714]">3</span> Projects</div>
-              <div><span className="font-bold text-[#171714]">2</span> Research</div>
-              <div><span className="font-bold text-[#171714]">1</span> Creative</div>
-              <div><span className="font-bold text-[#171714]">1</span> Maintenance</div>
+            <div className="space-y-1.5 text-[8px] leading-[14px] font-mono text-[#33322B] pr-1">
+              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">3</span> Projects</div>
+              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">2</span> Research</div>
+              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">1</span> Creative</div>
+              <div className="h-[14px] flex items-center"><span className="font-bold text-[#171714] w-2.5 inline-block">1</span> Maintenance</div>
             </div>
 
             {/* Circular Gauge: Big 76px diameter prominent ring, shifted upward */}
