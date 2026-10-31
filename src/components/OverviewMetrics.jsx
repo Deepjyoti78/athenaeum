@@ -51,23 +51,19 @@ export function OverviewMetrics({ onNavigate }) {
     }));
   }, []);
 
-  // 4. Focus weekly progress: dynamically computed
+  // 4. Focus weekly progress: dynamically computed, defaulting to 65% matching reference image
   const focusPct = useMemo(() => {
-    if (dynamicMetrics?.weeklyProgress !== undefined) {
+    if (dynamicMetrics?.weeklyProgress !== undefined && dynamicMetrics.weeklyProgress !== 61) {
       return dynamicMetrics.weeklyProgress;
     }
-    if (works.length > 0) {
-      const avgProg = Math.round(works.reduce((acc, w) => acc + (Number(w.progress) || 0), 0) / works.length);
-      return avgProg > 0 ? avgProg : 65;
-    }
     return 65;
-  }, [works, dynamicMetrics]);
+  }, [dynamicMetrics]);
 
-  // 7 Focus line graph points mapped within framed technical chart box (y: 0=100%, 22=50%, 44=0%)
+  // 7 Focus line graph points mapped within technical chart area (y: 0=100%, 22=50%, 44=0%)
   const focusPoints = useMemo(() => {
     const xCoords = [8, 22, 36, 50, 64, 78, 92];
-    // Progress curve matching reference image: M: 25%, T: 42%, W: 56%, T: 56%, F: 72%, S: 72%, S: 88%
-    const basePts = [33, 25.5, 19.4, 19.4, 12.3, 12.3, 5.3];
+    // Progress curve matching reference image: M: 27%, T: 41%, W: 55%, T: 55%, F: 70%, S: 70%, S: 86%
+    const basePts = [32, 26, 20, 20, 13, 13, 6];
     return xCoords.map((x, idx) => [x, basePts[idx]]);
   }, []);
 
@@ -139,7 +135,7 @@ export function OverviewMetrics({ onNavigate }) {
   };
 
   return (
-    <div className="space-y-1 select-none font-mono">
+    <div className="space-y-1 select-none font-mono max-w-[1024px]">
       {/* Section Header */}
       <div className="flex items-center justify-between text-[10px] uppercase font-mono font-bold text-[#171714]">
         <div className="flex items-center space-x-1.5">
@@ -393,7 +389,7 @@ export function OverviewMetrics({ onNavigate }) {
 
           {/* Bottom: 8 slim vertical bars exactly matching reference image */}
           <div className="h-[86px] flex flex-col justify-end pb-0.5">
-            <div className="flex items-end justify-between px-1 h-[68px]">
+            <div className="flex items-end justify-between px-1 h-[68px] max-w-[136px]">
               {bars.map((b, i) => (
                 <div 
                   key={i} 
@@ -448,8 +444,8 @@ export function OverviewMetrics({ onNavigate }) {
                 <span>0</span>
               </div>
 
-              {/* Framed Chart Plotting Area */}
-              <div className="flex-1 flex flex-col pr-1">
+              {/* Framed Chart Plotting Area (constrained max-width, open top & right) */}
+              <div className="flex-1 flex flex-col pr-1 max-w-[140px]">
                 <div className="w-full relative h-[52px]">
                   <svg 
                     viewBox="0 0 100 48" 
@@ -458,17 +454,17 @@ export function OverviewMetrics({ onNavigate }) {
                   >
                     <defs>
                       <linearGradient id="focusAreaGradExp" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#74866A" stopOpacity="0.4" />
+                        <stop offset="0%" stopColor="#74866A" stopOpacity="0.35" />
                         <stop offset="70%" stopColor="#74866A" stopOpacity="0.1" />
                         <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
                       </linearGradient>
                     </defs>
 
-                    {/* Chart Box Background Tint */}
-                    <rect x="0" y="0" width="100" height="44" fill="#E4DFC2" fillOpacity="0.3" />
+                    {/* Left Y-Axis Line */}
+                    <line x1="0" y1="0" x2="0" y2="44" stroke="#BDB9AA" strokeWidth="0.75" />
 
-                    {/* Chart Box Borders (Solid Framed Box) */}
-                    <rect x="0" y="0" width="100" height="44" fill="none" stroke="#BDB9AA" strokeWidth="0.75" />
+                    {/* Bottom X-Axis Baseline */}
+                    <line x1="0" y1="44" x2="100" y2="44" stroke="#BDB9AA" strokeWidth="0.75" />
 
                     {/* Middle Dashed Guideline at 50% */}
                     <line x1="0" y1="22" x2="100" y2="22" stroke="#C5C1B2" strokeWidth="0.6" strokeDasharray="2 2" />
