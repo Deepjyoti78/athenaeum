@@ -30,7 +30,7 @@ export function OverviewMetrics({ onNavigate }) {
 
   // 8-bar Activity Histogram matching reference image
   const bars = useMemo(() => {
-    const refHeights = [21, 21, 28, 41, 54, 27, 19, 7];
+    const refHeights = [27, 27, 36, 52, 70, 35, 25, 9];
     const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S', 'S'];
     const barColors = [
       '#74866A', // M
@@ -66,9 +66,9 @@ export function OverviewMetrics({ onNavigate }) {
   // Wide, expansive Focus line graph points scaled across full width from Mon to Sun with taller vertical range
   const focusPoints = useMemo(() => {
     const xCoords = [3, 18.67, 34.33, 50, 65.67, 81.33, 97];
-    // Baseline is 44, top is 7 (tall vertical span ~37 units in 48 viewBox)
+    // Baseline is 56, top is 8 (tall vertical span ~48 units in 60 viewBox)
     // Smooth upward progression with plateau steps:
-    const basePts = [36, 29, 21, 21, 14, 14, 7];
+    const basePts = [46, 37, 26, 26, 17, 17, 8];
     return xCoords.map((x, idx) => [x, basePts[idx]]);
   }, []);
 
@@ -160,7 +160,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('calendar')}
-          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[152px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px]"
           title="Click to open Archival Calendar"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -184,12 +184,12 @@ export function OverviewMetrics({ onNavigate }) {
           {/* Bottom: Mini 5-week Calendar Month Grid matching Image 2 */}
           <div className="pt-0.5">
             {/* Weekday headers: M T W T F S S */}
-            <div className="grid grid-cols-7 text-[7px] font-mono font-bold text-[#55544B] text-center mb-0.5">
+            <div className="grid grid-cols-7 text-[7px] font-mono font-bold text-[#55544B] text-center mb-1">
               <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
             </div>
 
             {/* Calendar Days Rows */}
-            <div className="space-y-[1px]">
+            <div className="space-y-[2px]">
               {/* Row 1 */}
               <div className="grid grid-cols-7 text-[7px] font-mono text-center">
                 {calRow1.map((c, i) => (
@@ -258,7 +258,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('actions')}
-          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[152px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px]"
           title="Click to view Action Registry"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -280,7 +280,7 @@ export function OverviewMetrics({ onNavigate }) {
           </div>
 
           {/* Bottom: Breakdown List matching Image 2 */}
-          <div className="pt-1 space-y-1 text-[8px] font-mono text-[#33322B]">
+          <div className="pt-1 space-y-1.5 text-[8px] font-mono text-[#33322B]">
             <div className="flex items-center space-x-2">
               <span className="font-bold text-[#171714] w-2.5">{todoCount}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#74866A] inline-block" />
@@ -309,7 +309,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
-          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[152px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px]"
           title="Click to view Works Catalog"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -331,8 +331,8 @@ export function OverviewMetrics({ onNavigate }) {
           </div>
 
           {/* Bottom: Works Categories & Bigger Donut Gauge (~76px) vertically centered */}
-          <div className="flex items-center justify-between h-[76px]">
-            <div className="space-y-1 text-[8px] font-mono text-[#33322B] pr-1">
+          <div className="flex items-center justify-between h-[86px]">
+            <div className="space-y-1.5 text-[8px] font-mono text-[#33322B] pr-1">
               <div><span className="font-bold text-[#171714]">3</span> Projects</div>
               <div><span className="font-bold text-[#171714]">2</span> Research</div>
               <div><span className="font-bold text-[#171714]">1</span> Creative</div>
@@ -340,7 +340,7 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
 
             {/* Circular Gauge: Big 76px diameter prominent ring, shifted upward */}
-            <div className="relative w-[74px] sm:w-[76px] h-[74px] sm:h-[76px] flex items-center justify-center flex-shrink-0 -translate-y-3">
+            <div className="relative w-[76px] sm:w-[78px] h-[76px] sm:h-[78px] flex items-center justify-center flex-shrink-0 -translate-y-1.5">
               <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
                 {/* Subtle warm inner disc fill */}
                 <circle cx="32" cy="32" r="26" fill="#ECE9DD" />
@@ -373,7 +373,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
-          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[152px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px]"
           title="Click to view Entries Archive"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -396,7 +396,7 @@ export function OverviewMetrics({ onNavigate }) {
 
           {/* Bottom: 8 slim vertical bars exactly matching reference image */}
           <div className="pt-0.5">
-            <div className="flex items-end justify-between px-1 h-[56px] pb-0.5">
+            <div className="flex items-end justify-between px-1 h-[74px] pb-0.5">
               {bars.map((b, i) => (
                 <div 
                   key={i} 
@@ -422,7 +422,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         {/* COLUMN 5: FOCUS & EXPANSIVE ARCHIVAL PROGRESS GRAPH          */}
         {/* ============================================================ */}
-        <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[152px]">
+        <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[178px]">
           {/* Top: Header, Number, Subtitle below */}
           <div>
             <div className="text-[9px] uppercase tracking-wider text-[#171714] font-bold leading-none">
@@ -443,10 +443,10 @@ export function OverviewMetrics({ onNavigate }) {
 
           {/* Bottom: Expansive Archival Line Graph filling the space from Mon to Sun with clean breathing room */}
           <div className="flex flex-col justify-end">
-            {/* Graph Canvas: 58px height, edge-to-edge taller plotting canvas */}
-            <div className="w-full relative h-[58px]">
+            {/* Graph Canvas: 72px height, edge-to-edge taller plotting canvas */}
+            <div className="w-full relative h-[72px]">
               <svg 
-                viewBox="0 0 100 48" 
+                viewBox="0 0 100 60" 
                 preserveAspectRatio="none" 
                 className="w-full h-full overflow-visible"
               >
@@ -459,19 +459,19 @@ export function OverviewMetrics({ onNavigate }) {
                 </defs>
 
                 {/* Horizontal Technical Grid Guidelines */}
-                <line x1="0" y1="11" x2="100" y2="11" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="22" x2="100" y2="22" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="33" x2="100" y2="33" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="44" x2="100" y2="44" stroke="#B8B4A5" strokeWidth="0.75" />
+                <line x1="0" y1="14" x2="100" y2="14" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="28" x2="100" y2="28" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="42" x2="100" y2="42" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="56" x2="100" y2="56" stroke="#B8B4A5" strokeWidth="0.75" />
 
                 {/* Vertical Day Alignment Ticks */}
                 {[3, 18.67, 34.33, 50, 65.67, 81.33, 97].map((xVal, idx) => (
                   <line 
                     key={idx} 
                     x1={xVal} 
-                    y1="44" 
+                    y1="56" 
                     x2={xVal} 
-                    y2="48" 
+                    y2="60" 
                     stroke="#88877B" 
                     strokeWidth="0.75" 
                   />
@@ -479,7 +479,7 @@ export function OverviewMetrics({ onNavigate }) {
 
                 {/* Shaded Area Under Curve */}
                 <polygon
-                  points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,44 3,44`}
+                  points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,56 3,56`}
                   fill="url(#focusAreaGradExp)"
                 />
 
