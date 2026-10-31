@@ -366,7 +366,7 @@ export function OverviewMetrics({ onNavigate }) {
         </div>
 
         {/* ============================================================ */}
-        {/* COLUMN 5: FOCUS & WEEKLY LINE GRAPH                          */}
+        {/* COLUMN 5: FOCUS & TECHNICAL ARCHIVAL PROGRESS GRAPH          */}
         {/* ============================================================ */}
         <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[152px]">
           {/* Top: Header, Number, Subtitle below */}
@@ -387,58 +387,90 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Line graph without 0-100 labels, spanning edge-to-edge Mon-Sun */}
-          <div className="pt-0.5 flex flex-col justify-between">
-            {/* Line graph canvas: full width Mon to Sun */}
-            <div className="w-full">
-              <svg viewBox="0 0 120 38" className="w-full h-9 overflow-visible">
+          {/* Bottom: Technical Archival Line Graph filling the space from Mon to Sun */}
+          <div className="flex flex-col justify-end pt-1">
+            {/* Graph Canvas: fills height and width with technical archival grid */}
+            <div className="w-full relative h-[50px]">
+              <svg 
+                viewBox="0 0 100 44" 
+                preserveAspectRatio="none" 
+                className="w-full h-full overflow-visible"
+              >
                 <defs>
                   <linearGradient id="focusAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.02" />
+                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.45" />
+                    <stop offset="65%" stopColor="#74866A" stopOpacity="0.12" />
+                    <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
-                {/* Horizontal baseline & midpoint guide */}
-                <line x1="6" y1="20" x2="114" y2="20" stroke="#D2CEBF" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="6" y1="34" x2="114" y2="34" stroke="#D2CEBF" strokeWidth="0.75" />
 
-                {/* Gradient area underneath line */}
+                {/* Horizontal Technical Grid Guidelines */}
+                <line x1="0" y1="11" x2="100" y2="11" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="21" x2="100" y2="21" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="31" x2="100" y2="31" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="41" x2="100" y2="41" stroke="#B8B4A5" strokeWidth="0.75" />
+
+                {/* Vertical Day Alignment Ticks */}
+                {[3, 18.67, 34.33, 50, 65.67, 81.33, 97].map((xVal, idx) => (
+                  <line 
+                    key={idx} 
+                    x1={xVal} 
+                    y1="41" 
+                    x2={xVal} 
+                    y2="44" 
+                    stroke="#88877B" 
+                    strokeWidth="0.75" 
+                  />
+                ))}
+
+                {/* Shaded Area Under Curve */}
                 <polygon
-                  points="6,28 23,22 42,19 60,20 79,14 97,12 114,6 114,34 6,34"
+                  points="3,33 18.67,26 34.33,21 50,22 65.67,14 81.33,12 97,6 97,41 3,41"
                   fill="url(#focusAreaGrad)"
                 />
-                {/* Connected Polyline from Monday (x=6) to Sunday (x=114) */}
+
+                {/* Connected Polyline: Bold Dark Archival Line */}
                 <polyline
                   fill="none"
                   stroke="#171714"
-                  strokeWidth="1.75"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  points="6,28 23,22 42,19 60,20 79,14 97,12 114,6"
+                  points="3,33 18.67,26 34.33,21 50,22 65.67,14 81.33,12 97,6"
                 />
-                {/* 7 Circular Data Points for M, T, W, T, F, S, S */}
+
+                {/* 7 Circular Data Points matching Mon - Sun */}
                 {[
-                  [6, 28],
-                  [23, 22],
-                  [42, 19],
-                  [60, 20],
-                  [79, 14],
-                  [97, 12],
-                  [114, 6]
+                  [3, 33],
+                  [18.67, 26],
+                  [34.33, 21],
+                  [50, 22],
+                  [65.67, 14],
+                  [81.33, 12],
+                  [97, 6]
                 ].map(([cx, cy], idx) => (
-                  <circle key={idx} cx={cx} cy={cy} r="2.2" fill="#171714" />
+                  <g key={idx}>
+                    <circle cx={cx} cy={cy} r="2.5" fill="#171714" />
+                    <circle cx={cx} cy={cy} r="1" fill="#FAF8F3" />
+                  </g>
                 ))}
               </svg>
-
-              {/* Weekday labels spanning Mon to Sun aligned with data points */}
-              <div className="flex justify-between px-0.5 text-[7px] font-mono font-bold text-[#55544B] mt-0.5">
-                <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
-              </div>
             </div>
 
-            {/* Subtext */}
-            <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-0.5">
-              {"+ 12% vs last week"}
+            {/* Weekday labels spanning Mon to Sun, exactly positioned under the data ticks */}
+            <div className="flex justify-between text-[7px] font-mono font-bold text-[#55544B] mt-1 select-none px-0.5">
+              <span className="w-2.5 text-center">M</span>
+              <span className="w-2.5 text-center">T</span>
+              <span className="w-2.5 text-center">W</span>
+              <span className="w-2.5 text-center">T</span>
+              <span className="w-2.5 text-center">F</span>
+              <span className="w-2.5 text-center">S</span>
+              <span className="w-2.5 text-center">S</span>
+            </div>
+
+            {/* Subtext with trend indicator */}
+            <div className="text-[7.5px] font-mono font-medium text-[#171714] mt-0.5 select-none">
+              <span className="text-[#4B5E44] font-bold">▲ +12%</span> vs last week
             </div>
           </div>
         </div>
