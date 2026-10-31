@@ -382,7 +382,7 @@ export function CalendarView() {
 
           {/* Month Picker Dropdown */}
           {isMonthPickerOpen && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-[#FAF8F3] border border-[#141512] shadow-xl z-50 p-2 text-[#25251F]">
+            <div className="absolute right-0 top-full mt-1 w-48 bg-[#EAE6D9] border border-[#141512] shadow-xl z-50 p-2 text-[#25251F]">
               <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-[#AAA99B] font-bold text-[8.5px]">
                 <button onClick={() => setViewYear(y => y - 1)} className="hover:text-black">&lt;</button>
                 <span>{viewYear}</span>
@@ -492,12 +492,12 @@ export function CalendarView() {
                       onClick={() => handleSelectDate(cell.dateObj)}
                       className={`h-full min-h-0 border p-1.5 flex flex-col justify-between transition-colors select-none relative group overflow-hidden ${
                         !cell.isCurrentMonth
-                          ? 'border-[#C8C4B6] bg-[#ECE8DC]/50 hover:bg-[#E4DFD0] cursor-pointer'
+                          ? 'border-[#C8C4B6] bg-[#DFDBD0]/70 hover:bg-[#D5D0C2] cursor-pointer'
                           : isSelected
                             ? 'border-2 border-[#141512] bg-[#DDD8CB] cursor-pointer shadow-sm'
                             : isToday
-                              ? 'border border-[#55544B] bg-[#FAF8F3] hover:bg-[#ECE7DB] cursor-pointer'
-                              : 'border-[#AAA99B] bg-[#FAF8F3] hover:bg-[#ECE7DB] cursor-pointer'
+                              ? 'border border-[#55544B] bg-[#E8E4D6] hover:bg-[#DDD8CB] cursor-pointer'
+                              : 'border-[#AAA99B] bg-[#E8E4D6] hover:bg-[#DDD8CB] cursor-pointer'
                       }`}
                     >
                       {/* Top row of cell: Date & Category Indicator Dot */}
@@ -539,7 +539,7 @@ export function CalendarView() {
                         <div className="mt-auto pt-1 overflow-hidden">
                           <div 
                             title={`${firstEvent.time} — ${firstEvent.title}`}
-                            className="text-[7.5px] font-mono font-medium text-[#141512] bg-[#E9E5D8] px-1 py-0.5 border border-[#AAA99B] truncate hover:bg-[#DDD8CB] transition-colors"
+                            className="text-[7.5px] font-mono font-medium text-[#141512] bg-[#DDD8CB] px-1 py-0.5 border border-[#AAA99B] truncate hover:bg-[#D4CEBF] transition-colors"
                           >
                             {firstEvent.title}
                           </div>
@@ -562,7 +562,7 @@ export function CalendarView() {
                       {activePopoverDate === cell.dateKey && (
                         <div 
                           onClick={(e) => e.stopPropagation()}
-                          className="absolute inset-x-1 bottom-1 bg-[#FAF8F3] border border-[#141512] shadow-xl p-2 z-40 text-[#141512] max-h-36 overflow-y-auto"
+                          className="absolute inset-x-1 bottom-1 bg-[#EAE6D9] border border-[#141512] shadow-xl p-2 z-40 text-[#141512] max-h-36 overflow-y-auto"
                         >
                           <div className="flex items-center justify-between pb-1 mb-1 border-b border-[#AAA99B] text-[7.5px] font-bold">
                             <span>{formatDateDisplay(cell.dateObj)}</span>
@@ -618,7 +618,7 @@ export function CalendarView() {
                         className={`h-full border p-2 flex flex-col transition-colors cursor-pointer overflow-y-auto ${
                           isSelected 
                             ? 'border-2 border-[#141512] bg-[#DDD8CB]' 
-                            : 'border-[#AAA99B] bg-[#FAF8F3] hover:bg-[#F3EFE4]'
+                            : 'border-[#AAA99B] bg-[#E8E4D6] hover:bg-[#DDD8CB]'
                         }`}
                       >
                         <div className="border-b border-[#AAA99B] pb-1 mb-2 text-center">
@@ -675,7 +675,7 @@ export function CalendarView() {
                         key={dateKey} 
                         onClick={() => handleSelectDate(dateObj)}
                         className={`border p-2.5 transition-colors cursor-pointer ${
-                          isSelected ? 'border-2 border-[#141512] bg-[#DDD8CB]' : 'border-[#AAA99B] bg-[#FAF8F3] hover:bg-[#F3EFE4]'
+                          isSelected ? 'border-2 border-[#141512] bg-[#DDD8CB]' : 'border-[#AAA99B] bg-[#E8E4D6] hover:bg-[#DDD8CB]'
                         }`}
                       >
                         <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-[#AAA99B] font-bold text-[9px]">
@@ -779,7 +779,7 @@ export function CalendarView() {
                   <p className="text-[8.5px] font-mono">No actions or entries scheduled for this date.</p>
                   <button
                     onClick={() => setIsAddModalOpen(true)}
-                    className="px-2.5 py-1 border border-[#AAA99B] bg-[#FAF8F3] hover:bg-[#ECE7DB] text-[8px] font-bold uppercase tracking-wider text-[#141512]"
+                    className="px-2.5 py-1 border border-[#AAA99B] bg-[#EAE6D9] hover:bg-[#DDD8CB] text-[8px] font-bold uppercase tracking-wider text-[#141512]"
                   >
                     + SCHEDULE RECORD
                   </button>
@@ -794,7 +794,7 @@ export function CalendarView() {
                         {item.itemType === 'ENTRY' ? (
                           <span className="w-2.5 h-2.5 rounded-full bg-[#141512] inline-block border-2 border-[#E9E5D8]" />
                         ) : (
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#FAF8F3] border-[1.5px] border-[#141512] inline-block" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#EAE6D9] border-[1.5px] border-[#141512] inline-block" />
                         )}
                       </div>
 
@@ -803,8 +803,8 @@ export function CalendarView() {
                         onClick={() => handleInspect(item)}
                         className={`p-2 border transition-colors space-y-1 cursor-pointer ${
                           isChecked 
-                            ? 'border-[#C8C4B6] bg-[#EFECE1] opacity-75' 
-                            : 'border-[#AAA99B] bg-[#FAF8F3] hover:bg-[#F5F1E6]'
+                            ? 'border-[#C8C4B6] bg-[#DFDBD0]/60 opacity-75' 
+                            : 'border-[#AAA99B] bg-[#EAE6D9] hover:bg-[#E2DDD0]'
                         }`}
                       >
                         {/* Top Row: Time, Title, Tag Badge & Menu */}
@@ -885,7 +885,7 @@ export function CalendarView() {
               MONTH OVERVIEW
             </div>
 
-            <div className="grid grid-cols-4 divide-x divide-[#AAA99B] border border-[#AAA99B] bg-[#FAF8F3] p-2 text-center shadow-sm">
+            <div className="grid grid-cols-4 divide-x divide-[#AAA99B] border border-[#AAA99B] bg-[#EAE6D9] p-2 text-center shadow-sm">
               <div className="px-1">
                 <div className="text-[20px] font-bold text-[#141512] leading-none" style={numeralStyle}>
                   {entries.length || 18}
@@ -935,7 +935,7 @@ export function CalendarView() {
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#FAF8F3] border-2 border-[#141512] shadow-2xl max-w-md w-full p-5 text-[#141512] font-mono space-y-3.5"
+            className="bg-[#EAE6D9] border-2 border-[#141512] shadow-2xl max-w-md w-full p-5 text-[#141512] font-mono space-y-3.5"
           >
             {/* Header */}
             <div className="flex justify-between items-center border-b border-[#AAA99B] pb-2 text-[8.5px]">
