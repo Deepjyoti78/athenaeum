@@ -141,6 +141,9 @@ function AthenaeumApp() {
             if (nav === 'search') {
               setIsSearchOpen(true);
             } else {
+              if (nav === 'news') {
+                setIsInspectorOpen(false);
+              }
               setActiveNav(nav);
             }
           }}
