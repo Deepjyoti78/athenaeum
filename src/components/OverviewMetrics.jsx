@@ -63,13 +63,12 @@ export function OverviewMetrics({ onNavigate }) {
     return 65;
   }, [works, dynamicMetrics]);
 
-  // Wide, expansive Focus line graph points scaled across full width from Mon to Sun
+  // Wide, expansive Focus line graph points scaled across full width from Mon to Sun with taller vertical range
   const focusPoints = useMemo(() => {
     const xCoords = [3, 18.67, 34.33, 50, 65.67, 81.33, 97];
-    // Baseline is 36, top is 6
-    // Smooth upward progression with plateau steps matching reference:
-    // M: 30, T: 25, W: 19, T: 19, F: 13, S: 13, S: 7
-    const basePts = [30, 25, 19, 19, 13, 13, 7];
+    // Baseline is 44, top is 7 (tall vertical span ~37 units in 48 viewBox)
+    // Smooth upward progression with plateau steps:
+    const basePts = [36, 29, 21, 21, 14, 14, 7];
     return xCoords.map((x, idx) => [x, basePts[idx]]);
   }, []);
 
@@ -340,8 +339,8 @@ export function OverviewMetrics({ onNavigate }) {
               <div><span className="font-bold text-[#171714]">1</span> Maintenance</div>
             </div>
 
-            {/* Circular Gauge: Big 76px diameter prominent ring */}
-            <div className="relative w-[74px] sm:w-[76px] h-[74px] sm:h-[76px] flex items-center justify-center flex-shrink-0">
+            {/* Circular Gauge: Big 76px diameter prominent ring, shifted upward */}
+            <div className="relative w-[74px] sm:w-[76px] h-[74px] sm:h-[76px] flex items-center justify-center flex-shrink-0 -translate-y-3">
               <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
                 {/* Subtle warm inner disc fill */}
                 <circle cx="32" cy="32" r="26" fill="#ECE9DD" />
@@ -443,11 +442,11 @@ export function OverviewMetrics({ onNavigate }) {
           </div>
 
           {/* Bottom: Expansive Archival Line Graph filling the space from Mon to Sun with clean breathing room */}
-          <div className="flex flex-col justify-end pt-1">
-            {/* Graph Canvas: 48px height, edge-to-edge */}
-            <div className="w-full relative h-[48px]">
+          <div className="flex flex-col justify-end">
+            {/* Graph Canvas: 58px height, edge-to-edge taller plotting canvas */}
+            <div className="w-full relative h-[58px]">
               <svg 
-                viewBox="0 0 100 40" 
+                viewBox="0 0 100 48" 
                 preserveAspectRatio="none" 
                 className="w-full h-full overflow-visible"
               >
@@ -460,19 +459,19 @@ export function OverviewMetrics({ onNavigate }) {
                 </defs>
 
                 {/* Horizontal Technical Grid Guidelines */}
-                <line x1="0" y1="10" x2="100" y2="10" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="19" x2="100" y2="19" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="28" x2="100" y2="28" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="37" x2="100" y2="37" stroke="#B8B4A5" strokeWidth="0.75" />
+                <line x1="0" y1="11" x2="100" y2="11" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="22" x2="100" y2="22" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="33" x2="100" y2="33" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
+                <line x1="0" y1="44" x2="100" y2="44" stroke="#B8B4A5" strokeWidth="0.75" />
 
                 {/* Vertical Day Alignment Ticks */}
                 {[3, 18.67, 34.33, 50, 65.67, 81.33, 97].map((xVal, idx) => (
                   <line 
                     key={idx} 
                     x1={xVal} 
-                    y1="37" 
+                    y1="44" 
                     x2={xVal} 
-                    y2="40" 
+                    y2="48" 
                     stroke="#88877B" 
                     strokeWidth="0.75" 
                   />
@@ -480,7 +479,7 @@ export function OverviewMetrics({ onNavigate }) {
 
                 {/* Shaded Area Under Curve */}
                 <polygon
-                  points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,37 3,37`}
+                  points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,44 3,44`}
                   fill="url(#focusAreaGradExp)"
                 />
 
@@ -518,11 +517,6 @@ export function OverviewMetrics({ onNavigate }) {
               <span className="w-2.5 text-center">F</span>
               <span className="w-2.5 text-center">S</span>
               <span className="w-2.5 text-center">S</span>
-            </div>
-
-            {/* Readable comparison text beneath the chart */}
-            <div className="text-[8px] font-mono font-medium text-[#171714] mt-1 select-none">
-              <span className="text-[#3D4C38] font-bold">▲ +12%</span> vs last week
             </div>
           </div>
         </div>
