@@ -78,7 +78,7 @@ export function OverviewMetrics({ onNavigate }) {
           </div>
 
           {/* Bottom: Mini 5-week Calendar Month Grid */}
-          <div className="pt-2 border-t border-[#AAA99B]">
+          <div className="pt-2">
             {/* Weekday headers: M T W T F S S */}
             <div className="grid grid-cols-7 text-[7px] font-mono font-bold text-[#55544B] text-center mb-1">
               <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
@@ -164,7 +164,7 @@ export function OverviewMetrics({ onNavigate }) {
           </div>
 
           {/* Bottom: Breakdown List matching Reference Image */}
-          <div className="pt-2 border-t border-[#AAA99B] space-y-1 text-[8px] font-mono text-[#33322B]">
+          <div className="pt-2 space-y-1 text-[8px] font-mono text-[#33322B]">
             <div className="flex items-center space-x-2">
               <span className="text-[#66655A] font-bold">•</span>
               <span className="font-bold text-[#141512] w-2.5">5</span>
@@ -215,7 +215,7 @@ export function OverviewMetrics({ onNavigate }) {
           </div>
 
           {/* Bottom: Works Categories & Minimalist Donut Ring */}
-          <div className="pt-2 border-t border-[#AAA99B] flex items-center justify-between">
+          <div className="pt-2 flex items-center justify-between">
             <div className="space-y-1 text-[8px] font-mono text-[#33322B]">
               <div><span className="font-bold text-[#141512]">3</span> Projects</div>
               <div><span className="font-bold text-[#141512]">2</span> Research</div>
@@ -270,7 +270,7 @@ export function OverviewMetrics({ onNavigate }) {
           </div>
 
           {/* Bottom: 7-bar Activity Histogram — Centered with reduced spacing and NO bottom border line */}
-          <div className="pt-2 border-t border-[#AAA99B]">
+          <div className="pt-2">
             <div className="flex items-end justify-center space-x-2 h-14 pb-0.5">
               {bars.map((b, i) => (
                 <div 
@@ -314,7 +314,7 @@ export function OverviewMetrics({ onNavigate }) {
           </div>
 
           {/* Bottom: Sparkline & Comparison Text — Clean, elegant curve with NO horizontal line */}
-          <div className="pt-2 border-t border-[#AAA99B] flex flex-col justify-between h-14">
+          <div className="pt-2 flex flex-col justify-between h-14">
             <div className="pt-2 px-1">
               <svg viewBox="0 0 100 24" className="w-full h-7 overflow-visible">
                 {/* Subtle soft gradient fill under trendline */}
