@@ -530,3 +530,6 @@ export function OverviewMetrics({ onNavigate }) {
     </div>
   );
 }
+
+export default OverviewMetrics;
+
