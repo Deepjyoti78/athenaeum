@@ -63,12 +63,11 @@ export function OverviewMetrics({ onNavigate }) {
     return 65;
   }, [works, dynamicMetrics]);
 
-  // Wide, expansive Focus line graph points scaled across full width from Mon to Sun with taller vertical range
+  // 7 Focus line graph points mapped within framed technical chart box (y: 0=100%, 22=50%, 44=0%)
   const focusPoints = useMemo(() => {
-    const xCoords = [3, 18.67, 34.33, 50, 65.67, 81.33, 97];
-    // Baseline is 56, top is 8 (tall vertical span ~48 units in 60 viewBox)
-    // Smooth upward progression with plateau steps:
-    const basePts = [46, 37, 26, 26, 17, 17, 8];
+    const xCoords = [8, 22, 36, 50, 64, 78, 92];
+    // Progress curve matching reference image: M: 25%, T: 42%, W: 56%, T: 56%, F: 72%, S: 72%, S: 88%
+    const basePts = [33, 25.5, 19.4, 19.4, 12.3, 12.3, 5.3];
     return xCoords.map((x, idx) => [x, basePts[idx]]);
   }, []);
 
@@ -441,82 +440,98 @@ export function OverviewMetrics({ onNavigate }) {
             </div>
           </div>
 
-          {/* Bottom: Expansive Archival Line Graph filling the space from Mon to Sun with clean breathing room */}
+          {/* Bottom: Technical Archival Chart with Y-Axis and Framed Grid Box matching reference image */}
           <div className="flex flex-col justify-end">
-            {/* Graph Canvas: 72px height, edge-to-edge taller plotting canvas */}
-            <div className="w-full relative h-[72px]">
-              <svg 
-                viewBox="0 0 100 60" 
-                preserveAspectRatio="none" 
-                className="w-full h-full overflow-visible"
-              >
-                <defs>
-                  <linearGradient id="focusAreaGradExp" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#74866A" stopOpacity="0.4" />
-                    <stop offset="70%" stopColor="#74866A" stopOpacity="0.1" />
-                    <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
+            <div className="flex items-start">
+              {/* Y-Axis: 100, 50, 0 aligned with top border, middle dashed line, and baseline */}
+              <div className="flex flex-col justify-between h-[56px] text-[7px] font-mono text-[#66655B] select-none text-right pr-1.5 w-[18px] flex-shrink-0 leading-none py-[1px]">
+                <span>100</span>
+                <span>50</span>
+                <span>0</span>
+              </div>
 
-                {/* Horizontal Technical Grid Guidelines */}
-                <line x1="0" y1="14" x2="100" y2="14" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="28" x2="100" y2="28" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="42" x2="100" y2="42" stroke="#D5D0C2" strokeWidth="0.5" strokeDasharray="2 2" />
-                <line x1="0" y1="56" x2="100" y2="56" stroke="#B8B4A5" strokeWidth="0.75" />
+              {/* Framed Chart Plotting Area */}
+              <div className="flex-1 flex flex-col pr-1">
+                <div className="w-full relative h-[56px]">
+                  <svg 
+                    viewBox="0 0 100 48" 
+                    preserveAspectRatio="none" 
+                    className="w-full h-full overflow-visible"
+                  >
+                    <defs>
+                      <linearGradient id="focusAreaGradExp" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#74866A" stopOpacity="0.4" />
+                        <stop offset="70%" stopColor="#74866A" stopOpacity="0.1" />
+                        <stop offset="100%" stopColor="#EAE7D9" stopOpacity="0.0" />
+                      </linearGradient>
+                    </defs>
 
-                {/* Vertical Day Alignment Ticks */}
-                {[3, 18.67, 34.33, 50, 65.67, 81.33, 97].map((xVal, idx) => (
-                  <line 
-                    key={idx} 
-                    x1={xVal} 
-                    y1="56" 
-                    x2={xVal} 
-                    y2="60" 
-                    stroke="#88877B" 
-                    strokeWidth="0.75" 
-                  />
-                ))}
+                    {/* Chart Box Background Tint */}
+                    <rect x="0" y="0" width="100" height="44" fill="#E4DFC2" fillOpacity="0.3" />
 
-                {/* Shaded Area Under Curve */}
-                <polygon
-                  points={`3,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 97,${focusPoints[6][1]} 97,56 3,56`}
-                  fill="url(#focusAreaGradExp)"
-                />
+                    {/* Chart Box Borders (Solid Framed Box) */}
+                    <rect x="0" y="0" width="100" height="44" fill="none" stroke="#BDB9AA" strokeWidth="0.75" />
 
-                {/* Connected Polyline: Bold Dark Archival Line */}
-                <polyline
-                  fill="none"
-                  stroke="#171714"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  points={focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')}
-                />
+                    {/* Middle Dashed Guideline at 50% */}
+                    <line x1="0" y1="22" x2="100" y2="22" stroke="#C5C1B2" strokeWidth="0.6" strokeDasharray="2 2" />
 
-                {/* 7 Circular Data Points matching Mon - Sun */}
-                {focusPoints.map(([cx, cy], idx) => {
-                  const isLatest = idx === 6;
-                  const r = isLatest ? 3.0 : 2.3;
-                  const innerR = isLatest ? 1.0 : 0.8;
-                  return (
-                    <g key={idx}>
-                      <circle cx={cx} cy={cy} r={r} fill="#171714" />
-                      <circle cx={cx} cy={cy} r={innerR} fill="#FAF8F3" />
-                    </g>
-                  );
-                })}
-              </svg>
-            </div>
+                    {/* Vertical Day Alignment Ticks below baseline */}
+                    {[8, 22, 36, 50, 64, 78, 92].map((xVal, idx) => (
+                      <line 
+                        key={idx} 
+                        x1={xVal} 
+                        y1="44" 
+                        x2={xVal} 
+                        y2="47.5" 
+                        stroke="#88877B" 
+                        strokeWidth="0.75" 
+                      />
+                    ))}
 
-            {/* Weekday labels spanning Mon to Sun edge to edge, cleanly aligned under data ticks */}
-            <div className="flex justify-between text-[7.5px] font-mono font-bold text-[#55544B] mt-1 select-none px-0.5">
-              <span className="w-2.5 text-center">M</span>
-              <span className="w-2.5 text-center">T</span>
-              <span className="w-2.5 text-center">W</span>
-              <span className="w-2.5 text-center">T</span>
-              <span className="w-2.5 text-center">F</span>
-              <span className="w-2.5 text-center">S</span>
-              <span className="w-2.5 text-center">S</span>
+                    {/* Shaded Area Under Curve */}
+                    <polygon
+                      points={`8,${focusPoints[0][1]} ${focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')} 92,${focusPoints[6][1]} 92,44 8,44`}
+                      fill="url(#focusAreaGradExp)"
+                    />
+
+                    {/* Connected Polyline: Sharp Charcoal Archival Line */}
+                    <polyline
+                      fill="none"
+                      stroke="#171714"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      points={focusPoints.map(p => `${p[0]},${p[1]}`).join(' ')}
+                    />
+
+                    {/* 7 Circular Data Points matching Mon - Sun */}
+                    {focusPoints.map(([cx, cy], idx) => (
+                      <circle key={idx} cx={cx} cy={cy} r={idx === 6 ? 2.6 : 2.2} fill="#171714" />
+                    ))}
+                  </svg>
+                </div>
+
+                {/* Weekday labels spanning Mon to Sun, directly aligned under each day tick */}
+                <div className="relative w-full h-3 mt-1">
+                  {[
+                    { label: 'M', x: '8%' },
+                    { label: 'T', x: '22%' },
+                    { label: 'W', x: '36%' },
+                    { label: 'T', x: '50%' },
+                    { label: 'F', x: '64%' },
+                    { label: 'S', x: '78%' },
+                    { label: 'S', x: '92%' },
+                  ].map((d, i) => (
+                    <span
+                      key={i}
+                      className="absolute -translate-x-1/2 text-[7.5px] font-mono font-bold text-[#55544B] select-none text-center"
+                      style={{ left: d.x }}
+                    >
+                      {d.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
