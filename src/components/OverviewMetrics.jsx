@@ -2,11 +2,11 @@ import React from 'react';
 
 export function OverviewMetrics({ onNavigate }) {
   // Canonical reference values from Reference Screenshot:
-  // Column 1: TODAY 09 (FRIDAY MAY 2025) + Mini Calendar Month Grid
-  // Column 2: ACTIONS 12 DUE TODAY (5 To do, 4 In progress, 1 Waiting, 2 Completed)
-  // Column 3: WORKS 07 ACTIVE (3 Projects, 2 Research, 1 Creative, 1 Maintenance) + Donut Ring
-  // Column 4: ENTRIES 18 THIS WEEK (7-bar activity histogram)
-  // Column 5: FOCUS 65% WEEKLY PROGRESS (Refined sparkline chart with +12% vs last week)
+  // Column 1: TODAY -> 09 -> FRIDAY, MAY 2025 + Mini Calendar Month Grid
+  // Column 2: ACTIONS -> 12 -> DUE TODAY + (5 To do, 4 In progress, 1 Waiting, 2 Completed)
+  // Column 3: WORKS -> 07 -> ACTIVE + (3 Projects, 2 Research, 1 Creative, 1 Maintenance) + Donut Ring
+  // Column 4: ENTRIES -> 18 -> THIS WEEK + 7-bar activity histogram
+  // Column 5: FOCUS -> 65% -> WEEKLY PROGRESS + Refined sparkline chart
 
   // May 2025 Calendar: May 1st was a Thursday
   // Mon Tue Wed Thu Fri Sat Sun
@@ -55,24 +55,25 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('calendar')}
-          className="flex flex-col justify-between p-3 pb-3.5 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[184px]"
+          className="flex flex-col justify-between p-3 pb-3.5 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[188px]"
           title="Click to open Archival Calendar"
         >
-          {/* Top: Header & Number */}
+          {/* Top: Header, Number, Subtitle below */}
           <div>
             <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none">
               TODAY
             </div>
-            <div className="flex items-baseline space-x-2 mt-1">
+            <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
+                className="text-[42px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 09
               </span>
-              <div className="flex flex-col text-[8px] font-mono uppercase leading-tight">
+              <div className="flex items-center space-x-1.5 text-[7.5px] font-mono uppercase leading-tight mt-1">
                 <span className="font-bold text-[#141512] tracking-wide">FRIDAY</span>
-                <span className="text-[7.5px] font-semibold text-[#55544B] tracking-wider mt-0.5">MAY 2025</span>
+                <span className="text-[#88877A]">•</span>
+                <span className="font-semibold text-[#55544B] tracking-wider">MAY 2025</span>
               </div>
             </div>
           </div>
@@ -142,22 +143,22 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('actions')}
-          className="flex flex-col justify-between p-3 pb-3.5 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[184px]"
+          className="flex flex-col justify-between p-3 pb-3.5 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[188px]"
           title="Click to view Action Registry"
         >
-          {/* Top: Header & Number */}
+          {/* Top: Header, Number, Subtitle below */}
           <div>
             <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none">
               ACTIONS
             </div>
-            <div className="flex items-baseline space-x-1.5 mt-1">
+            <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
+                className="text-[42px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 12
               </span>
-              <span className="text-[8px] uppercase tracking-wider text-[#44433A] font-bold">
+              <span className="text-[7.5px] uppercase tracking-wider text-[#44433A] font-bold mt-1">
                 DUE TODAY
               </span>
             </div>
@@ -193,22 +194,22 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
-          className="flex flex-col justify-between p-3 pb-3.5 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[184px]"
+          className="flex flex-col justify-between p-3 pb-3.5 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[188px]"
           title="Click to view Works Catalog"
         >
-          {/* Top: Header & Number */}
+          {/* Top: Header, Number, Subtitle below */}
           <div>
             <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none">
               WORKS
             </div>
-            <div className="flex items-baseline space-x-1.5 mt-1">
+            <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
+                className="text-[42px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 07
               </span>
-              <span className="text-[8px] uppercase tracking-wider text-[#44433A] font-bold">
+              <span className="text-[7.5px] uppercase tracking-wider text-[#44433A] font-bold mt-1">
                 ACTIVE
               </span>
             </div>
@@ -248,22 +249,22 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
-          className="flex flex-col justify-between p-3 pb-3.5 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[184px]"
+          className="flex flex-col justify-between p-3 pb-3.5 cursor-pointer hover:bg-[#E4DFC2]/40 transition-colors h-[188px]"
           title="Click to view Entries Archive"
         >
-          {/* Top: Header & Number */}
+          {/* Top: Header, Number, Subtitle below */}
           <div>
             <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none">
               ENTRIES
             </div>
-            <div className="flex items-baseline space-x-1.5 mt-1">
+            <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
+                className="text-[42px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 18
               </span>
-              <span className="text-[8px] uppercase tracking-wider text-[#44433A] font-bold">
+              <span className="text-[7.5px] uppercase tracking-wider text-[#44433A] font-bold mt-1">
                 THIS WEEK
               </span>
             </div>
@@ -294,20 +295,20 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         {/* COLUMN 5: FOCUS & PROGRESS SPARKLINE                         */}
         {/* ============================================================ */}
-        <div className="flex flex-col justify-between p-3 pb-3.5 h-[184px]">
-          {/* Top: Header & Number */}
+        <div className="flex flex-col justify-between p-3 pb-3.5 h-[188px]">
+          {/* Top: Header, Number, Subtitle below */}
           <div>
             <div className="text-[8.5px] uppercase tracking-wider text-[#25251F] font-bold leading-none">
               FOCUS
             </div>
-            <div className="flex items-baseline space-x-1.5 mt-1">
+            <div className="flex flex-col mt-0.5">
               <span 
-                className="text-[44px] font-bold text-[#141512] leading-none tracking-tight select-none"
+                className="text-[42px] font-bold text-[#141512] leading-none tracking-tight select-none"
                 style={numeralStyle}
               >
                 65%
               </span>
-              <span className="text-[8px] uppercase tracking-wider text-[#44433A] font-bold">
+              <span className="text-[7.5px] uppercase tracking-wider text-[#44433A] font-bold mt-1">
                 WEEKLY PROGRESS
               </span>
             </div>
