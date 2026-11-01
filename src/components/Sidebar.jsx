@@ -72,12 +72,13 @@ export function Sidebar({
 
       <aside className={`
         ${isMobileOpen 
-          ? 'fixed inset-y-0 left-0 z-50 w-64 shadow-2xl flex flex-col justify-between h-full' 
+          ? 'fixed inset-y-0 left-0 z-50 w-64 shadow-2xl' 
           : 'hidden md:flex md:w-60 md:min-w-[230px] md:max-w-[260px] md:static'}
+        flex flex-col justify-between h-full flex-shrink-0
         bg-[#11130F] text-[#AAA99B] border-r border-[#262922] select-none text-xs font-mono transition-transform duration-200
       `}>
         {/* Upper Area */}
-        <div className="flex flex-col p-2.5 space-y-2.5 overflow-y-auto">
+        <div className="flex-1 flex flex-col p-2.5 space-y-2.5 overflow-y-auto min-h-0">
           {/* Brand & Logo Header */}
           <div className="flex items-center justify-between pb-1 border-b border-[#262922]">
             <div className="flex items-center space-x-2">
@@ -199,7 +200,7 @@ export function Sidebar({
       </div>
 
       {/* System Panel (Bottom) */}
-      <div className="p-2.5 border-t border-[#262922] bg-[#0E100D] space-y-1.5">
+      <div className="p-2.5 border-t border-[#262922] bg-[#0E100D] space-y-1.5 flex-shrink-0">
         <div className="text-[8px] uppercase tracking-wider text-[#68675C] font-medium">
           SYSTEM PANEL
         </div>
