@@ -154,14 +154,14 @@ export function OverviewMetrics({ onNavigate }) {
       </div>
 
       {/* Unified Archival Overview Panel — Continuous 5-Column Box matching reference image */}
-      <div className="border border-[#B5B3A4] bg-[#EAE7D9] grid grid-cols-5 divide-x divide-[#B5B3A4] shadow-sm">
+      <div className="border border-[#B5B3A4] bg-[#EAE7D9] flex overflow-x-auto divide-x divide-[#B5B3A4] shadow-sm md:grid md:grid-cols-5 snap-x no-scrollbar">
         
         {/* ============================================================ */}
         {/* COLUMN 1: TODAY & ARCHIVAL CALENDAR                          */}
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('calendar')}
-          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px] min-w-[170px] sm:min-w-[178px] md:min-w-0 flex-shrink-0 md:flex-shrink snap-start"
           title="Click to open Archival Calendar"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -259,7 +259,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('actions')}
-          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px] min-w-[155px] sm:min-w-[165px] md:min-w-0 flex-shrink-0 md:flex-shrink snap-start"
           title="Click to view Action Registry"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -312,7 +312,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('works')}
-          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px] min-w-[170px] sm:min-w-[178px] md:min-w-0 flex-shrink-0 md:flex-shrink snap-start"
           title="Click to view Works Catalog"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -372,7 +372,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         <div 
           onClick={() => onNavigate && onNavigate('entries')}
-          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px]"
+          className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 cursor-pointer hover:bg-[#E4DFC2]/30 transition-colors h-[178px] min-w-[155px] sm:min-w-[165px] md:min-w-0 flex-shrink-0 md:flex-shrink snap-start"
           title="Click to view Entries Archive"
         >
           {/* Top: Header, Number, Subtitle below */}
@@ -421,7 +421,7 @@ export function OverviewMetrics({ onNavigate }) {
         {/* ============================================================ */}
         {/* COLUMN 5: FOCUS & FRAMED WEEKLY PROGRESS GRAPH               */}
         {/* ============================================================ */}
-        <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[178px]">
+        <div className="flex flex-col justify-between p-3 pt-2.5 pb-2.5 h-[178px] min-w-[160px] sm:min-w-[170px] md:min-w-0 flex-shrink-0 md:flex-shrink snap-start">
           {/* Top: Header, Number, Subtitle below */}
           <div>
             <div className="text-[9px] uppercase tracking-wider text-[#171714] font-bold leading-none">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Search, Plus, Edit3, Check, Calendar, User, Tag } from 'lucide-react';
+import { FileText, Search, Plus, Edit3, Check, Calendar, User, Tag, ArrowLeft } from 'lucide-react';
 
 export function EntriesView({ entries, onAddEntry, onUpdateEntry }) {
   const [selectedEntryId, setSelectedEntryId] = useState(entries[0]?.id || 1);
@@ -7,6 +7,7 @@ export function EntriesView({ entries, onAddEntry, onUpdateEntry }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   // New entry form state
   const [newTitle, setNewTitle] = useState('');
@@ -33,6 +34,7 @@ export function EntriesView({ entries, onAddEntry, onUpdateEntry }) {
     setSelectedEntryId(ent.id);
     setEditContent(ent.content || '');
     setIsEditing(false);
+    setShowMobileDetail(true);
   };
 
   const handleSaveEdit = () => {
@@ -123,7 +125,7 @@ export function EntriesView({ entries, onAddEntry, onUpdateEntry }) {
       {/* Main Split Pane */}
       <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Left List Pane */}
-        <div className="w-72 min-w-[260px] border-r border-[#AAA99B] bg-[#E9E5D8] overflow-y-auto divide-y divide-[#DDD9CD]">
+        <div className={`${showMobileDetail ? 'hidden md:block' : 'w-full md:w-72 md:min-w-[260px]'} border-r border-[#AAA99B] bg-[#E9E5D8] overflow-y-auto divide-y divide-[#DDD9CD]`}>
           {filteredEntries.map((ent) => {
             const isSelected = selectedEntry?.id === ent.id;
             return (
@@ -154,7 +156,17 @@ export function EntriesView({ entries, onAddEntry, onUpdateEntry }) {
         </div>
 
         {/* Right Reader / Editor Pane */}
-        <div className="flex-1 flex flex-col bg-[#F3EFE4] overflow-y-auto p-4 select-text">
+        <div className={`${!showMobileDetail ? 'hidden md:flex' : 'flex-1 flex'} flex-col bg-[#F3EFE4] overflow-y-auto p-3 sm:p-4 select-text`}>
+          {showMobileDetail && (
+            <button
+              onClick={() => setShowMobileDetail(false)}
+              className="md:hidden self-start mb-2 text-[8px] font-bold text-[#171714] flex items-center space-x-1 border border-[#AAA99B] px-2 py-0.5 bg-[#DFDBD0] hover:bg-[#D5D1C4]"
+            >
+              <ArrowLeft className="w-3 h-3" />
+              <span>← ALL ENTRIES</span>
+            </button>
+          )}
+
           {isCreating ? (
             <form onSubmit={handleCreate} className="space-y-3 max-w-2xl select-none">
               <div className="flex items-center justify-between pb-2 border-b border-[#AAA99B]">

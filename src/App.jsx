@@ -65,7 +65,8 @@ function AthenaeumApp() {
   } = useArchive();
 
   // Panels & Modals state
-  const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+  const [isInspectorOpen, setIsInspectorOpen] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isNewRecordOpen, setIsNewRecordOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -152,6 +153,8 @@ function AthenaeumApp() {
           onSelectRecentView={handleSelectRecentView}
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenSettings={() => setIsSettingsOpen(true)}
+          isMobileOpen={isMobileSidebarOpen}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
         />
 
         {/* 2. Central Workspace & Right Inspector Container */}
@@ -166,6 +169,7 @@ function AthenaeumApp() {
             isFullscreen={isFullscreen}
             viewMode={viewMode}
             setViewMode={setViewMode}
+            onToggleMobileSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
           />
 
           {/* Central Main Panel & Inspector Row */}
@@ -313,22 +317,32 @@ function AthenaeumApp() {
 
             {/* 3. Right Sidebar — Universal Record Inspector */}
             {isInspectorOpen && (
-              <aside className="h-full flex-shrink-0 animate-fadeIn">
-                <RecordInspector
-                  onClose={() => setIsInspectorOpen(false)}
-                  onOpenLinkedRecords={(key) => {
-                    if (key === 'actions') {
-                      setActiveNav('actions');
-                    } else if (key === 'entries') {
-                      setActiveNav('entries');
-                    } else if (key === 'collections') {
-                      setActiveNav('collections');
-                    } else if (key === 'people') {
-                      setActiveNav('people');
-                    }
-                  }}
+              <>
+                {/* Mobile Backdrop for Inspector */}
+                <div 
+                  className="fixed inset-0 bg-black/60 backdrop-blur-[1px] z-40 lg:hidden animate-fadeIn"
+                  onClick={() => setIsInspectorOpen(false)}
                 />
-              </aside>
+                <aside className="fixed inset-y-0 right-0 z-50 w-[88vw] max-w-[340px] shadow-2xl bg-[#E9E5D8] lg:static lg:w-auto lg:h-full lg:shadow-none flex-shrink-0 animate-fadeIn">
+                  <RecordInspector
+                    onClose={() => setIsInspectorOpen(false)}
+                    onOpenLinkedRecords={(key) => {
+                      if (key === 'actions') {
+                        setActiveNav('actions');
+                      } else if (key === 'entries') {
+                        setActiveNav('entries');
+                      } else if (key === 'collections') {
+                        setActiveNav('collections');
+                      } else if (key === 'people') {
+                        setActiveNav('people');
+                      }
+                      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                        setIsInspectorOpen(false);
+                      }
+                    }}
+                  />
+                </aside>
+              </>
             )}
           </div>
         </div>

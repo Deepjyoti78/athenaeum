@@ -12,7 +12,7 @@ export function BottomStatusBar() {
       </div>
 
       {/* Center Item */}
-      <div className="flex items-center space-x-1.5">
+      <div className="hidden sm:flex items-center space-x-1.5">
         <span className="text-[#77766B]">LAST BACKUP:</span>
         <span className="text-[#D6D4C8]">09 May 2025 08:24</span>
         <span className="w-1.5 h-1.5 rounded-full bg-[#738A62] inline-block animate-pulse"></span>

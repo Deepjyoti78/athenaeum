@@ -7,10 +7,11 @@ import {
   Minimize2, 
   Minus, 
   Square, 
-  X,
-  Clock,
-  SidebarClose,
-  SidebarOpen
+  X, 
+  Clock, 
+  SidebarClose, 
+  SidebarOpen,
+  Menu
 } from 'lucide-react';
 
 export function TopToolbar({ 
@@ -20,7 +21,8 @@ export function TopToolbar({
   onToggleFullscreen,
   isFullscreen,
   viewMode,
-  setViewMode
+  setViewMode,
+  onToggleMobileSidebar
 }) {
   const [timeStr, setTimeStr] = useState('10:24:37');
   const [isLiveClock, setIsLiveClock] = useState(false);
@@ -43,15 +45,24 @@ export function TopToolbar({
   }, [isLiveClock]);
 
   return (
-    <header className="h-9 bg-[#E9E5D8] border-b border-[#AAA99B] px-3 flex items-center justify-between text-xs font-mono text-[#25251F] select-none flex-shrink-0">
-      {/* Left: Archival Date & Time */}
-      <div className="flex items-center space-x-2 text-[11px] tracking-wide">
+    <header className="h-9 bg-[#E9E5D8] border-b border-[#AAA99B] px-2 sm:px-3 flex items-center justify-between text-xs font-mono text-[#25251F] select-none flex-shrink-0">
+      {/* Left: Mobile Menu & Archival Date & Time */}
+      <div className="flex items-center space-x-1.5 sm:space-x-2 text-[10px] sm:text-[11px] tracking-wide">
+        {/* Mobile Sidebar Hamburger Button */}
+        <button
+          onClick={onToggleMobileSidebar}
+          className="md:hidden p-1 border border-[#AAA99B] bg-[#DFDBD0] hover:bg-[#D4D0C3] active:bg-[#C9C4B7] text-[#25251F] flex items-center justify-center mr-0.5"
+          title="Open Navigation"
+        >
+          <Menu className="w-3.5 h-3.5 text-[#25251F]" />
+        </button>
+
         <span className="font-semibold text-[#1C1E19]">09 MAY 2025</span>
-        <span className="text-[#88877A]">•</span>
+        <span className="text-[#88877A] hidden xs:inline">•</span>
         <button
           onClick={() => setIsLiveClock(!isLiveClock)}
           title="Click to toggle reference freeze / live local clock"
-          className="hover:text-[#5E6B56] transition-colors flex items-center space-x-1"
+          className="hover:text-[#5E6B56] transition-colors items-center space-x-1 hidden xs:flex"
         >
           <span className="font-mono">{timeStr}</span>
           {isLiveClock && <span className="w-1.5 h-1.5 bg-[#738A62] rounded-full inline-block"></span>}

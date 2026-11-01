@@ -407,7 +407,7 @@ ${nextFocus}
       {/* ============================================================ */}
       {/* MAIN THREE-COLUMN WORKSPACE                                  */}
       {/* ============================================================ */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 overflow-hidden">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-2 sm:p-3 overflow-y-auto lg:overflow-hidden">
         
         {/* ------------------------------------------------------------ */}
         {/* COLUMN 1: CHRONICLE ARCHIVE LOGS INDEX (~22% width, col-span-3) */}
@@ -426,7 +426,7 @@ ${nextFocus}
             </div>
 
             {/* Logs List */}
-            <div className="overflow-y-auto divide-y divide-[#D5D1C4] max-h-[calc(100vh-250px)]">
+            <div className="overflow-y-auto divide-y divide-[#D5D1C4] max-h-44 lg:max-h-[calc(100vh-250px)]">
               {datesList.map(d => {
                 const log = logsMap[d] || {};
                 const isSel = selectedDate === d;

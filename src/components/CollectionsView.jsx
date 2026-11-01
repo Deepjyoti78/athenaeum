@@ -94,21 +94,21 @@ export function CollectionsView({ collections = INITIAL_COLLECTIONS }) {
       </div>
 
       {/* Gallery Grid */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-2 sm:p-4">
         {items.length === 0 ? (
           <div className="py-12 text-center text-[#77766B] text-[9px] border border-dashed border-[#B5B3A4] bg-[#FAF8F3]/60">
             NO SPECIMEN PLATES RECORDED IN THIS COLLECTION.
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
             {items.map((artType, idx) => (
               <div
                 key={idx}
                 onClick={() => setLightboxItem({ type: artType, title: `${activeCollection.title || 'Collection'} — Specimen #${idx + 1}` })}
-                className="border border-[#AAA99B] bg-[#FAF8F3] hover:border-[#25251F] p-2 flex flex-col justify-between group cursor-pointer transition-all hover:shadow-md"
+                className="border border-[#AAA99B] bg-[#FAF8F3] hover:border-[#25251F] p-1.5 sm:p-2 flex flex-col justify-between group cursor-pointer transition-all hover:shadow-md"
               >
                 {/* Media Container */}
-                <div className="w-full h-36 border border-[#AAA99B] bg-[#DDD8CB] overflow-hidden relative">
+                <div className="w-full h-24 sm:h-36 border border-[#AAA99B] bg-[#DDD8CB] overflow-hidden relative">
                   <ArchivalArtwork type={artType} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                     <Maximize2 className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />

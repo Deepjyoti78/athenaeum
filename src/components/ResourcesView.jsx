@@ -47,7 +47,7 @@ export function ResourcesView({ resources = INITIAL_RESOURCES, onAddResource }) 
   return (
     <div className="flex-1 flex flex-col h-full bg-[#E9E5D8] overflow-hidden select-none font-mono">
       {/* Header */}
-      <div className="p-3 border-b border-[#AAA99B] bg-[#DFDBD0] flex items-center justify-between">
+      <div className="p-3 border-b border-[#AAA99B] bg-[#DFDBD0] flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center space-x-2">
           <span className="w-2 h-2 bg-[#738A62] inline-block"></span>
           <h1 className="text-xs font-bold uppercase tracking-wider text-[#25251F]">
@@ -66,7 +66,7 @@ export function ResourcesView({ resources = INITIAL_RESOURCES, onAddResource }) 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search resources..."
-              className="bg-transparent text-[9px] text-[#25251F] focus:outline-none w-36"
+              className="bg-transparent text-[9px] text-[#25251F] focus:outline-none w-28 sm:w-36"
             />
           </div>
 
@@ -81,8 +81,8 @@ export function ResourcesView({ resources = INITIAL_RESOURCES, onAddResource }) 
       </div>
 
       {/* Filter Tabs */}
-      <div className="px-3 py-1.5 border-b border-[#AAA99B] bg-[#ECE7DC] flex items-center space-x-1 text-[8px] overflow-x-auto">
-        <span className="text-[#77766B] mr-1 uppercase">CATEGORY:</span>
+      <div className="px-3 py-1.5 border-b border-[#AAA99B] bg-[#ECE7DC] flex items-center space-x-1 text-[8px] overflow-x-auto no-scrollbar">
+        <span className="text-[#77766B] mr-1 uppercase flex-shrink-0">CATEGORY:</span>
         {categories.map(c => (
           <button
             key={c}
@@ -99,9 +99,9 @@ export function ResourcesView({ resources = INITIAL_RESOURCES, onAddResource }) 
       </div>
 
       {/* Resources Table */}
-      <div className="flex-1 overflow-y-auto p-3">
-        <div className="border border-[#AAA99B] bg-[#E9E5D8]">
-          <table className="w-full text-left border-collapse text-[9px] font-mono">
+      <div className="flex-1 overflow-y-auto p-2 sm:p-3">
+        <div className="border border-[#AAA99B] bg-[#E9E5D8] overflow-x-auto">
+          <table className="w-full min-w-[550px] text-left border-collapse text-[9px] font-mono">
             <thead>
               <tr className="border-b border-[#AAA99B] bg-[#DFDBD0] text-[#666] uppercase text-[8px]">
                 <th className="py-2 px-3 font-normal">ASSET TITLE</th>

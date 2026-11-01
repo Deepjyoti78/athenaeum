@@ -210,14 +210,14 @@ export function PlacesView({ places: propPlaces = INITIAL_PLACES, onAddPlace }) 
 
         <div className="flex items-center space-x-2">
           {/* Search Box */}
-          <div className="flex items-center space-x-1.5 bg-[#FAF8F3] border border-[#B5B3A4] px-2.5 py-1 text-[8.5px]">
+          <div className="flex items-center space-x-1.5 bg-[#FAF8F3] border border-[#B5B3A4] px-2 py-1 text-[8.5px]">
             <Search className="w-3 h-3 text-[#66655B]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search places, coordinates..."
-              className="bg-transparent text-[8.5px] text-[#171714] focus:outline-none w-44 placeholder-[#888]"
+              placeholder="Search places..."
+              className="bg-transparent text-[8.5px] text-[#171714] focus:outline-none w-28 sm:w-44 placeholder-[#888]"
             />
           </div>
 
@@ -289,31 +289,31 @@ export function PlacesView({ places: propPlaces = INITIAL_PLACES, onAddPlace }) 
           /* ========================================================== */
           /* GRID VIEW: 2-COLUMN BALANCED ARCHIVAL RECORD CARDS         */
           /* ========================================================== */
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {filteredPlaces.map((plc, idx) => {
               const isSelected = activePlaceId === plc.id;
               return (
                 <div 
                   key={plc.id} 
                   onClick={() => handleSelectPlace(plc)}
-                  className={`border border-[#B5B3A4] bg-[#EAE7D9] p-3 flex flex-col justify-between transition-all duration-150 cursor-pointer group shadow-sm ${
+                  className={`border border-[#B5B3A4] bg-[#EAE7D9] p-2 sm:p-3 flex flex-col justify-between transition-all duration-150 cursor-pointer group shadow-sm ${
                     isSelected ? 'ring-1 ring-[#171714] bg-[#E4DFC2]/60' : 'hover:border-[#171714] hover:bg-[#E5E1D2]'
                   }`}
                 >
                   {/* Card Header: Badge, Title, Coordinates & Type */}
                   <div>
-                    <div className="flex items-start justify-between pb-2 border-b border-[#D5D1C4]">
-                      <div className="flex items-start space-x-2.5 flex-1 pr-2">
+                    <div className="flex items-start justify-between pb-1.5 sm:pb-2 border-b border-[#D5D1C4]">
+                      <div className="flex items-start space-x-1.5 sm:space-x-2.5 flex-1 pr-1 sm:pr-2 min-w-0">
                         {/* Number Badge */}
-                        <div className="w-5 h-5 rounded-full bg-[#2E3D2A] text-[#FAF8F3] text-[9.5px] font-bold font-mono flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#2E3D2A] text-[#FAF8F3] text-[8px] sm:text-[9.5px] font-bold font-mono flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
                           {idx + 1}
                         </div>
                         
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-[12px] font-bold text-[#171714] group-hover:underline flex items-center space-x-1.5 truncate">
+                          <h3 className="text-[10px] sm:text-[12px] font-bold text-[#171714] group-hover:underline flex items-center space-x-1.5 truncate">
                             <span>{plc.name}</span>
                           </h3>
-                          <div className="text-[8px] text-[#66655B] font-mono mt-0.5 flex items-center space-x-1">
+                          <div className="text-[7px] sm:text-[8px] text-[#66655B] font-mono mt-0.5 flex items-center space-x-1 truncate">
                             <span className="text-[#3E4F3B]">⊙</span>
                             <span>{plc.coordinates}</span>
                           </div>
@@ -321,20 +321,20 @@ export function PlacesView({ places: propPlaces = INITIAL_PLACES, onAddPlace }) 
                       </div>
 
                       {/* Archival Locus Status Pill */}
-                      <span className="text-[7.5px] px-2 py-0.5 border border-[#B5B3A4] bg-[#DDD8CB] text-[#333] font-mono uppercase tracking-wider flex-shrink-0">
-                        {plc.type || 'ARCHIVAL LOCUS'}
+                      <span className="text-[6.5px] sm:text-[7.5px] px-1 sm:px-2 py-0.5 border border-[#B5B3A4] bg-[#DDD8CB] text-[#333] font-mono uppercase tracking-wider flex-shrink-0 hidden xs:inline-block">
+                        {plc.type || 'LOCUS'}
                       </span>
                     </div>
 
                     {/* Card Body: Description on Left, Drawing Thumbnail on Right */}
-                    <div className="mt-2.5 flex items-start space-x-3">
-                      <div className="flex-1 min-w-0 space-y-2">
-                        <p className="text-[8.5px] text-[#33322A] leading-relaxed line-clamp-3">
+                    <div className="mt-1.5 sm:mt-2.5 flex items-start space-x-2 sm:space-x-3">
+                      <div className="flex-1 min-w-0 space-y-1 sm:space-y-2">
+                        <p className="text-[7.5px] sm:text-[8.5px] text-[#33322A] leading-relaxed line-clamp-2 sm:line-clamp-3">
                           {plc.description}
                         </p>
                         
-                        <div className="pt-1.5 text-[7.5px] text-[#66655B] font-mono space-y-0.5">
-                          <div>
+                        <div className="pt-1 text-[7px] sm:text-[7.5px] text-[#66655B] font-mono space-y-0.5 hidden xs:block">
+                          <div className="truncate">
                             REGION: <strong className="text-[#171714] font-medium">{plc.region}</strong>
                           </div>
                           <div>
@@ -345,10 +345,10 @@ export function PlacesView({ places: propPlaces = INITIAL_PLACES, onAddPlace }) 
 
                       {/* Locus Illustration Thumbnail */}
                       <div className="flex flex-col items-center flex-shrink-0">
-                        <div className="w-28 h-18 border border-[#B5B3A4] bg-[#D5D0C2] overflow-hidden rounded-[0.5px] shadow-inner">
+                        <div className="w-16 sm:w-28 h-12 sm:h-18 border border-[#B5B3A4] bg-[#D5D0C2] overflow-hidden rounded-[0.5px] shadow-inner">
                           {renderPlaceThumbnail(plc)}
                         </div>
-                        <span className="text-[7px] font-mono font-bold text-[#444] border border-[#B5B3A4] bg-[#DDD8CB] px-1.5 py-0.5 text-center mt-1 w-28">
+                        <span className="text-[6px] sm:text-[7px] font-mono font-bold text-[#444] border border-[#B5B3A4] bg-[#DDD8CB] px-1 sm:px-1.5 py-0.5 text-center mt-0.5 sm:mt-1 w-16 sm:w-28">
                           {plc.recordsCount || 1} RECORDS
                         </span>
                       </div>

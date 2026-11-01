@@ -14,7 +14,8 @@ import {
   Search, 
   Settings,
   MoreHorizontal,
-  LogOut
+  LogOut,
+  X
 } from 'lucide-react';
 import { AthenaeumLogo } from './AthenaeumLogo';
 import { RECENT_VIEWS } from '../data/mockData';
@@ -25,7 +26,9 @@ export function Sidebar({
   setActiveNav, 
   onSelectRecentView,
   onOpenSearch,
-  onOpenSettings
+  onOpenSettings,
+  isMobileOpen = false,
+  onCloseMobile
 }) {
   const { currentUser, logout } = useAuth();
   const navItems = [
@@ -43,22 +46,63 @@ export function Sidebar({
     { id: 'search', label: 'SEARCH', icon: Search, action: onOpenSearch },
   ];
 
+  const handleNavClick = (item) => {
+    if (item.action) {
+      item.action();
+    } else {
+      setActiveNav(item.id);
+    }
+    if (onCloseMobile) onCloseMobile();
+  };
+
+  const handleRecentViewClick = (name) => {
+    if (onSelectRecentView) onSelectRecentView(name);
+    if (onCloseMobile) onCloseMobile();
+  };
+
   return (
-    <aside className="w-60 min-w-[230px] max-w-[260px] bg-[#11130F] text-[#AAA99B] border-r border-[#262922] flex flex-col justify-between h-full select-none text-xs font-mono">
-      {/* Upper Area */}
-      <div className="flex flex-col p-2.5 space-y-2.5 overflow-y-auto">
-        {/* Brand & Logo Header */}
-        <div className="flex items-center space-x-2 pb-1 border-b border-[#262922]">
-          <AthenaeumLogo className="w-7 h-7 text-[#AAA99B] flex-shrink-0" />
-          <div className="flex flex-col">
-            <span className="font-serif tracking-[0.16em] text-[13px] text-[#E9E5D8] font-bold leading-none">
-              ATHENÆUM
-            </span>
-            <span className="text-[7px] text-[#77766B] tracking-wider mt-1 uppercase leading-tight font-mono">
-              Personal Archive &amp; Creative Workspace
-            </span>
+    <>
+      {/* Mobile Drawer Backdrop */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/70 backdrop-blur-[1px] z-40 md:hidden animate-fadeIn"
+          onClick={onCloseMobile}
+        />
+      )}
+
+      <aside className={`
+        ${isMobileOpen 
+          ? 'fixed inset-y-0 left-0 z-50 w-64 shadow-2xl flex flex-col justify-between h-full' 
+          : 'hidden md:flex md:w-60 md:min-w-[230px] md:max-w-[260px] md:static'}
+        bg-[#11130F] text-[#AAA99B] border-r border-[#262922] select-none text-xs font-mono transition-transform duration-200
+      `}>
+        {/* Upper Area */}
+        <div className="flex flex-col p-2.5 space-y-2.5 overflow-y-auto">
+          {/* Brand & Logo Header */}
+          <div className="flex items-center justify-between pb-1 border-b border-[#262922]">
+            <div className="flex items-center space-x-2">
+              <AthenaeumLogo className="w-7 h-7 text-[#AAA99B] flex-shrink-0" />
+              <div className="flex flex-col">
+                <span className="font-serif tracking-[0.16em] text-[13px] text-[#E9E5D8] font-bold leading-none">
+                  ATHENÆUM
+                </span>
+                <span className="text-[7px] text-[#77766B] tracking-wider mt-1 uppercase leading-tight font-mono">
+                  Personal Archive &amp; Creative Workspace
+                </span>
+              </div>
+            </div>
+
+            {/* Mobile Close Button */}
+            {onCloseMobile && (
+              <button 
+                onClick={onCloseMobile}
+                className="md:hidden text-[#77766B] hover:text-[#E9E5D8] p-1 border border-[#262922] hover:bg-[#1E211A] transition-colors"
+                title="Close Navigation"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
-        </div>
 
         {/* Active Curator Profile Badge */}
         {currentUser && (
@@ -119,13 +163,7 @@ export function Sidebar({
               return (
                 <button
                   key={item.id}
-                  onClick={() => {
-                    if (item.action) {
-                      item.action();
-                    } else {
-                      setActiveNav(item.id);
-                    }
-                  }}
+                  onClick={() => handleNavClick(item)}
                   className={`w-full flex items-center space-x-2.5 px-2 py-1 transition-all duration-100 text-left text-[10px] rounded-[1px] ${
                     isActive
                       ? 'bg-[#E9E5D8] text-[#1E201B] font-semibold shadow-sm'
@@ -149,7 +187,7 @@ export function Sidebar({
             {RECENT_VIEWS.map((view, i) => (
               <button
                 key={i}
-                onClick={() => onSelectRecentView(view)}
+                onClick={() => handleRecentViewClick(view)}
                 className="w-full text-left px-1.5 py-0.5 flex items-center space-x-1.5 text-[#7E7D72] hover:text-[#E9E5D8] hover:bg-[#161914] truncate transition-colors"
               >
                 <span className="text-[#57594F] text-[8px]">•</span>
@@ -201,7 +239,10 @@ export function Sidebar({
         <div className="pt-1.5 border-t border-[#1C1F18] flex items-center justify-between text-[8.5px] text-[#6E7065]">
           <span>ATHENAEUM v0.1.0</span>
           <button 
-            onClick={onOpenSettings}
+            onClick={() => {
+              if (onOpenSettings) onOpenSettings();
+              if (onCloseMobile) onCloseMobile();
+            }}
             title="System Settings"
             className="text-[#6E7065] hover:text-[#AAA99B] transition-colors p-0.5"
           >
@@ -210,5 +251,6 @@ export function Sidebar({
         </div>
       </div>
     </aside>
+    </>
   );
 }

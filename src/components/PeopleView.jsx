@@ -80,51 +80,51 @@ export function PeopleView({ people = INITIAL_PEOPLE, onAddPerson }) {
       </div>
 
       {/* Grid of Persons */}
-      <div className="flex-1 overflow-y-auto p-3">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+      <div className="flex-1 overflow-y-auto p-2 sm:p-3">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5">
           {filteredPeople.map((p) => (
             <div
               key={p.id}
-              className="border border-[#AAA99B] bg-[#E9E5D8] hover:bg-[#E3DFD3] p-2.5 flex flex-col justify-between"
+              className="border border-[#AAA99B] bg-[#E9E5D8] hover:bg-[#E3DFD3] p-2 sm:p-2.5 flex flex-col justify-between"
             >
               <div>
-                <div className="flex justify-between items-start pb-1.5 border-b border-[#D5D1C4]">
-                  <div>
-                    <h3 className="text-[11px] font-bold text-[#25251F]">
+                <div className="flex justify-between items-start pb-1 sm:pb-1.5 border-b border-[#D5D1C4]">
+                  <div className="min-w-0 pr-1">
+                    <h3 className="text-[10px] sm:text-[11px] font-bold text-[#25251F] truncate">
                       {p.name}
                     </h3>
-                    <div className="text-[8px] text-[#666] font-medium flex items-center space-x-1 mt-0.5">
-                      <Briefcase className="w-2.5 h-2.5" />
-                      <span>{p.role}</span>
+                    <div className="text-[7.5px] sm:text-[8px] text-[#666] font-medium flex items-center space-x-1 mt-0.5 truncate">
+                      <Briefcase className="w-2.5 h-2.5 flex-shrink-0" />
+                      <span className="truncate">{p.role}</span>
                     </div>
                   </div>
-                  <span className="text-[7.5px] px-1.5 py-0.2 border border-[#AAA99B] bg-[#DDD8CB] text-[#333]">
+                  <span className="text-[6.5px] sm:text-[7.5px] px-1 sm:px-1.5 py-0.2 border border-[#AAA99B] bg-[#DDD8CB] text-[#333] flex-shrink-0">
                     {p.status}
                   </span>
                 </div>
 
-                <div className="mt-2 space-y-1 text-[8px] text-[#555]">
-                  <div className="flex items-center space-x-1.5">
+                <div className="mt-1.5 sm:mt-2 space-y-0.5 sm:space-y-1 text-[7.5px] sm:text-[8px] text-[#555]">
+                  <div className="flex items-center space-x-1 sm:space-x-1.5 truncate">
                     <span className="text-[#888]">ORG:</span>
                     <span className="text-[#25251F] font-medium truncate">{p.affiliation}</span>
                   </div>
-                  <div className="flex items-center space-x-1.5">
-                    <Mail className="w-2.5 h-2.5 text-[#888]" />
+                  <div className="flex items-center space-x-1 sm:space-x-1.5 truncate">
+                    <Mail className="w-2.5 h-2.5 text-[#888] flex-shrink-0" />
                     <span className="text-[#444] truncate">{p.email}</span>
                   </div>
-                  <div className="flex items-center space-x-1.5">
-                    <MapPin className="w-2.5 h-2.5 text-[#888]" />
-                    <span className="text-[#444]">{p.location}</span>
+                  <div className="flex items-center space-x-1 sm:space-x-1.5 truncate">
+                    <MapPin className="w-2.5 h-2.5 text-[#888] flex-shrink-0" />
+                    <span className="text-[#444] truncate">{p.location}</span>
                   </div>
-                  <p className="text-[7.5px] text-[#666] italic mt-1.5 pt-1.5 border-t border-[#D5D1C4]">
+                  <p className="text-[7px] sm:text-[7.5px] text-[#666] italic mt-1 pt-1 border-t border-[#D5D1C4] line-clamp-2">
                     "{p.notes}"
                   </p>
                 </div>
               </div>
 
-              <div className="mt-2 pt-1 border-t border-[#D5D1C4] flex justify-between text-[7.5px] text-[#77766B]">
-                <span>LINKED WORKS: {p.worksCount}</span>
-                <span>ID: {p.id}</span>
+              <div className="mt-2 pt-1 border-t border-[#D5D1C4] flex justify-between text-[7px] sm:text-[7.5px] text-[#77766B]">
+                <span>WORKS: {p.worksCount}</span>
+                <span>{p.id}</span>
               </div>
             </div>
           ))}

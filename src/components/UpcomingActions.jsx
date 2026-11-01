@@ -50,8 +50,8 @@ export function UpcomingActions({
         </div>
 
         {/* Table matching reference image */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-[8.5px] font-mono table-fixed">
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full min-w-[420px] text-left border-collapse text-[8.5px] font-mono table-fixed">
             <thead>
               <tr className="border-b border-[#D5D1C4] text-[#66655A] uppercase text-[7.5px] font-mono tracking-wider">
                 <th className="py-1.5 px-2 font-normal w-[12%]">TIME</th>

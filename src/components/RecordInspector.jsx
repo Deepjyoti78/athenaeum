@@ -137,9 +137,9 @@ export function RecordInspector({
   const tabs = ['DETAILS', 'NOTES', 'LINKS', 'FILES', 'ACTIVITY'];
 
   return (
-    <div className="flex h-full bg-[#E9E5D8] border-l border-[#AAA99B] text-[#25251F] font-mono select-none">
+    <div className="flex h-full bg-[#E9E5D8] border-l border-[#AAA99B] text-[#25251F] font-mono select-none w-full">
       {/* Main Inspector Body */}
-      <div className="w-[305px] min-w-[290px] flex flex-col justify-between h-full overflow-y-auto">
+      <div className="w-full lg:w-[305px] lg:min-w-[290px] flex flex-col justify-between h-full overflow-y-auto">
         <div>
           {/* Header */}
           <div className="p-2 pb-1.5 border-b border-[#AAA99B] flex items-center justify-between">

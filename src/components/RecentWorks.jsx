@@ -47,7 +47,7 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
           <p className="text-[8px] text-[#66655B] mt-1">Initialize your first project, research inquiry, or creative exploration.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         {displayWorks.map((work) => {
           const isSelected = selectedWorkId === work.id;
           const isMenuOpen = activeMenuId === work.id;
@@ -59,10 +59,10 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
                 setActiveMenuId(null);
                 onSelectWork && onSelectWork(work);
               }}
-              className="border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#E2DFD0] transition-colors cursor-pointer p-2 flex flex-col justify-between group relative shadow-sm"
+              className="border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#E2DFD0] transition-colors cursor-pointer p-1.5 sm:p-2 flex flex-col justify-between group relative shadow-sm"
             >
               {/* Artwork Container matching Image 2 aspect ratio */}
-              <div className="w-full h-[88px] sm:h-[92px] border border-[#B5B3A4] overflow-hidden mb-2 bg-[#D5D0C2] relative">
+              <div className="w-full h-[72px] sm:h-[92px] border border-[#B5B3A4] overflow-hidden mb-1.5 sm:mb-2 bg-[#D5D0C2] relative">
                 <ArchivalArtwork 
                   type={work.photo || work.artwork || 'blueprint'} 
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]" 
@@ -123,18 +123,18 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
 
               {/* Title & Metadata matching reference image */}
               <div className="space-y-1">
-                <h3 className="font-mono font-bold text-[9.5px] uppercase text-[#171714] tracking-tight truncate">
+                <h3 className="font-mono font-bold text-[8.5px] sm:text-[9.5px] uppercase text-[#171714] tracking-tight truncate">
                   {work.title || work.shortTitle}
                 </h3>
 
-                <div className="space-y-0.5 text-[8px] font-mono text-[#55544B] pt-0.5 border-t border-[#D5D1C4]">
+                <div className="space-y-0.5 text-[7px] sm:text-[8px] font-mono text-[#55544B] pt-0.5 border-t border-[#D5D1C4]">
                   <div className="flex justify-between items-center">
                     <span className="text-[#66655A] flex-shrink-0">Type:</span>
-                    <span className="font-semibold text-[#171714] truncate text-right pl-2">{work.type || 'Project'}</span>
+                    <span className="font-semibold text-[#171714] truncate text-right pl-1">{work.type || 'Project'}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#66655A] flex-shrink-0">Status:</span>
-                    <div className="flex items-center space-x-1.5 flex-shrink-0 pl-2">
+                    <div className="flex items-center space-x-1 flex-shrink-0 pl-1">
                       <span className={`w-1.5 h-1.5 rounded-full inline-block flex-shrink-0 ${
                         work.status === 'In progress' ? 'bg-[#74866A]' : 'bg-[#88877A]'
                       }`} />
@@ -143,7 +143,7 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#66655A] flex-shrink-0">Updated:</span>
-                    <span className="text-[#55544B] truncate text-right pl-2">{work.updated || 'Today 09:18'}</span>
+                    <span className="text-[#55544B] truncate text-right pl-1">{work.updated || 'Today 09:18'}</span>
                   </div>
                 </div>
               </div>
