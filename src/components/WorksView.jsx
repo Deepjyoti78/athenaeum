@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Filter, Plus, ArrowUpDown, Check, Circle, ExternalLink } from 'lucide-react';
 import { ArchivalArtwork } from './ArchivalArtwork';
 
-export function WorksView({ works, onSelectWork, onAddNewWork }) {
+export function WorksView({ works = [], onSelectWork, onAddNewWork }) {
   const [filterType, setFilterType] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,19 +11,20 @@ export function WorksView({ works, onSelectWork, onAddNewWork }) {
   const types = ['ALL', 'PROJECT', 'RESEARCH', 'CREATIVE', 'MAINTENANCE'];
   const statuses = ['ALL', 'IN PROGRESS', 'PLANNED', 'ACTIVE'];
 
-  const filteredWorks = works.filter(work => {
-    const matchesType = filterType === 'ALL' || work.type.toUpperCase() === filterType;
-    const matchesStatus = filterStatus === 'ALL' || work.status.toUpperCase() === filterStatus;
+  const safeWorks = Array.isArray(works) ? works : [];
+  const filteredWorks = safeWorks.filter(work => {
+    const matchesType = filterType === 'ALL' || work?.type?.toUpperCase() === filterType;
+    const matchesStatus = filterStatus === 'ALL' || work?.status?.toUpperCase() === filterStatus;
     const q = searchQuery.toLowerCase().trim();
     const matchesSearch = !q || 
-      work.title.toLowerCase().includes(q) || 
-      work.description.toLowerCase().includes(q) ||
-      work.tags.some(t => t.toLowerCase().includes(q));
+      (work?.title && work.title.toLowerCase().includes(q)) || 
+      (work?.description && work.description.toLowerCase().includes(q)) ||
+      (Array.isArray(work?.tags) && work.tags.some(t => t && t.toLowerCase().includes(q)));
     return matchesType && matchesStatus && matchesSearch;
   }).sort((a, b) => {
-    if (sortBy === 'title') return a.title.localeCompare(b.title);
-    if (sortBy === 'progress') return b.progress - a.progress;
-    return b.updated.localeCompare(a.updated);
+    if (sortBy === 'title') return (a?.title || '').localeCompare(b?.title || '');
+    if (sortBy === 'progress') return (b?.progress || 0) - (a?.progress || 0);
+    return (b?.updated || '').localeCompare(a?.updated || '');
   });
 
   return (
@@ -117,7 +118,17 @@ export function WorksView({ works, onSelectWork, onAddNewWork }) {
 
       {/* Works Grid */}
       <div className="flex-1 overflow-y-auto p-3">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+        {filteredWorks.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center p-8 text-center text-[#66655A]">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#25251F] mb-1">
+              NO WORKS FOUND
+            </p>
+            <p className="text-[8.5px] text-[#77766B] max-w-xs">
+              No archival projects match the active filters or catalog query.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
           {filteredWorks.map((work) => (
             <div
               key={work.id}
@@ -182,6 +193,7 @@ export function WorksView({ works, onSelectWork, onAddNewWork }) {
             </div>
           ))}
         </div>
+        )}
       </div>
     </div>
   );

@@ -8,13 +8,17 @@ export function PlacesView({ places: propPlaces = INITIAL_PLACES, onAddPlace }) 
   const places = propPlaces || context?.places || INITIAL_PLACES;
   const inspectRecord = context?.inspectRecord;
 
-  const [placeList, setPlaceList] = useState(places);
+  const [placeList, setPlaceList] = useState(places || []);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('ALL');
   const [sortBy, setSortBy] = useState('updated');
   const [viewMode, setViewMode] = useState('grid'); // Default to full-width archival grid
   const [activePlaceId, setActivePlaceId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
+
+  React.useEffect(() => {
+    setPlaceList(places || []);
+  }, [places]);
 
   // New place modal state
   const [name, setName] = useState('');
@@ -28,20 +32,21 @@ export function PlacesView({ places: propPlaces = INITIAL_PLACES, onAddPlace }) 
   // Regions list for filter
   const regions = useMemo(() => {
     const set = new Set();
-    placeList.forEach(p => {
-      if (p.region) set.add(p.region);
+    (placeList || []).forEach(p => {
+      if (p?.region) set.add(p.region);
     });
     return Array.from(set);
   }, [placeList]);
 
   // Filter & Sort
   const filteredPlaces = useMemo(() => {
-    return placeList.filter(p => {
+    return (placeList || []).filter(p => {
+      if (!p) return false;
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch = !q || 
-        p.name.toLowerCase().includes(q) || 
-        p.region.toLowerCase().includes(q) || 
-        p.description.toLowerCase().includes(q) ||
+        (p.name && p.name.toLowerCase().includes(q)) || 
+        (p.region && p.region.toLowerCase().includes(q)) || 
+        (p.description && p.description.toLowerCase().includes(q)) ||
         (p.coordinates && p.coordinates.toLowerCase().includes(q));
       
       const matchesRegion = selectedRegion === 'ALL' || p.region === selectedRegion;
