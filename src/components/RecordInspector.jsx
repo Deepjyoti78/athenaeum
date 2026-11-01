@@ -137,7 +137,7 @@ export function RecordInspector({
   const tabs = ['DETAILS', 'NOTES', 'LINKS', 'FILES', 'ACTIVITY'];
 
   return (
-    <div className="flex h-full bg-[#E9E5D8] border-l border-[#AAA99B] text-[#25251F] font-mono select-none w-full">
+    <div key={record.id} className="flex h-full bg-[#E9E5D8] border-l border-[#AAA99B] text-[#25251F] font-mono select-none w-full animate-slide-right">
       {/* Main Inspector Body */}
       <div className="w-full lg:w-[305px] lg:min-w-[290px] flex flex-col justify-between h-full overflow-y-auto">
         <div>

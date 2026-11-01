@@ -129,16 +129,17 @@ export function WorksView({ works = [], onSelectWork, onAddNewWork }) {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5">
-          {filteredWorks.map((work) => (
+          {filteredWorks.map((work, idx) => (
             <div
               key={work.id}
+              style={{ animationDelay: `${idx * 45}ms` }}
               onClick={() => onSelectWork(work)}
-              className="border border-[#AAA99B] bg-[#E9E5D8] hover:bg-[#E3DFD3] hover:border-[#25251F] transition-all p-1.5 sm:p-2 flex flex-col justify-between group cursor-pointer"
+              className="animate-card-enter archival-card-hover border border-[#AAA99B] bg-[#E9E5D8] hover:bg-[#E3DFD3] hover:border-[#25251F] cursor-pointer p-1.5 sm:p-2 flex flex-col justify-between group shadow-sm transition-all"
             >
               <div>
                 {/* Artwork Header */}
                 <div className="w-full h-20 sm:h-28 border border-[#AAA99B] overflow-hidden mb-1.5 sm:mb-2 bg-[#D5D0C2] relative">
-                  <ArchivalArtwork type={work.photo || work.artwork || 'blueprint'} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]" />
+                  <ArchivalArtwork type={work.photo || work.artwork || 'blueprint'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute top-1 left-1 bg-[#25251F] text-[#E9E5D8] text-[7px] font-mono px-1 py-0.2">
                     {work.id}
                   </div>

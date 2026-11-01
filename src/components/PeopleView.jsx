@@ -82,10 +82,11 @@ export function PeopleView({ people = INITIAL_PEOPLE, onAddPerson }) {
       {/* Grid of Persons */}
       <div className="flex-1 overflow-y-auto p-2 sm:p-3">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5">
-          {filteredPeople.map((p) => (
+          {filteredPeople.map((p, idx) => (
             <div
               key={p.id}
-              className="border border-[#AAA99B] bg-[#E9E5D8] hover:bg-[#E3DFD3] p-2 sm:p-2.5 flex flex-col justify-between"
+              style={{ animationDelay: `${idx * 45}ms` }}
+              className="animate-card-enter archival-card-hover border border-[#AAA99B] bg-[#E9E5D8] hover:bg-[#E3DFD3] hover:border-[#25251F] p-2 sm:p-2.5 flex flex-col justify-between shadow-sm cursor-pointer"
             >
               <div>
                 <div className="flex justify-between items-start pb-1 sm:pb-1.5 border-b border-[#D5D1C4]">
@@ -133,8 +134,8 @@ export function PeopleView({ people = INITIAL_PEOPLE, onAddPerson }) {
 
       {/* Add Person Modal */}
       {isAdding && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] z-50 flex items-center justify-center p-4">
-          <div className="bg-[#E9E5D8] border border-[#25251F] max-w-md w-full p-3 shadow-2xl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="animate-modal-pop bg-[#E9E5D8] border border-[#25251F] max-w-md w-full p-3 shadow-2xl">
             <div className="flex justify-between items-center pb-2 border-b border-[#AAA99B]">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#25251F]">
                 REGISTER ARCHIVAL COLLABORATOR

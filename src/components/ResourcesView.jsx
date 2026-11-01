@@ -113,8 +113,12 @@ export function ResourcesView({ resources = INITIAL_RESOURCES, onAddResource }) 
               </tr>
             </thead>
             <tbody className="divide-y divide-[#DDD9CD]">
-              {filteredResources.map((res) => (
-                <tr key={res.id} className="hover:bg-[#E2DDD0] transition-colors">
+              {filteredResources.map((res, idx) => (
+                <tr 
+                  key={res.id} 
+                  style={{ animationDelay: `${idx * 30}ms` }}
+                  className="animate-fade-in hover:bg-[#E2DDD0] transition-colors"
+                >
                   <td className="py-2 px-3 text-[#25251F] font-bold">
                     {res.title}
                     <div className="text-[7.5px] text-[#77766B] font-normal">{res.category}</div>
@@ -142,8 +146,8 @@ export function ResourcesView({ resources = INITIAL_RESOURCES, onAddResource }) 
 
       {/* Add Dialog */}
       {isAdding && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] z-50 flex items-center justify-center p-4">
-          <div className="bg-[#E9E5D8] border border-[#25251F] max-w-md w-full p-3 shadow-2xl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="animate-modal-pop bg-[#E9E5D8] border border-[#25251F] max-w-md w-full p-3 shadow-2xl">
             <div className="flex justify-between items-center pb-2 border-b border-[#AAA99B]">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#25251F]">
                 CATALOG VAULT RESOURCE

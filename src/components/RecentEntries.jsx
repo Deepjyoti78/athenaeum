@@ -63,11 +63,12 @@ export function RecentEntries({ entries: propEntries, onViewAll, onSelectEntry }
                   </td>
                 </tr>
               ) : (
-                entries.slice(0, 4).map((entry) => (
+                entries.slice(0, 4).map((entry, idx) => (
                   <tr 
                     key={entry.id}
+                    style={{ animationDelay: `${idx * 40}ms` }}
                     onClick={() => handleClick(entry)}
-                    className="hover:bg-[#E2DDD0] transition-colors cursor-pointer group"
+                    className="animate-fade-in hover:bg-[#E2DDD0] transition-colors cursor-pointer group"
                   >
                     <td className="py-2 px-2.5 text-[#55544B] whitespace-nowrap text-[8px]">
                       {entry.date} <span className="text-[#171714] font-bold ml-1">{entry.time}</span>

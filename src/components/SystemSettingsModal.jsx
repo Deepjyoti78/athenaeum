@@ -153,7 +153,7 @@ export function SystemSettingsModal({ isOpen, onClose, works = [], actions = [],
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-[2px] z-50 flex items-center justify-center p-3 font-mono select-none">
-      <div className="w-full max-w-3xl bg-[#EAE7D9] border-2 border-[#171714] shadow-2xl flex flex-col max-h-[92vh] overflow-hidden rounded-[1px]">
+      <div className="w-full max-w-3xl bg-[#EAE7D9] border-2 border-[#171714] shadow-2xl flex flex-col max-h-[92vh] overflow-hidden rounded-[1px] animate-modal-pop">
         
         {/* ============================================================ */}
         {/* TOP TECHNICAL CONSOLE HEADER                                 */}

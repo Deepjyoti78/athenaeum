@@ -846,7 +846,7 @@ export function NewsView({ onOpenNewRecord }) {
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#FAF7F0] border-2 border-[#141512] shadow-2xl max-w-2xl w-full p-6 sm:p-8 text-[#141512] font-serif space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-[#FAF7F0] border-2 border-[#141512] shadow-2xl max-w-2xl w-full p-6 sm:p-8 text-[#141512] font-serif space-y-4 max-h-[90vh] overflow-y-auto animate-modal-pop"
           >
             {/* Modal Header */}
             <div className="flex justify-between items-center border-b border-[#141512] pb-2 font-mono text-[8px] text-[#666]">

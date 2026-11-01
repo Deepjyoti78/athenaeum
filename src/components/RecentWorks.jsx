@@ -48,24 +48,25 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-        {displayWorks.map((work) => {
+        {displayWorks.map((work, idx) => {
           const isSelected = selectedWorkId === work.id;
           const isMenuOpen = activeMenuId === work.id;
 
           return (
             <div
               key={work.id}
+              style={{ animationDelay: `${idx * 60}ms` }}
               onClick={() => {
                 setActiveMenuId(null);
                 onSelectWork && onSelectWork(work);
               }}
-              className="border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#E2DFD0] transition-colors cursor-pointer p-1.5 sm:p-2 flex flex-col justify-between group relative shadow-sm"
+              className="animate-card-enter archival-card-hover border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#E2DFD0] hover:border-[#171714] cursor-pointer p-1.5 sm:p-2 flex flex-col justify-between group relative shadow-sm"
             >
               {/* Artwork Container matching Image 2 aspect ratio */}
               <div className="w-full h-[72px] sm:h-[92px] border border-[#B5B3A4] overflow-hidden mb-1.5 sm:mb-2 bg-[#D5D0C2] relative">
                 <ArchivalArtwork 
                   type={work.photo || work.artwork || 'blueprint'} 
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]" 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
                 />
 
                 {/* Contextual three-dot menu button in top right matching reference image */}

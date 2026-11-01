@@ -175,145 +175,151 @@ function AthenaeumApp() {
           {/* Central Main Panel & Inspector Row */}
           <div className="flex-1 flex min-h-0 overflow-hidden">
             
-            {/* View Switcher: Shows Selected Active Page */}
-            {activeNav === 'dashboard' && (
-              <main className="flex-1 overflow-y-auto p-3.5 space-y-3.5 bg-[#E9E5D8]">
-                {/* Section A: Overview Metrics */}
-                <OverviewMetrics 
-                  onNavigate={handleNavigate}
-                />
+            {/* View Switcher: Shows Selected Active Page with Smooth Transition */}
+            <div key={activeNav} className="flex-1 flex flex-col min-h-0 overflow-hidden animate-page-enter">
+              {activeNav === 'dashboard' && (
+                <main className="flex-1 overflow-y-auto p-2 sm:p-3.5 space-y-2.5 sm:space-y-3.5 bg-[#E9E5D8]">
+                  {/* Section A: Overview Metrics */}
+                  <div className="animate-card-enter">
+                    <OverviewMetrics 
+                      onNavigate={handleNavigate}
+                    />
+                  </div>
 
-                {/* Section B: Recent Works Grid */}
-                <RecentWorks
+                  {/* Section B: Recent Works Grid */}
+                  <div className="animate-card-enter stagger-1">
+                    <RecentWorks
+                      works={works}
+                      selectedWorkId={selectedRecord?.id || 'WRK-2025-0003'}
+                      onSelectWork={handleSelectWork}
+                      onViewAll={() => setActiveNav('works')}
+                    />
+                  </div>
+
+                  {/* Section C & D: Upcoming Actions (60%) & Daily Log (40%) precisely aligning with 3:2 ratio */}
+                  <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 animate-card-enter stagger-2">
+                    <div className="lg:col-span-3">
+                      <UpcomingActions
+                        actions={actions}
+                        onToggleActionStatus={toggleActionStatus}
+                        onChangePriority={cycleActionPriority}
+                      />
+                    </div>
+                    <div className="lg:col-span-2">
+                      <DailyLog
+                        onViewLog={() => setActiveNav('daily-log')}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Section E & F: Recent Entries (60%) & Collection Highlight (40%) completing bottom dashboard */}
+                  <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 pb-3 animate-card-enter stagger-3">
+                    <div className="lg:col-span-3">
+                      <RecentEntries
+                        entries={entries}
+                        onViewAll={() => setActiveNav('entries')}
+                        onSelectEntry={(entry) => {
+                          inspectRecord('entry', entry);
+                          if (!isInspectorOpen) setIsInspectorOpen(true);
+                        }}
+                      />
+                    </div>
+                    <div className="lg:col-span-2">
+                      <CollectionHighlight
+                        collection={collections[0]}
+                        onViewCollection={() => setActiveNav('collections')}
+                        onThumbnailClick={() => setActiveNav('collections')}
+                      />
+                    </div>
+                  </div>
+                </main>
+              )}
+
+              {activeNav === 'works' && (
+                <WorksView
                   works={works}
-                  selectedWorkId={selectedRecord?.id || 'WRK-2025-0003'}
                   onSelectWork={handleSelectWork}
-                  onViewAll={() => setActiveNav('works')}
+                  onAddNewWork={() => setIsNewRecordOpen(true)}
                 />
+              )}
 
-                {/* Section C & D: Upcoming Actions (60%) & Daily Log (40%) precisely aligning with 3:2 ratio */}
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
-                  <div className="lg:col-span-3">
-                    <UpcomingActions
-                      actions={actions}
-                      onToggleActionStatus={toggleActionStatus}
-                      onChangePriority={cycleActionPriority}
-                    />
-                  </div>
-                  <div className="lg:col-span-2">
-                    <DailyLog
-                      onViewLog={() => setActiveNav('daily-log')}
-                    />
-                  </div>
-                </div>
+              {activeNav === 'actions' && (
+                <ActionsView
+                  actions={actions}
+                  onToggleActionStatus={toggleActionStatus}
+                  onChangePriority={cycleActionPriority}
+                  onAddAction={async (newAct) => {
+                    await createAction(newAct);
+                    showToast(`Scheduled Action: ${newAct.action}`);
+                  }}
+                />
+              )}
 
-                {/* Section E & F: Recent Entries (60%) & Collection Highlight (40%) completing bottom dashboard */}
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 pb-3">
-                  <div className="lg:col-span-3">
-                    <RecentEntries
-                      entries={entries}
-                      onViewAll={() => setActiveNav('entries')}
-                      onSelectEntry={(entry) => {
-                        inspectRecord('entry', entry);
-                        if (!isInspectorOpen) setIsInspectorOpen(true);
-                      }}
-                    />
-                  </div>
-                  <div className="lg:col-span-2">
-                    <CollectionHighlight
-                      collection={collections[0]}
-                      onViewCollection={() => setActiveNav('collections')}
-                      onThumbnailClick={() => setActiveNav('collections')}
-                    />
-                  </div>
-                </div>
-              </main>
-            )}
+              {activeNav === 'entries' && (
+                <EntriesView
+                  entries={entries}
+                  onAddEntry={async (newEnt) => {
+                    await createEntry(newEnt);
+                    showToast(`Logged Entry: ${newEnt.title}`);
+                  }}
+                  onUpdateEntry={async (updatedEnt) => {
+                    await updateEntry(updatedEnt);
+                    showToast(`Entry updated.`);
+                  }}
+                />
+              )}
 
-            {activeNav === 'works' && (
-              <WorksView
-                works={works}
-                onSelectWork={handleSelectWork}
-                onAddNewWork={() => setIsNewRecordOpen(true)}
-              />
-            )}
+              {activeNav === 'collections' && (
+                <CollectionsView
+                  collections={collections}
+                />
+              )}
 
-            {activeNav === 'actions' && (
-              <ActionsView
-                actions={actions}
-                onToggleActionStatus={toggleActionStatus}
-                onChangePriority={cycleActionPriority}
-                onAddAction={async (newAct) => {
-                  await createAction(newAct);
-                  showToast(`Scheduled Action: ${newAct.action}`);
-                }}
-              />
-            )}
+              {activeNav === 'people' && (
+                <PeopleView
+                  people={people}
+                  onAddPerson={async (newP) => {
+                    await createPerson(newP);
+                    showToast(`Registered Person: ${newP.name}`);
+                  }}
+                />
+              )}
 
-            {activeNav === 'entries' && (
-              <EntriesView
-                entries={entries}
-                onAddEntry={async (newEnt) => {
-                  await createEntry(newEnt);
-                  showToast(`Logged Entry: ${newEnt.title}`);
-                }}
-                onUpdateEntry={async (updatedEnt) => {
-                  await updateEntry(updatedEnt);
-                  showToast(`Entry updated.`);
-                }}
-              />
-            )}
+              {activeNav === 'places' && (
+                <PlacesView
+                  places={places}
+                  onAddPlace={async (newPlc) => {
+                    await createPlace(newPlc);
+                    showToast(`Recorded Locus: ${newPlc.name}`);
+                  }}
+                />
+              )}
 
-            {activeNav === 'collections' && (
-              <CollectionsView
-                collections={collections}
-              />
-            )}
+              {activeNav === 'resources' && (
+                <ResourcesView
+                  resources={resources}
+                  onAddResource={async (newRes) => {
+                    await createResource(newRes);
+                    showToast(`Cataloged Resource: ${newRes.title}`);
+                  }}
+                />
+              )}
 
-            {activeNav === 'people' && (
-              <PeopleView
-                people={people}
-                onAddPerson={async (newP) => {
-                  await createPerson(newP);
-                  showToast(`Registered Person: ${newP.name}`);
-                }}
-              />
-            )}
+              {activeNav === 'calendar' && (
+                <CalendarView
+                  actions={actions}
+                  entries={entries}
+                />
+              )}
 
-            {activeNav === 'places' && (
-              <PlacesView
-                places={places}
-                onAddPlace={async (newPlc) => {
-                  await createPlace(newPlc);
-                  showToast(`Recorded Locus: ${newPlc.name}`);
-                }}
-              />
-            )}
+              {activeNav === 'daily-log' && (
+                <DailyLogView />
+              )}
 
-            {activeNav === 'resources' && (
-              <ResourcesView
-                resources={resources}
-                onAddResource={async (newRes) => {
-                  await createResource(newRes);
-                  showToast(`Cataloged Resource: ${newRes.title}`);
-                }}
-              />
-            )}
-
-            {activeNav === 'calendar' && (
-              <CalendarView
-                actions={actions}
-                entries={entries}
-              />
-            )}
-
-            {activeNav === 'daily-log' && (
-              <DailyLogView />
-            )}
-
-            {activeNav === 'news' && (
-              <NewsView onOpenNewRecord={() => setIsNewRecordOpen(true)} />
-            )}
+              {activeNav === 'news' && (
+                <NewsView onOpenNewRecord={() => setIsNewRecordOpen(true)} />
+              )}
+            </div>
 
             {/* 3. Right Sidebar — Universal Record Inspector */}
             {isInspectorOpen && (

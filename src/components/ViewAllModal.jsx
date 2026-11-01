@@ -31,7 +31,7 @@ export function ViewAllModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] z-50 flex items-center justify-center p-4 font-mono select-none">
-      <div className="w-full max-w-3xl bg-[#E9E5D8] border border-[#25251F] shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+      <div className="w-full max-w-3xl bg-[#E9E5D8] border border-[#25251F] shadow-2xl flex flex-col max-h-[85vh] overflow-hidden animate-modal-pop">
         {/* Header */}
         <div className="p-3 bg-[#DFDBD0] border-b border-[#AAA99B] flex items-center justify-between">
           <div className="flex items-center space-x-2">

@@ -295,8 +295,9 @@ export function PlacesView({ places: propPlaces = INITIAL_PLACES, onAddPlace }) 
               return (
                 <div 
                   key={plc.id} 
+                  style={{ animationDelay: `${idx * 50}ms` }}
                   onClick={() => handleSelectPlace(plc)}
-                  className={`border border-[#B5B3A4] bg-[#EAE7D9] p-2 sm:p-3 flex flex-col justify-between transition-all duration-150 cursor-pointer group shadow-sm ${
+                  className={`animate-card-enter archival-card-hover border border-[#B5B3A4] bg-[#EAE7D9] p-2 sm:p-3 flex flex-col justify-between cursor-pointer group shadow-sm transition-all duration-200 ${
                     isSelected ? 'ring-1 ring-[#171714] bg-[#E4DFC2]/60' : 'hover:border-[#171714] hover:bg-[#E5E1D2]'
                   }`}
                 >

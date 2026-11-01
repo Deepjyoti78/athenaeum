@@ -126,13 +126,14 @@ export function EntriesView({ entries, onAddEntry, onUpdateEntry }) {
       <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Left List Pane */}
         <div className={`${showMobileDetail ? 'hidden md:block' : 'w-full md:w-72 md:min-w-[260px]'} border-r border-[#AAA99B] bg-[#E9E5D8] overflow-y-auto divide-y divide-[#DDD9CD]`}>
-          {filteredEntries.map((ent) => {
+          {filteredEntries.map((ent, idx) => {
             const isSelected = selectedEntry?.id === ent.id;
             return (
               <div
                 key={ent.id}
                 onClick={() => handleSelect(ent)}
-                className={`p-2.5 cursor-pointer transition-colors ${
+                style={{ animationDelay: `${Math.min(idx * 30, 400)}ms` }}
+                className={`p-2.5 cursor-pointer transition-colors animate-fade-in ${
                   isSelected 
                     ? 'bg-[#DFDBD0] border-l-4 border-l-[#25251F]' 
                     : 'hover:bg-[#E3DFD3]'
@@ -252,7 +253,7 @@ export function EntriesView({ entries, onAddEntry, onUpdateEntry }) {
               </div>
             </form>
           ) : selectedEntry ? (
-            <div className="space-y-3 max-w-3xl">
+            <div key={selectedEntry.id} className="space-y-3 max-w-3xl animate-fade-in">
               {/* Document Header */}
               <div className="pb-3 border-b border-[#AAA99B] flex items-start justify-between">
                 <div>

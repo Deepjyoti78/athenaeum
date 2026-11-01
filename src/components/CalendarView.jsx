@@ -417,7 +417,7 @@ export function CalendarView() {
         {/* ============================================================ */}
         {/* LEFT COLUMN: MONTH VIEW & CALENDAR GRID                      */}
         {/* ============================================================ */}
-        <div className="flex-1 flex flex-col h-full min-h-0 p-3.5 md:p-4 bg-[#E9E5D8]">
+        <div className="flex-1 flex flex-col h-full min-h-0 p-3.5 md:p-4 bg-[#E9E5D8] animate-card-enter stagger-1">
           {/* Month Header & Segmented Tab Switcher */}
           <div className="flex items-start justify-between pb-2.5 border-b border-[#AAA99B] flex-shrink-0">
             <div>
@@ -743,7 +743,7 @@ export function CalendarView() {
         {/* ============================================================ */}
         {/* RIGHT COLUMN: DAY AGENDA TIMELINE & MONTH OVERVIEW           */}
         {/* ============================================================ */}
-        <div className="w-[360px] min-w-[340px] max-w-[380px] bg-[#E9E5D8] p-4 flex flex-col justify-between overflow-y-auto">
+        <div className="w-[360px] min-w-[340px] max-w-[380px] bg-[#E9E5D8] p-4 flex flex-col justify-between overflow-y-auto animate-card-enter stagger-2">
           <div>
             {/* Day Header with + ADD ENTRY button */}
             <div className="flex items-start justify-between pb-3 border-b border-[#AAA99B]">

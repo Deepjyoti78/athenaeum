@@ -102,7 +102,7 @@ export function SearchModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] z-50 flex items-start justify-center pt-16 p-4 font-mono select-none">
-      <div className="w-full max-w-xl bg-[#E9E5D8] border border-[#25251F] shadow-2xl flex flex-col max-h-[82vh] overflow-hidden">
+      <div className="w-full max-w-xl bg-[#E9E5D8] border border-[#25251F] shadow-2xl flex flex-col max-h-[82vh] overflow-hidden animate-modal-pop">
         {/* Search Input Bar */}
         <div className="p-3 bg-[#DFDBD0] border-b border-[#AAA99B] flex items-center space-x-2">
           <Search className="w-4 h-4 text-[#666]" />

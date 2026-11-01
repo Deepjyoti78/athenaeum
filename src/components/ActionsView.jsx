@@ -109,7 +109,7 @@ export function ActionsView({ actions, onToggleActionStatus, onChangePriority, o
 
       {/* Quick Add Bar */}
       {isAdding && (
-        <form onSubmit={handleCreateAction} className="p-2 border-b border-[#AAA99B] bg-[#E3DFD2] flex flex-wrap items-center gap-2 text-[9px]">
+        <form onSubmit={handleCreateAction} className="p-2 border-b border-[#AAA99B] bg-[#E3DFD2] flex flex-wrap items-center gap-2 text-[9px] animate-card-enter">
           <span className="font-bold text-[#25251F] text-[8px] uppercase">NEW:</span>
           <input
             type="text"
@@ -217,12 +217,13 @@ export function ActionsView({ actions, onToggleActionStatus, onChangePriority, o
               </tr>
             </thead>
             <tbody className="divide-y divide-[#DDD9CD]">
-              {filteredActions.map((item) => {
+              {filteredActions.map((item, idx) => {
                 const isDone = item.status === 'Completed';
                 return (
                   <tr 
                     key={item.id}
-                    className="hover:bg-[#E2DDD0] transition-colors group"
+                    style={{ animationDelay: `${Math.min(idx * 25, 400)}ms` }}
+                    className="hover:bg-[#E2DDD0] transition-colors group animate-fade-in"
                   >
                     {/* Done Checkbox */}
                     <td className="py-2 px-3 text-center">

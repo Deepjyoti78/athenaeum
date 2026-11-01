@@ -83,7 +83,7 @@ export function AuthScreen() {
       </div>
 
       {/* Main Archival Authentication Console */}
-      <div className="w-full max-w-lg bg-[#FAF8F3] border-2 border-[#171714] shadow-2xl relative z-10">
+      <div className="w-full max-w-lg bg-[#FAF8F3] border-2 border-[#171714] shadow-2xl relative z-10 animate-modal-pop">
         
         {/* Terminal Header */}
         <div className="p-3 bg-[#DFDBD0] border-b-2 border-[#171714] flex items-center justify-between">

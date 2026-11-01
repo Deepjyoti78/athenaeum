@@ -412,7 +412,7 @@ ${nextFocus}
         {/* ------------------------------------------------------------ */}
         {/* COLUMN 1: CHRONICLE ARCHIVE LOGS INDEX (~22% width, col-span-3) */}
         {/* ------------------------------------------------------------ */}
-        <div className="lg:col-span-3 border border-[#B5B3A4] bg-[#EAE7D9] flex flex-col justify-between overflow-hidden shadow-sm">
+        <div className="lg:col-span-3 border border-[#B5B3A4] bg-[#EAE7D9] flex flex-col justify-between overflow-hidden shadow-sm animate-card-enter stagger-1">
           
           <div>
             {/* Index Header */}
@@ -479,7 +479,7 @@ ${nextFocus}
         {/* ------------------------------------------------------------ */}
         {/* COLUMN 2: MANUSCRIPT EDITOR STAGE (~53% width, col-span-6)  */}
         {/* ------------------------------------------------------------ */}
-        <div className="lg:col-span-6 border border-[#B5B3A4] bg-[#FAF8F3] flex flex-col justify-between overflow-hidden shadow-sm">
+        <div className="lg:col-span-6 border border-[#B5B3A4] bg-[#FAF8F3] flex flex-col justify-between overflow-hidden shadow-sm animate-card-enter stagger-2">
           
           <div className="flex-1 flex flex-col p-3.5 overflow-y-auto">
             
@@ -593,7 +593,7 @@ ${nextFocus}
         {/* ------------------------------------------------------------ */}
         {/* COLUMN 3: BIOMETRIC & TELEMETRY TELEMETRY (~25%, col-span-3) */}
         {/* ------------------------------------------------------------ */}
-        <div className="lg:col-span-3 border border-[#B5B3A4] bg-[#EAE7D9] p-3 flex flex-col justify-between overflow-y-auto space-y-3 shadow-sm">
+        <div className="lg:col-span-3 border border-[#B5B3A4] bg-[#EAE7D9] p-3 flex flex-col justify-between overflow-y-auto space-y-3 shadow-sm animate-card-enter stagger-3">
           
           <div className="space-y-3">
             {/* Panel Title */}

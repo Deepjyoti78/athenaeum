@@ -69,12 +69,13 @@ export function UpcomingActions({
                   </td>
                 </tr>
               ) : (
-                displayActions.map((item) => {
+                displayActions.map((item, idx) => {
                 const isCompleted = item.status === 'Completed';
                 return (
                   <tr 
                     key={item.id} 
-                    className="hover:bg-[#E2DFD0] transition-colors group cursor-pointer"
+                    style={{ animationDelay: `${idx * 40}ms` }}
+                    className="animate-fade-in hover:bg-[#E2DFD0] transition-colors group cursor-pointer"
                     onClick={() => inspectRecord && inspectRecord('action', item)}
                   >
                     {/* Time */}

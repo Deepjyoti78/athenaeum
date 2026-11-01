@@ -104,12 +104,13 @@ export function CollectionsView({ collections = INITIAL_COLLECTIONS }) {
             {items.map((artType, idx) => (
               <div
                 key={idx}
+                style={{ animationDelay: `${idx * 45}ms` }}
                 onClick={() => setLightboxItem({ type: artType, title: `${activeCollection.title || 'Collection'} — Specimen #${idx + 1}` })}
-                className="border border-[#AAA99B] bg-[#FAF8F3] hover:border-[#25251F] p-1.5 sm:p-2 flex flex-col justify-between group cursor-pointer transition-all hover:shadow-md"
+                className="animate-card-enter archival-card-hover border border-[#AAA99B] bg-[#FAF8F3] hover:border-[#25251F] p-1.5 sm:p-2 flex flex-col justify-between group cursor-pointer transition-all hover:shadow-md"
               >
                 {/* Media Container */}
                 <div className="w-full h-24 sm:h-36 border border-[#AAA99B] bg-[#DDD8CB] overflow-hidden relative">
-                  <ArchivalArtwork type={artType} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <ArchivalArtwork type={artType} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                     <Maximize2 className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
                   </div>
@@ -130,11 +131,11 @@ export function CollectionsView({ collections = INITIAL_COLLECTIONS }) {
       {lightboxItem && (
         <div 
           onClick={() => setLightboxItem(null)}
-          className="fixed inset-0 bg-black/75 backdrop-blur-[2px] z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/75 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 animate-fade-in"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#E9E5D8] border border-[#25251F] max-w-2xl w-full p-3 shadow-2xl flex flex-col space-y-3"
+            className="animate-modal-pop bg-[#E9E5D8] border border-[#25251F] max-w-2xl w-full p-3 shadow-2xl flex flex-col space-y-3"
           >
             <div className="flex items-center justify-between pb-2 border-b border-[#AAA99B]">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#25251F]">
