@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
-import { X, Plus, Check, FolderGit2, CheckSquare, FileText, Layers, Users, MapPin, HardDrive } from 'lucide-react';
+import { 
+  X, 
+  Plus, 
+  Check, 
+  FolderGit2, 
+  CheckSquare, 
+  FileText, 
+  Layers, 
+  Users, 
+  MapPin, 
+  HardDrive,
+  Camera,
+  Upload,
+  Image as ImageIcon,
+  Trash2
+} from 'lucide-react';
 import { useArchive } from '../context/ArchiveContext';
 
 export function NewRecordModal({ isOpen, onClose }) {
@@ -36,7 +51,26 @@ export function NewRecordModal({ isOpen, onClose }) {
   const [size, setSize] = useState('2.4 MB');
   const [locus, setLocus] = useState('Vault Shelf B-12');
 
+  // Photo / Artwork State (base64 Data URL or Image URL)
+  const [photo, setPhoto] = useState('');
+
   if (!isOpen) return null;
+
+  // Handle local image file upload
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 8 * 1024 * 1024) {
+        alert('Photo size exceeds 8MB. Please choose a smaller image file.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        setPhoto(uploadEvent.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,7 +89,8 @@ export function NewRecordModal({ isOpen, onClose }) {
         longDescription: description || 'New archival record created in local repository.',
         tags: tags.split(',').map(t => t.trim()).filter(Boolean),
         progress: 10,
-        artwork: 'blueprint'
+        artwork: photo || 'blueprint',
+        photo: photo || null
       });
     } else if (recordCategory === 'action') {
       await createAction({
@@ -72,14 +107,16 @@ export function NewRecordModal({ isOpen, onClose }) {
         category: category,
         author: author,
         content: description,
-        time: time || '12:00'
+        time: time || '12:00',
+        photo: photo || null
       });
     } else if (recordCategory === 'collection') {
       await createCollection({
         title: title,
         description: description,
         tags: tags.split(',').map(t => t.trim()).filter(Boolean),
-        items: ['highlight_blueprint', 'highlight_specimen']
+        items: photo ? [photo] : ['highlight_blueprint', 'highlight_specimen'],
+        photo: photo || null
       });
     } else if (recordCategory === 'person') {
       await createPerson({
@@ -88,14 +125,16 @@ export function NewRecordModal({ isOpen, onClose }) {
         org: org,
         email: email || `${title.toLowerCase().replace(/\s+/g, '.')}@athenaeum.org`,
         status: 'Active',
-        notes: description
+        notes: description,
+        photo: photo || null
       });
     } else if (recordCategory === 'place') {
       await createPlace({
         name: title,
         coordinates: coordinates,
         region: region,
-        description: description
+        description: description,
+        photo: photo || null
       });
     } else if (recordCategory === 'resource') {
       await createResource({
@@ -103,13 +142,15 @@ export function NewRecordModal({ isOpen, onClose }) {
         format: format,
         size: size,
         locus: locus,
-        description: description
+        description: description,
+        photo: photo || null
       });
     }
 
     // Reset & Close
     setTitle('');
     setDescription('');
+    setPhoto('');
     onClose();
   };
 
@@ -125,9 +166,9 @@ export function NewRecordModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] z-50 flex items-center justify-center p-4 font-mono select-none">
-      <div className="w-full max-w-lg bg-[#E9E5D8] border border-[#25251F] shadow-2xl flex flex-col">
+      <div className="w-full max-w-lg bg-[#E9E5D8] border border-[#25251F] shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
         {/* Modal Header */}
-        <div className="bg-[#DFDBD0] border-b border-[#AAA99B] p-2.5 flex items-center justify-between">
+        <div className="bg-[#DFDBD0] border-b border-[#AAA99B] p-2.5 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center space-x-2">
             <span className="w-2 h-2 bg-[#738A62] inline-block"></span>
             <span className="text-[11px] font-bold uppercase tracking-wider text-[#25251F]">
@@ -140,7 +181,7 @@ export function NewRecordModal({ isOpen, onClose }) {
         </div>
 
         {/* Category Picker */}
-        <div className="flex border-b border-[#AAA99B] bg-[#D7D2C4] text-[8.5px] overflow-x-auto">
+        <div className="flex border-b border-[#AAA99B] bg-[#D7D2C4] text-[8.5px] overflow-x-auto flex-shrink-0">
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isSelected = recordCategory === cat.id;
@@ -161,8 +202,8 @@ export function NewRecordModal({ isOpen, onClose }) {
           })}
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-3.5 space-y-2.5 text-[9px]">
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="p-3.5 space-y-2.5 text-[9px] overflow-y-auto flex-1">
           <div>
             <label className="block text-[8px] uppercase tracking-wider text-[#66655A] font-semibold mb-1">
               {recordCategory === 'person' ? 'FULL NAME *' : 
@@ -183,6 +224,7 @@ export function NewRecordModal({ isOpen, onClose }) {
                 "e.g. Field observations on optics"
               }
               className="w-full bg-[#F4EFE3] border border-[#AAA99B] p-1.5 text-[#25251F] font-mono focus:outline-none focus:ring-1 focus:ring-[#777A5A]"
+              autoFocus
             />
           </div>
 
@@ -217,6 +259,112 @@ export function NewRecordModal({ isOpen, onClose }) {
                   <option value="Planned">Planned</option>
                   <option value="Completed">Completed</option>
                 </select>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================== */}
+          {/* PHOTO / SPECIMEN ARTWORK UPLOAD OPTION                     */}
+          {/* ========================================================== */}
+          {(recordCategory === 'work' || recordCategory === 'collection' || recordCategory === 'place' || recordCategory === 'resource' || recordCategory === 'entry' || recordCategory === 'person') && (
+            <div className="p-2 border border-[#B5B3A4] bg-[#F2EDE2]/70 space-y-1.5">
+              <div className="flex items-center justify-between text-[7.5px] uppercase font-bold text-[#555]">
+                <div className="flex items-center space-x-1.5">
+                  <Camera className="w-3 h-3 text-[#3E523A]" />
+                  <span>RECORD PHOTO / SPECIMEN PLATE</span>
+                </div>
+                {photo && (
+                  <button
+                    type="button"
+                    onClick={() => setPhoto('')}
+                    className="text-[#9A3B3B] hover:underline flex items-center space-x-0.5 font-bold"
+                  >
+                    <Trash2 className="w-2.5 h-2.5" />
+                    <span>REMOVE</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-start space-x-2.5">
+                {/* Photo Preview Thumbnail */}
+                <div className="w-24 h-16 border border-[#B5B3A4] bg-[#D5D0C2] overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-inner">
+                  {photo ? (
+                    <img 
+                      src={photo} 
+                      alt="Archival specimen preview" 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-[#777] text-center p-1">
+                      <ImageIcon className="w-3.5 h-3.5 mb-0.5 opacity-60" />
+                      <span className="text-[6.5px] leading-tight font-mono">NO PHOTO</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Upload & Preset Actions */}
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center space-x-1.5">
+                    <label className="cursor-pointer border border-[#AAA99B] bg-[#DFDBD0] hover:bg-[#D4D0C3] active:bg-[#C9C4B7] px-2.5 py-1 text-[7.5px] font-bold tracking-wider uppercase text-[#25251F] flex items-center space-x-1 transition-colors shadow-sm">
+                      <Upload className="w-2.5 h-2.5" />
+                      <span>{photo ? 'CHANGE PHOTO' : 'UPLOAD PHOTO'}</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handlePhotoUpload} 
+                        className="hidden" 
+                      />
+                    </label>
+                    <span className="text-[6.5px] text-[#777] font-mono">
+                      JPG, PNG, WEBP, GIF
+                    </span>
+                  </div>
+
+                  {/* URL Input */}
+                  <div className="flex items-center space-x-1 bg-[#FAF8F3] border border-[#B5B3A4] px-1.5 py-0.5">
+                    <span className="text-[6.5px] text-[#777] uppercase font-bold">URL:</span>
+                    <input
+                      type="text"
+                      value={photo.startsWith('data:') ? '' : photo}
+                      onChange={(e) => setPhoto(e.target.value)}
+                      placeholder="Paste image link or choose preset..."
+                      className="bg-transparent text-[7.5px] text-[#25251F] focus:outline-none w-full font-mono"
+                    />
+                  </div>
+
+                  {/* Preset Buttons */}
+                  <div className="flex items-center space-x-1 text-[6.5px] text-[#555]">
+                    <span className="uppercase text-[#888]">PRESETS:</span>
+                    <button
+                      type="button"
+                      onClick={() => setPhoto('/images/works/athenaeum_app.jpg')}
+                      className="px-1 py-0.2 border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#DDD8CB] text-[6.5px]"
+                    >
+                      Blueprint
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPhoto('/images/works/east_london_archive.jpg')}
+                      className="px-1 py-0.2 border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#DDD8CB] text-[6.5px]"
+                    >
+                      Map
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPhoto('/images/works/creature_concepts.jpg')}
+                      className="px-1 py-0.2 border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#DDD8CB] text-[6.5px]"
+                    >
+                      Sketch
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPhoto('/images/works/photography_portfolio.jpg')}
+                      className="px-1 py-0.2 border border-[#B5B3A4] bg-[#EAE7D9] hover:bg-[#DDD8CB] text-[6.5px]"
+                    >
+                      Camera
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -439,3 +587,5 @@ export function NewRecordModal({ isOpen, onClose }) {
     </div>
   );
 }
+
+export default NewRecordModal;

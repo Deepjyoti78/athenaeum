@@ -1,6 +1,19 @@
 import React from 'react';
 
 export function ArchivalArtwork({ type, className = "w-full h-full object-cover" }) {
+  // Support custom uploaded photo / base64 data URI / image URL
+  if (type && (type.startsWith('data:image') || type.startsWith('blob:') || type.startsWith('http://') || type.startsWith('https://'))) {
+    return (
+      <div className={`relative bg-[#D5D0C2] overflow-hidden flex items-center justify-center ${className}`}>
+        <img 
+          src={type} 
+          alt="Archival photograph" 
+          className="w-full h-full object-cover select-none"
+        />
+      </div>
+    );
+  }
+
   // Use high-fidelity cropped artworks matching Image 2 reference with clean fallbacks
   const imageMap = {
     blueprint: '/images/works/athenaeum_app.jpg',

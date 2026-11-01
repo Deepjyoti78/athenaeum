@@ -448,3 +448,4 @@ app.post('/api/auth/logout', authenticate, (req, res) => {
 app.listen(PORT, () => {
   console.log(`[Athenaeum Vault Server] Authentication & Vault Engine active on http://localhost:${PORT}`);
 });
+

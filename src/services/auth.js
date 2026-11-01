@@ -367,3 +367,4 @@ export async function syncUserVault(token, userId, vaultData) {
     }
   }
 }
+

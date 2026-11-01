@@ -20,8 +20,11 @@ import {
   Layers,
   ShieldCheck,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Camera,
+  Upload
 } from 'lucide-react';
+import { ArchivalArtwork } from './ArchivalArtwork';
 import { useArchive } from '../context/ArchiveContext';
 
 export function RecordInspector({ 
@@ -191,6 +194,36 @@ export function RecordInspector({
             <h2 className="text-[12.5px] font-serif font-bold tracking-[0.03em] text-[#25251F] uppercase leading-tight">
               {record.title || record.action || record.name}
             </h2>
+
+            {/* Photo / Artwork Specimen Plate */}
+            {(record.photo || record.artwork) && (
+              <div className="w-full h-28 border border-[#B5B3A4] bg-[#D5D0C2] overflow-hidden my-2 shadow-inner relative group">
+                <ArchivalArtwork 
+                  type={record.photo || record.artwork} 
+                  className="w-full h-full object-cover" 
+                />
+                <label className="absolute bottom-1 right-1 bg-[#171714]/85 hover:bg-[#171714] text-[#FAF8F3] px-1.5 py-0.5 text-[6.5px] uppercase font-bold tracking-wider cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-1 shadow">
+                  <Camera className="w-2.5 h-2.5" />
+                  <span>CHANGE PHOTO</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                          saveRecordUpdate({ ...record, photo: ev.target.result, artwork: ev.target.result });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            )}
+
             <p className="text-[8px] font-mono text-[#55544B] mt-1 leading-relaxed">
               {record.description || record.notes || record.content || 'Archival record stored in local repository.'}
             </p>

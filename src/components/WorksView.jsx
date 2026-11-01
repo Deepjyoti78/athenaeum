@@ -127,7 +127,7 @@ export function WorksView({ works, onSelectWork, onAddNewWork }) {
               <div>
                 {/* Artwork Header */}
                 <div className="w-full h-28 border border-[#AAA99B] overflow-hidden mb-2 bg-[#D5D0C2] relative">
-                  <ArchivalArtwork type={work.artwork} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]" />
+                  <ArchivalArtwork type={work.photo || work.artwork || 'blueprint'} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]" />
                   <div className="absolute top-1 left-1 bg-[#25251F] text-[#E9E5D8] text-[7px] font-mono px-1 py-0.2">
                     {work.id}
                   </div>

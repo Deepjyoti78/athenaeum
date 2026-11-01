@@ -64,7 +64,7 @@ export function RecentWorks({ works = [], selectedWorkId, onSelectWork, onViewAl
               {/* Artwork Container matching Image 2 aspect ratio */}
               <div className="w-full h-[88px] sm:h-[92px] border border-[#B5B3A4] overflow-hidden mb-2 bg-[#D5D0C2] relative">
                 <ArchivalArtwork 
-                  type={work.artwork} 
+                  type={work.photo || work.artwork || 'blueprint'} 
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]" 
                 />
 
